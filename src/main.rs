@@ -1,10 +1,5 @@
-use std::mem::Discriminant;
-
-use cgmath::{EuclideanSpace, InnerSpace, MetricSpace, Point3, Vector3};
-use color_eyre::{
-    eyre::{Context, Report},
-    owo_colors::OwoColorize,
-};
+use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector3, Vector4};
+use color_eyre::eyre::{Context, Report};
 use image::{ImageBuffer, Rgba};
 
 struct Sphere {
@@ -48,20 +43,28 @@ fn main() -> Result<(), Report> {
     };
 
     for (x, y, pixel) in image.enumerate_pixels_mut() {
+        let aspect_ratio = width as f32 / height as f32;
         let ray = Ray {
             origin: Point3::new(
-                x as f32 / width as f32 * 2.0 - 1.0,
+                x as f32 / width as f32 * aspect_ratio * 2.0 - aspect_ratio,
                 y as f32 / height as f32 * -2.0 + 1.0,
                 -1.0,
             ),
             direction: Vector3::new(0.0, 0.0, 1.0),
         };
 
-        if ray.hit(&sphere) {
-            *pixel = Rgba([255u8, 0, 255, 255]);
+        let color = if ray.hit(&sphere) {
+            Vector4::new(1.0, 0.0, 1.0, 1.0)
         } else {
-            *pixel = Rgba([135u8, 206, 235, 255]);
-        }
+            Vector4::new(0.53, 0.8, 0.92, 1.0)
+        };
+
+        *pixel = Rgba([
+            (color.x * 255.0) as u8,
+            (color.y * 255.0) as u8,
+            (color.z * 255.0) as u8,
+            (color.w * 255.0) as u8,
+        ]);
     }
 
     image.save("output.png").wrap_err("Cannot save image")?;
