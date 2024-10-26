@@ -1,4 +1,4 @@
-use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector3, Vector4};
+use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector3, Vector4, VectorSpace};
 use color_eyre::eyre::{Context, Report};
 use image::{ImageBuffer, Rgba};
 
@@ -56,7 +56,14 @@ fn main() -> Result<(), Report> {
         let color = if ray.hit(&sphere) {
             Vector4::new(1.0, 0.0, 1.0, 1.0)
         } else {
-            Vector4::new(0.53, 0.8, 0.92, 1.0)
+            let up = Vector3::unit_y();
+            let cosine_similarity =
+                ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
+
+            let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
+            let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
+
+            top_color.lerp(bottom_color, (cosine_similarity + 1.0) / 2.0)
         };
 
         *pixel = Rgba([
