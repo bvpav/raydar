@@ -13,7 +13,7 @@ struct Ray {
 }
 
 impl Ray {
-    fn hit(&self, sphere: &Sphere) -> bool {
+    fn hit(&self, sphere: &Sphere) -> Option<(f32, f32)> {
         let origin_vec = self.origin.to_vec();
         let sphere_center_vec = sphere.center.to_vec();
 
@@ -26,7 +26,23 @@ impl Ray {
 
         let discriminant_squared = k * k - a * c;
 
-        return discriminant_squared >= 0.0;
+        return if discriminant_squared < 0.0 {
+            None
+        } else {
+            let discriminant = discriminant_squared.sqrt();
+            let t1 = (-k - discriminant) / a;
+            let t2 = (-k + discriminant) / a;
+
+            if t1 < t2 {
+                Some((t1, t2))
+            } else {
+                Some((t2, t1))
+            }
+        };
+    }
+
+    fn at(&self, t: f32) -> Point3<f32> {
+        self.origin + self.direction * t
     }
 }
 
@@ -53,8 +69,11 @@ fn main() -> Result<(), Report> {
             direction: Vector3::new(0.0, 0.0, 1.0),
         };
 
-        let color = if ray.hit(&sphere) {
-            Vector4::new(1.0, 0.0, 1.0, 1.0)
+        let color = if let Some((t1, _)) = ray.hit(&sphere) {
+            let hit_point = ray.at(t1);
+            let normal = (hit_point - sphere.center).normalize();
+
+            ((normal + Vector3::new(1.0, 1.0, 1.0)) * 0.5).extend(1.0)
         } else {
             let up = Vector3::unit_y();
             let cosine_similarity =
@@ -63,7 +82,7 @@ fn main() -> Result<(), Report> {
             let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
             let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
 
-            top_color.lerp(bottom_color, (cosine_similarity + 1.0) / 2.0)
+            top_color.lerp(bottom_color, (cosine_similarity + 1.0) * 0.5)
         };
 
         *pixel = Rgba([
