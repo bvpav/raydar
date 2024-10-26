@@ -1,21 +1,19 @@
-use color_eyre::eyre::{Context, ContextCompat, Report};
+use color_eyre::eyre::{Context, Report};
 use image::{ImageBuffer, Rgba};
-use rand::Rng;
 
 fn main() -> Result<(), Report> {
     color_eyre::install()?;
 
-    let (width, height) = (1024, 1024);
+    let (width, height) = (256, 256);
 
-    let mut rng = rand::thread_rng();
+    let mut image = ImageBuffer::new(width, height);
 
-    let pixels: Vec<u8> = (0..width * height)
-        .map(|_| rng.gen::<u32>() | 0xff)
-        .flat_map(|pixel| pixel.to_be_bytes())
-        .collect();
-    let image =
-        ImageBuffer::<Rgba<u8>, _>::from_raw(width.try_into()?, height.try_into()?, &pixels[..])
-            .wrap_err("Cannot create image buffer")?;
+    for (x, y, pixel) in image.enumerate_pixels_mut() {
+        let r = (x as f32 / width as f32 * 255.0) as u8;
+        let g = (y as f32 / height as f32 * 255.0) as u8;
+        let b = 0;
+        *pixel = Rgba([r, g, b, 255]);
+    }
 
     image.save("output.png").wrap_err("Cannot save image")?;
 
