@@ -1,4 +1,4 @@
-use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace};
+use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use color_eyre::eyre::{Context, Report};
 use image::{ImageBuffer, Rgba};
 
@@ -99,16 +99,21 @@ impl Renderer {
             let hit_point = ray.at(t1);
             let normal = (hit_point - scene.sphere.center).normalize();
 
-            ((normal + Vector3::new(1.0, 1.0, 1.0)) * 0.5).extend(1.0)
+            let light_direction = Vector3::new(-1.0, -1.0, 0.6).normalize();
+            let cosine_similarity = normal.dot(-light_direction);
+
+            (Vector3::new(1.0, 0.0, 1.0) * (cosine_similarity + 1.0) * 0.5).extend(1.0)
         } else {
-            let up = Vector3::unit_y();
-            let cosine_similarity =
-                ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
+            // let up = Vector3::unit_y();
+            // let cosine_similarity =
+            //     ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
 
-            let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
-            let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
+            // let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
+            // let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
 
-            top_color.lerp(bottom_color, (cosine_similarity + 1.0) * 0.5)
+            // bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5)
+
+            Vector3::zero().extend(1.0)
         };
     }
 }
@@ -121,7 +126,7 @@ fn main() -> Result<(), Report> {
         resolution_y: 480,
         sphere: Sphere {
             center: Point3::new(0.0, 0.0, 0.0),
-            radius: 1.0,
+            radius: 0.5,
         },
     };
 
