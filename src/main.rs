@@ -78,13 +78,20 @@ impl Renderer {
 
     fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
         let aspect_ratio = scene.resolution_x as f32 / scene.resolution_y as f32;
+        // let ray = Ray {
+        //     origin: Point3::new(
+        //         uv_coord.x * aspect_ratio * 2.0 - aspect_ratio,
+        //         uv_coord.y * 2.0 - 1.0,
+        //         -1.0,
+        //     ),
+        //     direction: Vector3::new(0.0, 0.0, 1.0),
+        // };
+
         let ray = Ray {
-            origin: Point3::new(
-                uv_coord.x * aspect_ratio * 2.0 - aspect_ratio,
-                uv_coord.y * 2.0 - 1.0,
-                -1.0,
-            ),
-            direction: Vector3::new(0.0, 0.0, 1.0),
+            origin: Point3::new(0.0, 0.0, -1.0),
+            direction: (uv_coord.mul_element_wise(Vector2::new(2.0 * aspect_ratio, 2.0))
+                - Vector2::new(aspect_ratio, 1.0))
+            .extend(1.0),
         };
 
         return if let Some((t1, _)) = ray.hit(&scene.sphere) {
