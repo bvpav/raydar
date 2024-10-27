@@ -1,4 +1,4 @@
-use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector3, Vector4, VectorSpace};
+use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace};
 use color_eyre::eyre::{Context, Report};
 use image::{ImageBuffer, Rgba};
 
@@ -46,32 +46,51 @@ impl Ray {
     }
 }
 
-fn main() -> Result<(), Report> {
-    color_eyre::install()?;
+struct Scene {
+    resolution_x: u32,
+    resolution_y: u32,
 
-    let (width, height) = (854, 480);
+    sphere: Sphere,
+}
 
-    let mut image = ImageBuffer::new(width, height);
+struct Renderer;
 
-    let sphere = Sphere {
-        center: Point3::new(0.0, 0.0, 0.0),
-        radius: 1.0,
-    };
+impl Renderer {
+    fn render_frame(&self, scene: &Scene) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+        let mut image = ImageBuffer::new(scene.resolution_x, scene.resolution_y);
 
-    for (x, y, pixel) in image.enumerate_pixels_mut() {
-        let aspect_ratio = width as f32 / height as f32;
+        for (x, y, pixel) in image.enumerate_pixels_mut() {
+            let uv_coord = Vector2::new(
+                x as f32 / scene.resolution_x as f32,
+                1.0 - y as f32 / scene.resolution_y as f32,
+            );
+            let color = self.per_pixel(uv_coord, scene);
+            *pixel = Rgba([
+                (color.x * 255.0) as u8,
+                (color.y * 255.0) as u8,
+                (color.z * 255.0) as u8,
+                (color.w * 255.0) as u8,
+            ]);
+        }
+
+        image
+    }
+
+    fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
+        let aspect_ratio = scene.resolution_x as f32 / scene.resolution_y as f32;
         let ray = Ray {
             origin: Point3::new(
-                x as f32 / width as f32 * aspect_ratio * 2.0 - aspect_ratio,
-                y as f32 / height as f32 * -2.0 + 1.0,
+                uv_coord.x * aspect_ratio * 2.0 - aspect_ratio,
+                uv_coord.y * 2.0 - 1.0,
                 -1.0,
             ),
             direction: Vector3::new(0.0, 0.0, 1.0),
         };
 
-        let color = if let Some((t1, _)) = ray.hit(&sphere) {
+        return if let Some((t1, _)) = ray.hit(&scene.sphere) {
+            assert!(t1 >= 0.0, "sphere is behind the camera");
             let hit_point = ray.at(t1);
-            let normal = (hit_point - sphere.center).normalize();
+            let normal = (hit_point - scene.sphere.center).normalize();
 
             ((normal + Vector3::new(1.0, 1.0, 1.0)) * 0.5).extend(1.0)
         } else {
@@ -84,15 +103,24 @@ fn main() -> Result<(), Report> {
 
             top_color.lerp(bottom_color, (cosine_similarity + 1.0) * 0.5)
         };
-
-        *pixel = Rgba([
-            (color.x * 255.0) as u8,
-            (color.y * 255.0) as u8,
-            (color.z * 255.0) as u8,
-            (color.w * 255.0) as u8,
-        ]);
     }
+}
 
+fn main() -> Result<(), Report> {
+    color_eyre::install()?;
+
+    let scene = Scene {
+        resolution_x: 854,
+        resolution_y: 480,
+        sphere: Sphere {
+            center: Point3::new(0.0, 0.0, 0.0),
+            radius: 1.0,
+        },
+    };
+
+    let renderer = Renderer;
+
+    let image = renderer.render_frame(&scene);
     image.save("output.png").wrap_err("Cannot save image")?;
 
     Ok(())
