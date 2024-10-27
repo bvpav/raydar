@@ -2,9 +2,12 @@
 name = "raydar"
 version = "0.1.0"
 edition = "2021"
+default-run = "raydar"
 
 [dependencies]
 cgmath = "0.18.0"
 color-eyre = { version = "0.6.3", default-features = false }
+eframe = "0.29.1"
+egui = "0.29.1"
 image = "0.25.4"
 rand = "0.8.5"
