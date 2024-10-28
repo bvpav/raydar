@@ -4,14 +4,13 @@ use raydar::*;
 
 struct EditorApp {
     scene: Scene,
+    renderer: Renderer,
+    needs_rerender: bool,
+    rendered_scene_handle: Option<egui::TextureHandle>,
 }
 
 impl eframe::App for EditorApp {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("image will be here...");
-        });
-
         egui::SidePanel::right("inspector")
             .resizable(true)
             .show(ctx, |ui| {
@@ -72,6 +71,45 @@ impl eframe::App for EditorApp {
                     });
                 });
             });
+
+        egui::CentralPanel::default().show(ctx, |ui| {
+            let available_size = ui.available_size();
+            if available_size.x != self.scene.resolution_x as f32
+                || available_size.y != self.scene.resolution_y as f32
+            {
+                self.scene.resolution_x = available_size.x.round() as u32;
+                self.scene.resolution_y = available_size.y.round() as u32;
+                self.needs_rerender = true;
+            }
+
+            if let Some(texture) = &self.rendered_scene_handle {
+                ui.image(texture);
+            }
+        });
+
+        self.rerender(ctx);
+    }
+}
+
+impl EditorApp {
+    fn rerender(&mut self, ctx: &eframe::egui::Context) {
+        if !self.needs_rerender {
+            return;
+        }
+
+        let image = self.renderer.render_frame(&self.scene);
+        let size = [image.width() as _, image.height() as _];
+        let pixels = image.into_raw();
+        let color_image = egui::ColorImage::from_rgba_unmultiplied(size, &pixels);
+
+        self.rendered_scene_handle = Some(ctx.load_texture(
+            "rendered_scene",
+            color_image,
+            egui::TextureOptions::default(),
+        ));
+
+        self.needs_rerender = false;
+        ctx.request_repaint();
     }
 }
 
@@ -79,8 +117,8 @@ fn main() -> eframe::Result {
     let native_options = eframe::NativeOptions::default();
 
     let scene = Scene {
-        resolution_x: 854,
-        resolution_y: 480,
+        resolution_x: 0,
+        resolution_y: 0,
         sphere: Sphere {
             center: Point3::new(0.0, 0.0, 0.0),
             radius: 0.5,
@@ -90,6 +128,13 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "Raydar Editor",
         native_options,
-        Box::new(|_cc| Ok(Box::new(EditorApp { scene }))),
+        Box::new(|_cc| {
+            Ok(Box::new(EditorApp {
+                scene,
+                renderer: Renderer,
+                needs_rerender: true,
+                rendered_scene_handle: None,
+            }))
+        }),
     )
 }
