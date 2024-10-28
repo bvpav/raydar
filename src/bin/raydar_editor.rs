@@ -16,6 +16,9 @@ impl eframe::App for EditorApp {
             .show(ctx, |ui| {
                 ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
                     ui.heading("Inspector");
+                    if ui.button("Re-Render").clicked() {
+                        self.needs_rerender = true;
+                    }
                     ui.collapsing("Sphere", |ui| {
                         egui::Grid::new("location")
                             .num_columns(2)
@@ -74,11 +77,13 @@ impl eframe::App for EditorApp {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             let available_size = ui.available_size();
-            if available_size.x != self.scene.resolution_x as f32
-                || available_size.y != self.scene.resolution_y as f32
+            let available_size_x = available_size.x.round() as u32;
+            let available_size_y = available_size.y.round() as u32;
+            if available_size_x != self.scene.resolution_x
+                || available_size_y != self.scene.resolution_y
             {
-                self.scene.resolution_x = available_size.x.round() as u32;
-                self.scene.resolution_y = available_size.y.round() as u32;
+                self.scene.resolution_x = available_size_x;
+                self.scene.resolution_y = available_size_y;
                 self.needs_rerender = true;
             }
 
