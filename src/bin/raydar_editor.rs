@@ -6,6 +6,7 @@ struct EditorApp {
     scene: Scene,
     renderer: Renderer,
     needs_rerender: bool,
+    should_constantly_rerender: bool,
     rendered_scene_handle: Option<egui::TextureHandle>,
 }
 
@@ -19,6 +20,7 @@ impl eframe::App for EditorApp {
                     if ui.button("Re-Render").clicked() {
                         self.needs_rerender = true;
                     }
+                    ui.checkbox(&mut self.should_constantly_rerender, "Constantly Re-Render");
                     ui.label(format!(
                         "Resolution: {}x{}",
                         self.scene.resolution_x, self.scene.resolution_y
@@ -108,7 +110,7 @@ impl eframe::App for EditorApp {
 
 impl EditorApp {
     fn rerender(&mut self, ctx: &eframe::egui::Context) {
-        if !self.needs_rerender {
+        if !self.needs_rerender && !self.should_constantly_rerender {
             return;
         }
 
@@ -148,6 +150,7 @@ fn main() -> eframe::Result {
                 scene,
                 renderer: Renderer::default(),
                 needs_rerender: true,
+                should_constantly_rerender: false,
                 rendered_scene_handle: None,
             }))
         }),
