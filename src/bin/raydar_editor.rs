@@ -19,6 +19,16 @@ impl eframe::App for EditorApp {
                     if ui.button("Re-Render").clicked() {
                         self.needs_rerender = true;
                     }
+                    ui.label(format!(
+                        "Resolution: {}x{}",
+                        self.scene.resolution_x, self.scene.resolution_y
+                    ));
+                    if let Some(last_frame_duration) = self.renderer.last_frame_duration {
+                        ui.label(format!(
+                            "Last frame took {}ms",
+                            last_frame_duration.as_millis()
+                        ));
+                    }
                     ui.collapsing("Sphere", |ui| {
                         egui::Grid::new("location")
                             .num_columns(2)
@@ -136,7 +146,7 @@ fn main() -> eframe::Result {
         Box::new(|_cc| {
             Ok(Box::new(EditorApp {
                 scene,
-                renderer: Renderer,
+                renderer: Renderer::default(),
                 needs_rerender: true,
                 rendered_scene_handle: None,
             }))

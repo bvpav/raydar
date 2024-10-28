@@ -14,10 +14,15 @@ fn main() -> Result<(), Report> {
         },
     };
 
-    let renderer = Renderer;
+    let mut renderer = Renderer::default();
 
     let image = renderer.render_frame(&scene);
     image.save("output.png").wrap_err("Cannot save image")?;
+
+    println!(
+        "Frame took {}ms",
+        renderer.last_frame_duration.unwrap().as_millis()
+    );
 
     Ok(())
 }

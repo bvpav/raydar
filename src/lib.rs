@@ -1,3 +1,5 @@
+use std::time::{Duration, Instant};
+
 use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba};
 pub struct Sphere {
@@ -22,20 +24,16 @@ impl Ray {
             + sphere_center_vec.dot(sphere_center_vec)
             - sphere.radius * sphere.radius;
 
-        let discriminant_squared = k * k - a * c;
+        let discriminant = k * k - a * c;
 
-        return if discriminant_squared < 0.0 {
+        return if discriminant < 0.0 {
             None
         } else {
-            let discriminant = discriminant_squared.sqrt();
-            let t1 = (-k - discriminant) / a;
-            let t2 = (-k + discriminant) / a;
+            let sqrt_discriminant = discriminant.sqrt();
+            let t1 = (-k - sqrt_discriminant) / a;
+            let t2 = (-k + sqrt_discriminant) / a;
 
-            if t1 < t2 {
-                Some((t1, t2))
-            } else {
-                Some((t2, t1))
-            }
+            Some((t1, t2))
         };
     }
 
@@ -51,12 +49,16 @@ pub struct Scene {
     pub sphere: Sphere,
 }
 
-pub struct Renderer;
+#[derive(Default)]
+pub struct Renderer {
+    pub last_frame_duration: Option<Duration>,
+}
 
 impl Renderer {
-    pub fn render_frame(&self, scene: &Scene) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+    pub fn render_frame(&mut self, scene: &Scene) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
         let mut image = ImageBuffer::new(scene.resolution_x, scene.resolution_y);
 
+        let frame_started_at = Instant::now();
         for (x, y, pixel) in image.enumerate_pixels_mut() {
             let uv_coord = Vector2::new(
                 x as f32 / scene.resolution_x as f32,
@@ -70,6 +72,7 @@ impl Renderer {
                 (color.w * 255.0) as u8,
             ]);
         }
+        self.last_frame_duration = Some(frame_started_at.elapsed());
 
         image
     }
