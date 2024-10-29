@@ -1,6 +1,9 @@
 use cgmath::Point3;
 use color_eyre::eyre::{Context, Report};
-use raydar::*;
+use raydar::{
+    renderer::Renderer,
+    scene::{objects::Sphere, Scene},
+};
 
 fn main() -> Result<(), Report> {
     color_eyre::install()?;

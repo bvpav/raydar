@@ -1,6 +1,9 @@
 use cgmath::Point3;
 use egui::Layout;
-use raydar::*;
+use raydar::{
+    renderer::Renderer,
+    scene::{objects::Sphere, Scene},
+};
 
 struct EditorApp {
     scene: Scene,
