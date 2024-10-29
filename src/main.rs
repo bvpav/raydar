@@ -13,8 +13,6 @@ fn main() -> Result<(), Report> {
     color_eyre::install()?;
 
     let scene = Scene {
-        resolution_x: 854,
-        resolution_y: 480,
         camera: Camera::new(
             Point3::new(0.0, 0.0, -1.0),
             Point3::new(0.0, 0.0, 0.0),
@@ -23,7 +21,7 @@ fn main() -> Result<(), Report> {
             480,
             0.01,
             1000.0,
-            Projection::Perspective { fov: Deg(45.0) },
+            Projection::Perspective { fov: Deg(90.0) },
         ),
         sphere: Sphere {
             center: Point3::new(0.0, 0.0, 0.0),

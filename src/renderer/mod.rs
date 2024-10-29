@@ -1,7 +1,7 @@
 use std::time::{Duration, Instant};
 
 use cgmath::{
-    EuclideanSpace, InnerSpace, Point3, SquareMatrix, Vector2, Vector3, Vector4, VectorSpace,
+    EuclideanSpace, InnerSpace, Point3, SquareMatrix, Vector2, Vector3, Vector4, Zero,
 };
 use image::{ImageBuffer, Rgba};
 
@@ -50,13 +50,13 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn render_frame(&mut self, scene: &Scene) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
-        let mut image = ImageBuffer::new(scene.resolution_x, scene.resolution_y);
+        let mut image = ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
         let frame_started_at = Instant::now();
         for (x, y, pixel) in image.enumerate_pixels_mut() {
             let uv_coord = Vector2::new(
-                x as f32 / scene.resolution_x as f32,
-                1.0 - y as f32 / scene.resolution_y as f32,
+                x as f32 / scene.camera.resolution_x() as f32,
+                1.0 - y as f32 / scene.camera.resolution_y() as f32,
             );
             let color = self.per_pixel(uv_coord, scene);
             *pixel = Rgba([
@@ -77,8 +77,8 @@ impl Renderer {
         let view_inverse = scene.camera.view_matrix().invert().unwrap();
 
         let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
-            .extend(1.0)
-            .extend(1.0);
+            .extend(-1.0)
+            .extend(-1.0);
         let camera_space_point = proj_inverse * clip_space_point;
         let camera_space_point = camera_space_point / camera_space_point.w;
 
@@ -87,7 +87,7 @@ impl Renderer {
         let ray = Ray {
             origin: scene.camera.position(),
             // TODO: maybe use swizzling (needs feature to be enabled)
-            direction: Vector3::new(
+            direction: -Vector3::new(
                 world_space_direction.x,
                 world_space_direction.y,
                 world_space_direction.z,
@@ -105,16 +105,16 @@ impl Renderer {
 
             (Vector3::new(1.0, 0.0, 1.0) * (cosine_similarity + 1.0) * 0.5).extend(1.0)
         } else {
-            let up = Vector3::unit_y();
-            let cosine_similarity =
-                ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
+            // let up = Vector3::unit_y();
+            // let cosine_similarity =
+            //     ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
 
-            let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
-            let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
+            // let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
+            // let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
 
-            bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5)
+            // bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5)
 
-            // Vector3::zero().extend(1.0)
+            Vector3::zero().extend(1.0)
         };
     }
 }

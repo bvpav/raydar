@@ -136,7 +136,6 @@ impl Camera {
 
     fn update_matrices(&mut self) {
         self.view_matrix = Matrix4::look_at_lh(self.position, self.target, self.up);
-        dbg!(self.position, self.target, self.up, self.view_matrix);
 
         let aspect_ratio = self.aspect_ratio();
         let near = self.near_clip;

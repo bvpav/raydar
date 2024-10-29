@@ -30,7 +30,8 @@ impl eframe::App for EditorApp {
                     ui.checkbox(&mut self.should_constantly_rerender, "Constantly Re-Render");
                     ui.label(format!(
                         "Resolution: {}x{}",
-                        self.scene.resolution_x, self.scene.resolution_y
+                        self.scene.camera.resolution_x(),
+                        self.scene.camera.resolution_y()
                     ));
                     if let Some(last_frame_duration) = self.renderer.last_frame_duration {
                         ui.label(format!(
@@ -98,11 +99,11 @@ impl eframe::App for EditorApp {
             let available_size = ui.available_size();
             let available_size_x = available_size.x.round() as u32;
             let available_size_y = available_size.y.round() as u32;
-            if available_size_x != self.scene.resolution_x
-                || available_size_y != self.scene.resolution_y
+            if available_size_x != self.scene.camera.resolution_x()
+                || available_size_y != self.scene.camera.resolution_y()
             {
-                self.scene.resolution_x = available_size_x;
-                self.scene.resolution_y = available_size_y;
+                self.scene.camera.set_resolution_x(available_size_x);
+                self.scene.camera.set_resolution_y(available_size_y);
                 self.needs_rerender = true;
             }
 
@@ -141,8 +142,6 @@ fn main() -> eframe::Result {
     let native_options = eframe::NativeOptions::default();
 
     let scene = Scene {
-        resolution_x: 0,
-        resolution_y: 0,
         camera: Camera::new(
             Point3::new(0.0, 0.0, -1.0),
             Point3::new(0.0, 0.0, 0.0),
@@ -151,7 +150,7 @@ fn main() -> eframe::Result {
             480,
             0.001,
             1000.0,
-            Projection::Perspective { fov: Deg(45.0) },
+            Projection::Perspective { fov: Deg(90.0) },
         ),
         sphere: Sphere {
             center: Point3::new(0.0, 0.0, 0.0),
