@@ -11,6 +11,9 @@ pub struct Camera {
     target: Point3<f32>,
     up: Vector3<f32>,
 
+    resolution_x: u32,
+    resolution_y: u32,
+
     projection: Projection,
     near_clip: f32,
     far_clip: f32,
@@ -24,6 +27,8 @@ impl Camera {
         position: Point3<f32>,
         target: Point3<f32>,
         up: Vector3<f32>,
+        resolution_x: u32,
+        resolution_y: u32,
         near_clip: f32,
         far_clip: f32,
         projection: Projection,
@@ -32,6 +37,8 @@ impl Camera {
             position,
             target,
             up,
+            resolution_x,
+            resolution_y,
             near_clip,
             far_clip,
             projection,
@@ -59,6 +66,28 @@ impl Camera {
     pub fn set_target(&mut self, target: Point3<f32>) {
         self.target = target;
         self.update_matrices();
+    }
+
+    pub fn resolution_x(&self) -> u32 {
+        self.resolution_x
+    }
+
+    pub fn set_resolution_x(&mut self, resolution_x: u32) {
+        self.resolution_x = resolution_x;
+        self.update_matrices();
+    }
+
+    pub fn resolution_y(&self) -> u32 {
+        self.resolution_y
+    }
+
+    pub fn set_resolution_y(&mut self, resolution_x: u32) {
+        self.resolution_y = resolution_x;
+        self.update_matrices();
+    }
+
+    pub fn aspect_ratio(&self) -> f32 {
+        self.resolution_x as f32 / self.resolution_y as f32
     }
 
     pub fn up(&self) -> Vector3<f32> {
@@ -106,6 +135,23 @@ impl Camera {
     }
 
     fn update_matrices(&mut self) {
-        todo!()
+        self.view_matrix = Matrix4::look_at_lh(self.position, self.target, self.up);
+
+        let aspect_ratio = self.aspect_ratio();
+        let near = self.near_clip;
+        let far = self.far_clip;
+        self.proj_matrix = match self.projection {
+            Projection::Perspective { fov } => {
+                cgmath::perspective(cgmath::Deg(fov), aspect_ratio, near, far)
+            }
+            Projection::Orthographic { size } => cgmath::ortho(
+                -size * aspect_ratio,
+                size * aspect_ratio,
+                -size,
+                size,
+                near,
+                far,
+            ),
+        };
     }
 }
