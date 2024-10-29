@@ -1,10 +1,13 @@
 use std::time::{Duration, Instant};
 
-use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
+use cgmath::{
+    EuclideanSpace, InnerSpace, Point3, SquareMatrix, Vector2, Vector3, Vector4, VectorSpace,
+};
 use image::{ImageBuffer, Rgba};
 
 use crate::scene::{objects::Sphere, Scene};
 
+#[derive(Debug)]
 pub struct Ray {
     pub origin: Point3<f32>,
     pub direction: Vector3<f32>,
@@ -69,21 +72,27 @@ impl Renderer {
     }
 
     fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
-        let aspect_ratio = scene.resolution_x as f32 / scene.resolution_y as f32;
-        // let ray = Ray {
-        //     origin: Point3::new(
-        //         uv_coord.x * aspect_ratio * 2.0 - aspect_ratio,
-        //         uv_coord.y * 2.0 - 1.0,
-        //         -1.0,
-        //     ),
-        //     direction: Vector3::new(0.0, 0.0, 1.0),
-        // };
+        // FIXME: what to do when the determinant is 0 (inverse matrix does not exist)
+        let proj_inverse = scene.camera.proj_matrix().invert().unwrap();
+        let view_inverse = scene.camera.view_matrix().invert().unwrap();
+
+        let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
+            .extend(1.0)
+            .extend(1.0);
+        let camera_space_point = proj_inverse * clip_space_point;
+        let camera_space_point = camera_space_point / camera_space_point.w;
+
+        let world_space_direction = view_inverse * camera_space_point;
 
         let ray = Ray {
-            origin: Point3::new(0.0, 0.0, -1.0),
-            direction: (uv_coord.mul_element_wise(Vector2::new(2.0 * aspect_ratio, 2.0))
-                - Vector2::new(aspect_ratio, 1.0))
-            .extend(1.0),
+            origin: scene.camera.position(),
+            // TODO: maybe use swizzling (needs feature to be enabled)
+            direction: Vector3::new(
+                world_space_direction.x,
+                world_space_direction.y,
+                world_space_direction.z,
+            )
+            .normalize(),
         };
 
         return if let Some((t1, _)) = ray.hit(&scene.sphere) {
@@ -96,16 +105,16 @@ impl Renderer {
 
             (Vector3::new(1.0, 0.0, 1.0) * (cosine_similarity + 1.0) * 0.5).extend(1.0)
         } else {
-            // let up = Vector3::unit_y();
-            // let cosine_similarity =
-            //     ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
+            let up = Vector3::unit_y();
+            let cosine_similarity =
+                ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
 
-            // let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
-            // let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
+            let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
+            let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
 
-            // bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5)
+            bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5)
 
-            Vector3::zero().extend(1.0)
+            // Vector3::zero().extend(1.0)
         };
     }
 }

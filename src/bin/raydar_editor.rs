@@ -1,8 +1,12 @@
-use cgmath::Point3;
+use cgmath::{Deg, Point3, Vector3};
 use egui::Layout;
 use raydar::{
     renderer::Renderer,
-    scene::{objects::Sphere, Scene},
+    scene::{
+        camera::{Camera, Projection},
+        objects::Sphere,
+        Scene,
+    },
 };
 
 struct EditorApp {
@@ -139,6 +143,16 @@ fn main() -> eframe::Result {
     let scene = Scene {
         resolution_x: 0,
         resolution_y: 0,
+        camera: Camera::new(
+            Point3::new(0.0, 0.0, -1.0),
+            Point3::new(0.0, 0.0, 0.0),
+            Vector3::unit_y(),
+            854,
+            480,
+            0.001,
+            1000.0,
+            Projection::Perspective { fov: Deg(45.0) },
+        ),
         sphere: Sphere {
             center: Point3::new(0.0, 0.0, 0.0),
             radius: 0.5,

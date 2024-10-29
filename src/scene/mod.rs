@@ -1,3 +1,4 @@
+use camera::Camera;
 use objects::Sphere;
 
 pub mod camera;
@@ -8,4 +9,5 @@ pub struct Scene {
     pub resolution_y: u32,
 
     pub sphere: Sphere,
+    pub camera: Camera,
 }

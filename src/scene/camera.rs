@@ -1,8 +1,8 @@
-use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
+use cgmath::{Deg, Matrix4, Point3, SquareMatrix, Vector3};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Projection {
-    Perspective { fov: f32 },
+    Perspective { fov: Deg<f32> },
     Orthographic { size: f32 },
 }
 
@@ -136,14 +136,13 @@ impl Camera {
 
     fn update_matrices(&mut self) {
         self.view_matrix = Matrix4::look_at_lh(self.position, self.target, self.up);
+        dbg!(self.position, self.target, self.up, self.view_matrix);
 
         let aspect_ratio = self.aspect_ratio();
         let near = self.near_clip;
         let far = self.far_clip;
         self.proj_matrix = match self.projection {
-            Projection::Perspective { fov } => {
-                cgmath::perspective(cgmath::Deg(fov), aspect_ratio, near, far)
-            }
+            Projection::Perspective { fov } => cgmath::perspective(fov, aspect_ratio, near, far),
             Projection::Orthographic { size } => cgmath::ortho(
                 -size * aspect_ratio,
                 size * aspect_ratio,
