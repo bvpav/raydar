@@ -1,5 +1,6 @@
 use cgmath::{
-    Deg, Matrix4, MetricSpace, Point3, SquareMatrix, Transform, Vector2, Vector3, Vector4,
+    Deg, InnerSpace, Matrix4, MetricSpace, Point3, SquareMatrix, Transform, Vector2, Vector3,
+    Vector4,
 };
 #[derive(Debug, Clone, Copy)]
 pub enum Projection {
@@ -85,6 +86,14 @@ impl Camera {
 
         self.position += pan_delta;
         self.target += pan_delta;
+        self.update_matrices();
+    }
+
+    pub fn zoom(&mut self, distance: f32) {
+        let camera_to_target = self.position() - self.target();
+        let camera_to_target_distance = camera_to_target.magnitude();
+        self.position +=
+            camera_to_target.normalize() * f32::min(distance, camera_to_target_distance);
         self.update_matrices();
     }
 
