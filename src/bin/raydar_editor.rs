@@ -103,15 +103,13 @@ impl eframe::App for EditorApp {
             if let Some(texture) = &self.rendered_scene_handle {
                 let viewport = ui.add(egui::Image::new(texture).sense(Sense::drag()));
                 if viewport.dragged() {
+                    let camera = &mut self.scene.camera;
                     if viewport.dragged_by(egui::PointerButton::Middle) {
                         if ctx.input(|i| i.modifiers.ctrl) {
                             todo!("zoom not supported yet");
                         } else if ctx.input(|i| i.modifiers.shift) {
-                            let delta = viewport.drag_motion();
-                            dbg!(delta);
-                            self.scene
-                                .camera
-                                .pan(Vector2::new(delta.x, delta.y) * 0.005);
+                            let delta = viewport.drag_delta();
+                            camera.pan(Vector2::new(delta.x, delta.y));
                         }
                     }
                 }

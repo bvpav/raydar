@@ -1,4 +1,6 @@
-use cgmath::{Deg, Matrix4, Point3, SquareMatrix, Vector2, Vector3};
+use cgmath::{
+    Deg, Matrix4, MetricSpace, Point3, SquareMatrix, Transform, Vector2, Vector3, Vector4,
+};
 #[derive(Debug, Clone, Copy)]
 pub enum Projection {
     Perspective { fov: Deg<f32> },
@@ -65,13 +67,24 @@ impl Camera {
     }
 
     pub fn pan(&mut self, screen_delta: Vector2<f32>) {
-        let right = -self.view_matrix.x;
-        let up = self.view_matrix.y;
-        let translation = right * screen_delta.x + up * screen_delta.y;
-        // TODO: use swizzling
-        let translation = Vector3::new(translation.x, translation.y, translation.z);
-        self.position += translation;
-        self.target += translation;
+        let delta_ndc = Vector2::new(
+            (screen_delta.x / self.resolution_x() as f32) * 2.0,
+            -(screen_delta.y / self.resolution_y() as f32) * 2.0,
+        );
+        let camera_to_target_distance = self.position().distance(self.target());
+        let clip_space_delta = Vector4::new(delta_ndc.x, delta_ndc.y, 1.0, 0.0);
+
+        let camera_space_delta = self.inverse_proj_matrix() * clip_space_delta;
+        let camera_space_delta = camera_space_delta / camera_space_delta.w;
+
+        let world_space_delta = self
+            .inverse_view_matrix()
+            .transform_vector(camera_space_delta.truncate());
+
+        let pan_delta = world_space_delta * camera_to_target_distance;
+
+        self.position += pan_delta;
+        self.target += pan_delta;
         self.update_matrices();
     }
 
