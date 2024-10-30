@@ -20,6 +20,10 @@ pub struct Camera {
 
     view_matrix: Matrix4<f32>,
     proj_matrix: Matrix4<f32>,
+
+    // FIXME: do we need to store both original matrices and inverse matrices?
+    inverse_view_matrix: Matrix4<f32>,
+    inverse_proj_matrix: Matrix4<f32>,
 }
 
 impl Camera {
@@ -44,6 +48,8 @@ impl Camera {
             projection,
             view_matrix: Matrix4::<_>::identity(),
             proj_matrix: Matrix4::<_>::identity(),
+            inverse_view_matrix: Matrix4::<_>::identity(),
+            inverse_proj_matrix: Matrix4::<_>::identity(),
         };
         camera.update_matrices();
 
@@ -134,6 +140,14 @@ impl Camera {
         self.proj_matrix
     }
 
+    pub fn inverse_view_matrix(&self) -> Matrix4<f32> {
+        self.inverse_view_matrix
+    }
+
+    pub fn inverse_proj_matrix(&self) -> Matrix4<f32> {
+        self.inverse_proj_matrix
+    }
+
     fn update_matrices(&mut self) {
         self.view_matrix = Matrix4::look_at_lh(self.position, self.target, self.up);
 
@@ -151,5 +165,9 @@ impl Camera {
                 far,
             ),
         };
+
+        // FIXME: what to do when the determinant is 0 (inverse matrix does not exist)
+        self.inverse_view_matrix = self.view_matrix.invert().unwrap();
+        self.inverse_proj_matrix = self.proj_matrix.invert().unwrap();
     }
 }

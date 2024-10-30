@@ -1,8 +1,6 @@
 use std::time::{Duration, Instant};
 
-use cgmath::{
-    EuclideanSpace, InnerSpace, Point3, SquareMatrix, Vector2, Vector3, Vector4, Zero,
-};
+use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba};
 
 use crate::scene::{objects::Sphere, Scene};
@@ -72,17 +70,13 @@ impl Renderer {
     }
 
     fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
-        // FIXME: what to do when the determinant is 0 (inverse matrix does not exist)
-        let proj_inverse = scene.camera.proj_matrix().invert().unwrap();
-        let view_inverse = scene.camera.view_matrix().invert().unwrap();
-
         let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
             .extend(-1.0)
             .extend(-1.0);
-        let camera_space_point = proj_inverse * clip_space_point;
+        let camera_space_point = scene.camera.inverse_proj_matrix() * clip_space_point;
         let camera_space_point = camera_space_point / camera_space_point.w;
 
-        let world_space_direction = view_inverse * camera_space_point;
+        let world_space_direction = scene.camera.inverse_view_matrix() * camera_space_point;
 
         let ray = Ray {
             origin: scene.camera.position(),
