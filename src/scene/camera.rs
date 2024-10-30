@@ -92,9 +92,11 @@ impl Camera {
     pub fn zoom(&mut self, distance: f32) {
         let camera_to_target = self.position() - self.target();
         let camera_to_target_distance = camera_to_target.magnitude();
-        self.position +=
-            camera_to_target.normalize() * f32::min(distance, camera_to_target_distance);
-        self.update_matrices();
+        // TODO: maybe smoothly slow down when we get close to the target
+        if distance < camera_to_target_distance {
+            self.position += camera_to_target.normalize() * distance;
+            self.update_matrices();
+        }
     }
 
     pub fn target(&self) -> Point3<f32> {
