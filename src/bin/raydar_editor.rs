@@ -1,4 +1,5 @@
-use egui::Layout;
+use cgmath::Vector2;
+use egui::{Layout, Sense};
 use raydar::{renderer::Renderer, scene::Scene};
 
 struct EditorApp {
@@ -100,7 +101,20 @@ impl eframe::App for EditorApp {
             }
 
             if let Some(texture) = &self.rendered_scene_handle {
-                ui.image(texture);
+                let viewport = ui.add(egui::Image::new(texture).sense(Sense::drag()));
+                if viewport.dragged() {
+                    if viewport.dragged_by(egui::PointerButton::Middle) {
+                        if ctx.input(|i| i.modifiers.ctrl) {
+                            todo!("zoom not supported yet");
+                        } else if ctx.input(|i| i.modifiers.shift) {
+                            let delta = viewport.drag_motion();
+                            dbg!(delta);
+                            self.scene
+                                .camera
+                                .pan(Vector2::new(delta.x, delta.y) * 0.005);
+                        }
+                    }
+                }
             }
         });
 

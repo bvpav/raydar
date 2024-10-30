@@ -22,6 +22,7 @@ impl Default for Scene {
                 0.01,
                 1000.0,
                 Projection::Perspective { fov: Deg(90.0) },
+                // Projection::Orthographic { size: 1000.0 },
             ),
             sphere: Sphere {
                 center: Point3::new(0.0, 0.0, 0.0),
