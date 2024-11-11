@@ -166,7 +166,7 @@ fn main() -> eframe::Result {
                 scene,
                 renderer: Renderer::default(),
                 needs_rerender: true,
-                should_constantly_rerender: false,
+                should_constantly_rerender: true,
                 rendered_scene_handle: None,
             }))
         }),
