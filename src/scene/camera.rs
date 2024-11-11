@@ -1,6 +1,6 @@
 use cgmath::{
-    Deg, InnerSpace, Matrix4, MetricSpace, Point3, SquareMatrix, Transform, Vector2, Vector3,
-    Vector4,
+    num_traits::Float, Deg, InnerSpace, Matrix4, MetricSpace, Point3, SquareMatrix, Transform,
+    Vector2, Vector3, Vector4,
 };
 #[derive(Debug, Clone, Copy)]
 pub enum Projection {
@@ -86,6 +86,30 @@ impl Camera {
 
         self.position += pan_delta;
         self.target += pan_delta;
+        self.update_matrices();
+    }
+
+    pub fn orbit(&mut self, screen_delta: Vector2<f32>) {
+        let offset = self.position - self.target;
+        let radius = offset.magnitude();
+
+        let azimuth = offset.z.atan2(offset.x);
+        let elevation = (offset.y / radius).asin();
+
+        // FIXME: magic numbers
+        let new_azimuth = azimuth - screen_delta.x * 0.01;
+        let new_elevation = (elevation + screen_delta.y * 0.01).clamp(
+            -std::f32::consts::FRAC_PI_2 + 0.01,
+            std::f32::consts::FRAC_PI_2 - 0.01,
+        ); // clamp to avoid poles
+
+        let new_offset = Vector3::new(
+            radius * new_elevation.cos() * new_azimuth.cos(),
+            radius * new_elevation.sin(),
+            radius * new_elevation.cos() * new_azimuth.sin(),
+        );
+
+        self.position = self.target + new_offset;
         self.update_matrices();
     }
 

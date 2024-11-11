@@ -105,8 +105,8 @@ impl eframe::App for EditorApp {
                 let camera = &mut self.scene.camera;
                 if viewport.dragged() {
                     if viewport.dragged_by(egui::PointerButton::Middle) {
+                        let delta = viewport.drag_delta();
                         if ctx.input(|i| i.modifiers.ctrl) {
-                            let delta = viewport.drag_delta();
                             let delta = egui::vec2(
                                 delta.x / camera.resolution_x() as f32 * 2.0,
                                 -delta.y / camera.resolution_y() as f32 * 2.0,
@@ -114,8 +114,9 @@ impl eframe::App for EditorApp {
                             let direction = -f32::signum(delta.y) * 3.0;
                             camera.zoom(delta.length() * direction);
                         } else if ctx.input(|i| i.modifiers.shift) {
-                            let delta = viewport.drag_delta();
                             camera.pan(Vector2::new(delta.x, delta.y));
+                        } else {
+                            camera.orbit(Vector2::new(delta.x, delta.y));
                         }
                     }
                 }
