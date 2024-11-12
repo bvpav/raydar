@@ -25,7 +25,7 @@ impl Ray {
 
         let discriminant = k * k - a * c;
 
-        return if discriminant < 0.0 {
+        if discriminant < 0.0 {
             None
         } else {
             let sqrt_discriminant = discriminant.sqrt();
@@ -39,7 +39,7 @@ impl Ray {
             } else {
                 None
             }
-        };
+        }
     }
 
     fn at(&self, t: f32) -> Point3<f32> {
