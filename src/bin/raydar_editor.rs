@@ -83,6 +83,15 @@ impl eframe::App for EditorApp {
                                             );
                                         },
                                     );
+                                    ui.end_row();
+
+                                    ui.label("Albedo");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            ui.color_edit_button_rgb(sphere.albedo.as_mut());
+                                        },
+                                    );
                                 });
                         });
                     }
@@ -104,7 +113,8 @@ impl eframe::App for EditorApp {
             if let Some(texture) = &self.rendered_scene_handle {
                 let viewport = ui.add(egui::Image::new(texture).sense(Sense::drag()));
                 let camera = &mut self.scene.camera;
-                if viewport.dragged() && viewport.dragged_by(egui::PointerButton::Middle) {
+                // if viewport.dragged() && viewport.dragged_by(egui::PointerButton::Middle) {
+                if viewport.dragged() {
                     let delta = viewport.drag_delta();
                     if ctx.input(|i| i.modifiers.ctrl) {
                         let delta = egui::vec2(
@@ -118,10 +128,12 @@ impl eframe::App for EditorApp {
                     } else {
                         camera.orbit(Vector2::new(delta.x, delta.y));
                     }
+                    self.needs_rerender = true;
                 }
                 let scroll_delta = ctx.input(|i| i.smooth_scroll_delta);
                 if viewport.hovered() && scroll_delta.y != 0.0 {
                     camera.zoom(-scroll_delta.y * (1.0 / 255.0));
+                    self.needs_rerender = true;
                 }
             }
         });

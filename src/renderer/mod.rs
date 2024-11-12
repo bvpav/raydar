@@ -110,7 +110,7 @@ impl Renderer {
             let light_direction = Vector3::new(-1.0, -1.0, 0.6).normalize();
             let cosine_similarity = normal.dot(-light_direction);
 
-            (Vector3::new(1.0, 0.0, 1.0) * (cosine_similarity + 1.0) * 0.5).extend(1.0)
+            (sphere.albedo * (cosine_similarity + 1.0) * 0.5).extend(1.0)
         } else {
             // let up = Vector3::unit_y();
             // let cosine_similarity =
