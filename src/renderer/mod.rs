@@ -75,6 +75,15 @@ impl Renderer {
         image
     }
 
+    fn closest_hit<'a>(&self, ray: &Ray, scene: &'a Scene) -> Option<(&'a Sphere, Point3<f32>)> {
+        scene
+            .spheres
+            .iter()
+            .filter_map(|s| ray.hit(s).map(|t| (s, t)))
+            .min_by_key(|(_, t)| ordered_float::OrderedFloat(*t))
+            .map(|(s, t)| (s, ray.at(t)))
+    }
+
     fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
         let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
             .extend(-1.0)
@@ -95,9 +104,8 @@ impl Renderer {
             .normalize(),
         };
 
-        return if let Some(t) = ray.hit(&scene.sphere) {
-            let hit_point = ray.at(t);
-            let normal = (hit_point - scene.sphere.center).normalize();
+        return if let Some((sphere, hit_point)) = self.closest_hit(&ray, scene) {
+            let normal = (hit_point - sphere.center).normalize();
 
             let light_direction = Vector3::new(-1.0, -1.0, 0.6).normalize();
             let cosine_similarity = normal.dot(-light_direction);

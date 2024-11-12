@@ -32,59 +32,60 @@ impl eframe::App for EditorApp {
                             last_frame_duration.as_millis()
                         ));
                     }
-                    ui.collapsing("Sphere", |ui| {
-                        egui::Grid::new("location")
-                            .num_columns(2)
-                            .striped(true)
-                            .show(ui, |ui| {
-                                ui.label("X Location");
-                                ui.with_layout(
-                                    Layout::top_down_justified(egui::Align::Min),
-                                    |ui| {
-                                        ui.add(
-                                            egui::DragValue::new(&mut self.scene.sphere.center.x)
-                                                .speed(0.1),
-                                        );
-                                    },
-                                );
-                                ui.end_row();
+                    for (idx, sphere) in self.scene.spheres.iter_mut().enumerate() {
+                        ui.collapsing(format!("Sphere {}", idx), |ui| {
+                            egui::Grid::new("location")
+                                .num_columns(2)
+                                .striped(true)
+                                .show(ui, |ui| {
+                                    ui.label("X Location");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            ui.add(
+                                                egui::DragValue::new(&mut sphere.center.x)
+                                                    .speed(0.1),
+                                            );
+                                        },
+                                    );
+                                    ui.end_row();
 
-                                ui.label("Y Location");
-                                ui.with_layout(
-                                    Layout::top_down_justified(egui::Align::Min),
-                                    |ui| {
-                                        ui.add(
-                                            egui::DragValue::new(&mut self.scene.sphere.center.y)
-                                                .speed(0.1),
-                                        );
-                                    },
-                                );
-                                ui.end_row();
+                                    ui.label("Y Location");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            ui.add(
+                                                egui::DragValue::new(&mut sphere.center.y)
+                                                    .speed(0.1),
+                                            );
+                                        },
+                                    );
+                                    ui.end_row();
 
-                                ui.label("Z Location");
-                                ui.with_layout(
-                                    Layout::top_down_justified(egui::Align::Min),
-                                    |ui| {
-                                        ui.add(
-                                            egui::DragValue::new(&mut self.scene.sphere.center.z)
-                                                .speed(0.1),
-                                        );
-                                    },
-                                );
-                                ui.end_row();
+                                    ui.label("Z Location");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            ui.add(
+                                                egui::DragValue::new(&mut sphere.center.z)
+                                                    .speed(0.1),
+                                            );
+                                        },
+                                    );
+                                    ui.end_row();
 
-                                ui.label("Radius");
-                                ui.with_layout(
-                                    Layout::top_down_justified(egui::Align::Min),
-                                    |ui| {
-                                        ui.add(
-                                            egui::DragValue::new(&mut self.scene.sphere.radius)
-                                                .speed(0.1),
-                                        );
-                                    },
-                                );
-                            });
-                    });
+                                    ui.label("Radius");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            ui.add(
+                                                egui::DragValue::new(&mut sphere.radius).speed(0.1),
+                                            );
+                                        },
+                                    );
+                                });
+                        });
+                    }
                 });
             });
 
@@ -111,7 +112,7 @@ impl eframe::App for EditorApp {
                                 delta.x / camera.resolution_x() as f32 * 2.0,
                                 -delta.y / camera.resolution_y() as f32 * 2.0,
                             );
-                            let direction = -f32::signum(delta.y) * 3.0;
+                            let direction = -delta.y.signum() * 3.0;
                             camera.zoom(delta.length() * direction);
                         } else if ctx.input(|i| i.modifiers.shift) {
                             camera.pan(Vector2::new(delta.x, delta.y));

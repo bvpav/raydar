@@ -1,6 +1,6 @@
 use cgmath::{
-    num_traits::Float, Deg, InnerSpace, Matrix4, MetricSpace, Point3, SquareMatrix, Transform,
-    Vector2, Vector3, Vector4,
+    Deg, InnerSpace, Matrix4, MetricSpace, Point3, SquareMatrix, Transform, Vector2, Vector3,
+    Vector4,
 };
 #[derive(Debug, Clone, Copy)]
 pub enum Projection {

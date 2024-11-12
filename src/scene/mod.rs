@@ -6,7 +6,7 @@ pub mod camera;
 pub mod objects;
 
 pub struct Scene {
-    pub sphere: Sphere,
+    pub spheres: Vec<Sphere>,
     pub camera: Camera,
 }
 
@@ -24,10 +24,16 @@ impl Default for Scene {
                 Projection::Perspective { fov: Deg(90.0) },
                 // Projection::Orthographic { size: 1000.0 },
             ),
-            sphere: Sphere {
-                center: Point3::new(0.0, 0.0, 0.0),
-                radius: 0.5,
-            },
+            spheres: vec![
+                Sphere {
+                    center: Point3::new(-0.8, 0.0, 0.0),
+                    radius: 0.5,
+                },
+                Sphere {
+                    center: Point3::new(0.8, 0.0, 0.0),
+                    radius: 0.5,
+                },
+            ],
         }
     }
 }
