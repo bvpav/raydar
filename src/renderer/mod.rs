@@ -12,7 +12,7 @@ pub struct Ray {
 }
 
 impl Ray {
-    fn hit(&self, sphere: &Sphere) -> Option<(f32, f32)> {
+    fn hit(&self, sphere: &Sphere) -> Option<f32> {
         let origin_vec = self.origin.to_vec();
         let sphere_center_vec = sphere.center.to_vec();
 
@@ -32,7 +32,13 @@ impl Ray {
             let t1 = (-k - sqrt_discriminant) / a;
             let t2 = (-k + sqrt_discriminant) / a;
 
-            Some((t1, t2))
+            if t1 >= 0.0 {
+                Some(t1)
+            } else if t2 >= 0.0 {
+                Some(t2)
+            } else {
+                None
+            }
         };
     }
 
@@ -89,9 +95,8 @@ impl Renderer {
             .normalize(),
         };
 
-        return if let Some((t1, _)) = ray.hit(&scene.sphere) {
-            // assert!(t1 >= 0.0, "sphere is behind the camera");
-            let hit_point = ray.at(t1);
+        return if let Some(t) = ray.hit(&scene.sphere) {
+            let hit_point = ray.at(t);
             let normal = (hit_point - scene.sphere.center).normalize();
 
             let light_direction = Vector3::new(-1.0, -1.0, 0.6).normalize();
