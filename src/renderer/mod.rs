@@ -47,6 +47,13 @@ impl Ray {
     }
 }
 
+struct HitRecord<'a> {
+    hit_distance: f32,
+    world_position: Point3<f32>,
+    world_normal: Vector3<f32>,
+    sphere: &'a Sphere,
+}
+
 #[derive(Default)]
 pub struct Renderer {
     pub last_frame_duration: Option<Duration>,
@@ -75,15 +82,6 @@ impl Renderer {
         image
     }
 
-    fn closest_hit<'a>(&self, ray: &Ray, scene: &'a Scene) -> Option<(&'a Sphere, Point3<f32>)> {
-        scene
-            .spheres
-            .iter()
-            .filter_map(|s| ray.hit(s).map(|t| (s, t)))
-            .min_by_key(|(_, t)| ordered_float::OrderedFloat(*t))
-            .map(|(s, t)| (s, ray.at(t)))
-    }
-
     fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
         let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
             .extend(-1.0)
@@ -104,13 +102,11 @@ impl Renderer {
             .normalize(),
         };
 
-        return if let Some((sphere, hit_point)) = self.closest_hit(&ray, scene) {
-            let normal = (hit_point - sphere.center).normalize();
-
+        return if let Some(hit_record) = self.trace_ray(&ray, scene) {
             let light_direction = Vector3::new(-1.0, -1.0, 0.6).normalize();
-            let cosine_similarity = normal.dot(-light_direction);
+            let cosine_similarity = hit_record.world_normal.dot(-light_direction);
 
-            (sphere.albedo * (cosine_similarity + 1.0) * 0.5).extend(1.0)
+            (hit_record.sphere.albedo * (cosine_similarity + 1.0) * 0.5).extend(1.0)
         } else {
             // let up = Vector3::unit_y();
             // let cosine_similarity =
@@ -123,5 +119,34 @@ impl Renderer {
 
             Vector3::zero().extend(1.0)
         };
+    }
+
+    fn trace_ray<'a>(&self, ray: &Ray, scene: &'a Scene) -> Option<HitRecord<'a>> {
+        scene
+            .spheres
+            .iter()
+            .filter_map(|s| ray.hit(s).map(|t| (s, t)))
+            .min_by_key(|(_, t)| ordered_float::OrderedFloat(*t))
+            .and_then(|(s, t)| self.closest_hit(ray, t, s))
+            .or_else(|| self.miss(ray, scene))
+    }
+
+    fn closest_hit<'a>(
+        &self,
+        ray: &Ray,
+        hit_distance: f32,
+        sphere: &'a Sphere,
+    ) -> Option<HitRecord<'a>> {
+        let world_position = ray.at(hit_distance);
+        Some(HitRecord {
+            hit_distance,
+            world_position,
+            world_normal: (world_position - sphere.center).normalize(),
+            sphere,
+        })
+    }
+
+    fn miss<'a>(&self, _ray: &Ray, _scene: &Scene) -> Option<HitRecord<'a>> {
+        None
     }
 }
