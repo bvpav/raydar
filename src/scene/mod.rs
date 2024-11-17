@@ -1,8 +1,10 @@
 use camera::{Camera, Projection};
 use cgmath::{Deg, Point3, Vector3};
+use material::Material;
 use objects::Sphere;
 
 pub mod camera;
+pub mod material;
 pub mod objects;
 
 pub struct Scene {
@@ -28,12 +30,12 @@ impl Default for Scene {
                 Sphere {
                     center: Point3::new(-0.5, 0.0, 0.0),
                     radius: 0.5,
-                    albedo: Vector3::new(0.8, 0.3, 0.3),
+                    material: Material::with_albedo(Vector3::new(0.8, 0.3, 0.3)),
                 },
                 Sphere {
                     center: Point3::new(0.5, 0.0, 0.0),
                     radius: 0.5,
-                    albedo: Vector3::new(0.3, 0.2, 0.8),
+                    material: Material::with_albedo(Vector3::new(0.3, 0.2, 0.8)),
                 },
             ],
         }

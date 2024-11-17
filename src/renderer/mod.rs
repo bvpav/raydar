@@ -51,6 +51,7 @@ impl Ray {
 }
 
 struct HitRecord<'a> {
+    #[allow(unused)]
     hit_distance: f32,
     world_position: Point3<f32>,
     world_normal: Vector3<f32>,
@@ -106,7 +107,7 @@ impl Renderer {
         };
 
         let mut color: Vector4<f32> = Vector4::zero();
-        let mut factor = 1.0;
+        let factor = 1.0;
 
         for _ in 0..2 {
             if let Some(hit_record) = self.trace_ray(&ray, scene) {
@@ -114,7 +115,8 @@ impl Renderer {
                 let cosine_similarity = hit_record.world_normal.dot(-light_direction);
 
                 let surface_color =
-                    (hit_record.sphere.albedo * (cosine_similarity + 1.0) * 0.5).extend(1.0);
+                    (hit_record.sphere.material.albedo * (cosine_similarity + 1.0) * 0.5)
+                        .extend(1.0);
                 color += surface_color * factor;
 
                 ray = Ray {

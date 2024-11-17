@@ -89,7 +89,9 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.color_edit_button_rgb(sphere.albedo.as_mut());
+                                            ui.color_edit_button_rgb(
+                                                sphere.material.albedo.as_mut(),
+                                            );
                                         },
                                     );
                                 });

@@ -1,7 +1,9 @@
-use cgmath::{Point3, Vector3};
+use cgmath::Point3;
+
+use crate::scene::material::Material;
 
 pub struct Sphere {
     pub center: Point3<f32>,
     pub radius: f32,
-    pub albedo: Vector3<f32>,
+    pub material: Material,
 }
