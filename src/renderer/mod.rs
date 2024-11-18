@@ -121,7 +121,15 @@ impl Renderer {
 
                 ray = Ray {
                     origin: hit_record.world_position + hit_record.world_normal * 0.0001,
-                    direction: ray.direction.reflect(hit_record.world_normal),
+                    direction: ray.direction.reflect(
+                        hit_record.world_normal
+                            + hit_record.sphere.material.roughness
+                                * Vector3::new(
+                                    rand::random::<f32>() - 0.5,
+                                    rand::random::<f32>() - 0.5,
+                                    rand::random::<f32>() - 0.5,
+                                ),
+                    ),
                 }
             } else {
                 // let up = Vector3::unit_y();

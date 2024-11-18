@@ -10,7 +10,7 @@ impl Default for Material {
     fn default() -> Self {
         Self {
             albedo: Vector3::new(0.0, 0.0, 0.0),
-            roughness: 0.0,
+            roughness: 0.5,
             metallic: 0.0,
         }
     }
