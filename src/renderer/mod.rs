@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
+use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace, Zero};
 use image::{ImageBuffer, Rgba};
 
 use crate::{
@@ -107,9 +107,10 @@ impl Renderer {
         };
 
         let mut color: Vector4<f32> = Vector4::zero();
-        let factor = 1.0;
+        let mut factor = 1.0;
 
-        for _ in 0..2 {
+        let bounce_count = 2;
+        for _ in 0..bounce_count {
             if let Some(hit_record) = self.trace_ray(&ray, scene) {
                 let light_direction = Vector3::new(-1.0, -1.0, 0.6).normalize();
                 let cosine_similarity = hit_record.world_normal.dot(-light_direction);
@@ -118,6 +119,8 @@ impl Renderer {
                     (hit_record.sphere.material.albedo * (cosine_similarity + 1.0) * 0.5)
                         .extend(1.0);
                 color += surface_color * factor;
+
+                factor *= 0.5;
 
                 ray = Ray {
                     origin: hit_record.world_position + hit_record.world_normal * 0.0001,
@@ -132,16 +135,15 @@ impl Renderer {
                     ),
                 }
             } else {
-                // let up = Vector3::unit_y();
-                // let cosine_similarity =
-                //     ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
+                let up = Vector3::unit_y();
+                let cosine_similarity =
+                    ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
 
-                // let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
-                // let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
+                let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
+                let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
 
-                // let sky_color = bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5);
+                let sky_color = bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5);
 
-                let sky_color = Vector3::zero().extend(1.0);
                 color += sky_color * factor;
                 break;
             };
