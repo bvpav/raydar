@@ -94,6 +94,35 @@ impl eframe::App for EditorApp {
                                             );
                                         },
                                     );
+                                    ui.end_row();
+
+                                    ui.label("Roughness");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            ui.add(
+                                                egui::DragValue::new(
+                                                    &mut sphere.material.roughness,
+                                                )
+                                                .speed(0.1)
+                                                .range(0.0..=f32::INFINITY),
+                                            );
+                                        },
+                                    );
+                                    ui.end_row();
+
+                                    ui.label("Metallic");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            ui.add(
+                                                egui::DragValue::new(&mut sphere.material.metallic)
+                                                    .speed(0.1)
+                                                    .range(0.0..=1.0),
+                                            );
+                                        },
+                                    );
+                                    ui.end_row();
                                 });
                         });
                     }
