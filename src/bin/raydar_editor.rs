@@ -20,7 +20,12 @@ impl eframe::App for EditorApp {
                     if ui.button("Re-Render").clicked() {
                         self.needs_rerender = true;
                     }
-                    ui.checkbox(&mut self.should_constantly_rerender, "Constantly Re-Render");
+                    if ui
+                        .checkbox(&mut self.should_constantly_rerender, "Constantly Re-Render")
+                        .changed()
+                    {
+                        self.needs_rerender = true;
+                    }
                     ui.label(format!(
                         "Resolution: {}x{}",
                         self.scene.camera.resolution_x(),
@@ -42,10 +47,15 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.add(
-                                                egui::DragValue::new(&mut sphere.center.x)
-                                                    .speed(0.1),
-                                            );
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(&mut sphere.center.x)
+                                                        .speed(0.1),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
                                         },
                                     );
                                     ui.end_row();
@@ -54,10 +64,15 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.add(
-                                                egui::DragValue::new(&mut sphere.center.y)
-                                                    .speed(0.1),
-                                            );
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(&mut sphere.center.y)
+                                                        .speed(0.1),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
                                         },
                                     );
                                     ui.end_row();
@@ -66,10 +81,15 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.add(
-                                                egui::DragValue::new(&mut sphere.center.z)
-                                                    .speed(0.1),
-                                            );
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(&mut sphere.center.z)
+                                                        .speed(0.1),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
                                         },
                                     );
                                     ui.end_row();
@@ -78,9 +98,15 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.add(
-                                                egui::DragValue::new(&mut sphere.radius).speed(0.1),
-                                            );
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(&mut sphere.radius)
+                                                        .speed(0.1),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
                                         },
                                     );
                                     ui.end_row();
@@ -89,9 +115,14 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.color_edit_button_rgb(
-                                                sphere.material.albedo.as_mut(),
-                                            );
+                                            if ui
+                                                .color_edit_button_rgb(
+                                                    sphere.material.albedo.as_mut(),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
                                         },
                                     );
                                     ui.end_row();
@@ -100,13 +131,18 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.add(
-                                                egui::DragValue::new(
-                                                    &mut sphere.material.roughness,
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut sphere.material.roughness,
+                                                    )
+                                                    .speed(0.1)
+                                                    .range(0.0..=f32::INFINITY),
                                                 )
-                                                .speed(0.1)
-                                                .range(0.0..=f32::INFINITY),
-                                            );
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
                                         },
                                     );
                                     ui.end_row();
@@ -115,11 +151,18 @@ impl eframe::App for EditorApp {
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),
                                         |ui| {
-                                            ui.add(
-                                                egui::DragValue::new(&mut sphere.material.metallic)
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut sphere.material.metallic,
+                                                    )
                                                     .speed(0.1)
                                                     .range(0.0..=1.0),
-                                            );
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
                                         },
                                     );
                                     ui.end_row();
@@ -208,7 +251,7 @@ fn main() -> eframe::Result {
                 scene,
                 renderer: Renderer::default(),
                 needs_rerender: true,
-                should_constantly_rerender: true,
+                should_constantly_rerender: false,
                 rendered_scene_handle: None,
             }))
         }),
