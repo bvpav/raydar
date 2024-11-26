@@ -30,7 +30,7 @@ impl Default for Scene {
                 Sphere {
                     center: Point3::new(0.0, 0.0, 0.0),
                     radius: 1.0,
-                    material: Material::with_albedo(Vector3::new(0.8, 0.3, 0.3)),
+                    material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.16)),
                 },
                 Sphere {
                     center: Point3::new(0.0, -101.0, 0.0),
