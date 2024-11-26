@@ -218,23 +218,25 @@ impl eframe::App for EditorApp {
 
 impl EditorApp {
     fn rerender(&mut self, ctx: &eframe::egui::Context) {
-        if !self.needs_rerender && !self.should_constantly_rerender {
-            return;
+        if self.needs_rerender || self.should_constantly_rerender {
+            self.renderer.new_frame(&self.scene);
+            self.needs_rerender = false;
         }
 
-        let image = self.renderer.render_frame(&self.scene);
-        let size = [image.width() as _, image.height() as _];
-        let pixels = image.into_raw();
-        let color_image = egui::ColorImage::from_rgba_unmultiplied(size, &pixels);
+        let image = self.renderer.render_sample(&self.scene);
+        if let Some(image) = image {
+            let size = [image.width() as _, image.height() as _];
+            let pixels = image.into_raw();
+            let color_image = egui::ColorImage::from_rgba_unmultiplied(size, &pixels);
 
-        self.rendered_scene_handle = Some(ctx.load_texture(
-            "rendered_scene",
-            color_image,
-            egui::TextureOptions::default(),
-        ));
+            self.rendered_scene_handle = Some(ctx.load_texture(
+                "rendered_scene",
+                color_image,
+                egui::TextureOptions::default(),
+            ));
 
-        self.needs_rerender = false;
-        ctx.request_repaint();
+            ctx.request_repaint();
+        }
     }
 }
 

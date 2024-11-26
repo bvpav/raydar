@@ -1,7 +1,7 @@
 use std::time::{Duration, Instant};
 
 use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace, Zero};
-use image::{ImageBuffer, Rgba};
+use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
     scene::{objects::Sphere, Scene},
@@ -58,32 +58,87 @@ struct HitRecord<'a> {
     sphere: &'a Sphere,
 }
 
+const MAX_SAMPLE_COUNT: usize = 1024;
+
 #[derive(Default)]
 pub struct Renderer {
+    pub last_frame_start: Option<Instant>,
     pub last_frame_duration: Option<Duration>,
+    pub sample_count: usize,
+
+    frame_buffer: Option<Rgba32FImage>,
 }
 
 impl Renderer {
-    pub fn render_frame(&mut self, scene: &Scene) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
-        let mut image = ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
+    pub fn render_frame(&mut self, scene: &Scene) -> RgbaImage {
+        let mut frame_buffer = self.blank_frame_buffer(scene);
+
+        let mut rendered_frame =
+            ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
         let frame_started_at = Instant::now();
-        for (x, y, pixel) in image.enumerate_pixels_mut() {
+
+        self.sample_count = 0;
+        while self.sample_count < MAX_SAMPLE_COUNT {
+            self.render_next_sample(scene, &mut frame_buffer);
+        }
+        self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
+
+        self.last_frame_duration = Some(frame_started_at.elapsed());
+        self.last_frame_start = Some(frame_started_at);
+        self.frame_buffer = Some(frame_buffer);
+        rendered_frame
+    }
+
+    pub fn new_frame(&mut self, scene: &Scene) {
+        self.frame_buffer = Some(self.blank_frame_buffer(scene));
+        self.last_frame_start = Some(Instant::now());
+        self.sample_count = 0;
+    }
+
+    pub fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
+        if self.sample_count >= MAX_SAMPLE_COUNT {
+            return None;
+        }
+
+        let mut frame_buffer = self.frame_buffer(scene);
+
+        let mut rendered_frame =
+            ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
+
+        self.render_next_sample(scene, &mut frame_buffer);
+        self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
+
+        Some(rendered_frame)
+    }
+
+    fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
+        for (x, y, pixel) in frame_buffer.enumerate_pixels_mut() {
             let uv_coord = Vector2::new(
                 x as f32 / scene.camera.resolution_x() as f32,
                 1.0 - y as f32 / scene.camera.resolution_y() as f32,
             );
             let color = self.per_pixel(uv_coord, scene);
             *pixel = Rgba([
-                (color.x * 255.0) as u8,
-                (color.y * 255.0) as u8,
-                (color.z * 255.0) as u8,
-                (color.w * 255.0) as u8,
+                (pixel[0] + color.x),
+                (pixel[1] + color.y),
+                (pixel[2] + color.z),
+                (pixel[3] + color.w),
             ]);
         }
-        self.last_frame_duration = Some(frame_started_at.elapsed());
 
-        image
+        self.sample_count += 1;
+    }
+
+    fn print_frame_buffer(&self, frame_buffer: &Rgba32FImage, image: &mut RgbaImage) {
+        for (fb_pixel, rendered_pixel) in frame_buffer.pixels().zip(image.pixels_mut()) {
+            *rendered_pixel = Rgba([
+                ((fb_pixel[0] / self.sample_count as f32).clamp(0.0, 1.0) * 255.0) as u8,
+                ((fb_pixel[1] / self.sample_count as f32).clamp(0.0, 1.0) * 255.0) as u8,
+                ((fb_pixel[2] / self.sample_count as f32).clamp(0.0, 1.0) * 255.0) as u8,
+                ((fb_pixel[3] / self.sample_count as f32).clamp(0.0, 1.0) * 255.0) as u8,
+            ]);
+        }
     }
 
     fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
@@ -179,5 +234,28 @@ impl Renderer {
 
     fn miss<'a>(&self, _ray: &Ray, _scene: &Scene) -> Option<HitRecord<'a>> {
         None
+    }
+
+    fn frame_buffer(&mut self, scene: &Scene) -> Rgba32FImage {
+        self.frame_buffer
+            .take()
+            .map(|mut frame_buffer| {
+                if frame_buffer.width() != scene.camera.resolution_x()
+                    || frame_buffer.height() != scene.camera.resolution_y()
+                {
+                    frame_buffer =
+                        Rgba32FImage::new(scene.camera.resolution_x(), scene.camera.resolution_y());
+                }
+                frame_buffer
+            })
+            .unwrap_or_else(|| {
+                Rgba32FImage::new(scene.camera.resolution_x(), scene.camera.resolution_y())
+            })
+    }
+
+    fn blank_frame_buffer(&mut self, scene: &Scene) -> Rgba32FImage {
+        let mut frame_buffer = self.frame_buffer(scene);
+        frame_buffer.fill(0.0);
+        frame_buffer
     }
 }
