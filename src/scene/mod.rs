@@ -40,7 +40,7 @@ impl Default for Scene {
                 Sphere {
                     center: Point3::new(2.0, 0.0, 0.0),
                     radius: 1.0,
-                    material: Material::with_emission(Vector3::new(0.8, 0.5, 0.2), 1.0),
+                    material: Material::with_emission(Vector3::new(0.8, 0.5, 0.2), 3.0),
                 },
             ],
         }

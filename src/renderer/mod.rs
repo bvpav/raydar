@@ -1,11 +1,13 @@
 use std::time::{Duration, Instant};
 
-use cgmath::{EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace, Zero};
+use cgmath::{
+    ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace, Zero,
+};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
     scene::{objects::Sphere, Scene},
-    utils::Reflect,
+    utils,
 };
 
 #[derive(Debug)]
@@ -59,6 +61,7 @@ struct HitRecord<'a> {
 }
 
 const MAX_SAMPLE_COUNT: usize = 1024;
+const MAX_BOUNCES: usize = 2;
 
 #[derive(Default)]
 pub struct Renderer {
@@ -173,50 +176,35 @@ impl Renderer {
             .normalize(),
         };
 
-        let mut color: Vector4<f32> = Vector4::zero();
-        let mut factor = 1.0;
+        let mut light = Vector3::zero();
+        let mut throughput = Vector3::new(1.0, 1.0, 1.0);
 
-        let bounce_count = 2;
-        for _ in 0..bounce_count {
+        for _ in 0..MAX_BOUNCES {
             if let Some(hit_record) = self.trace_ray(&ray, scene) {
-                let light_direction = Vector3::new(-1.0, -1.0, 0.6).normalize();
-                let cosine_similarity = hit_record.world_normal.dot(-light_direction);
-
-                let surface_color =
-                    (hit_record.sphere.material.albedo * (cosine_similarity + 1.0) * 0.5)
-                        .extend(1.0);
-                color += surface_color * factor;
-
-                factor *= 0.5;
+                throughput = throughput.mul_element_wise(hit_record.sphere.material.albedo);
+                light += hit_record.sphere.material.emission_color
+                    * hit_record.sphere.material.emission_strength;
 
                 ray = Ray {
                     origin: hit_record.world_position + hit_record.world_normal * 0.0001,
-                    direction: ray.direction.reflect(
-                        hit_record.world_normal
-                            + hit_record.sphere.material.roughness
-                                * Vector3::new(
-                                    rand::random::<f32>() - 0.5,
-                                    rand::random::<f32>() - 0.5,
-                                    rand::random::<f32>() - 0.5,
-                                ),
-                    ),
+                    direction: utils::random_in_unit_hemisphere(hit_record.world_normal),
                 }
             } else {
                 let up = Vector3::unit_y();
                 let cosine_similarity =
                     ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
 
-                let top_color = Vector4::new(0.53, 0.8, 0.92, 1.0);
-                let bottom_color = Vector4::new(1.0, 1.0, 1.0, 1.0);
+                let top_color = Vector3::new(0.53, 0.8, 0.92);
+                let bottom_color = Vector3::new(1.0, 1.0, 1.0);
 
                 let sky_color = bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5);
 
-                color += sky_color * factor;
+                light += sky_color.mul_element_wise(throughput);
                 break;
             };
         }
 
-        color
+        light.extend(1.0)
     }
 
     fn trace_ray<'a>(&self, ray: &Ray, scene: &'a Scene) -> Option<HitRecord<'a>> {
