@@ -36,6 +36,16 @@ impl eframe::App for EditorApp {
                             "Last frame took {}ms",
                             last_frame_duration.as_millis()
                         ));
+                    } else {
+                        ui.label("Frame is rendering...");
+                    }
+                    if let Some(last_sample_duration) = self.renderer.last_sample_duration {
+                        ui.label(format!(
+                            "Sample {}/{} took {}ms",
+                            self.renderer.sample_count,
+                            self.renderer.max_sample_count(),
+                            last_sample_duration.as_millis()
+                        ));
                     }
                     for (idx, sphere) in self.scene.spheres.iter_mut().enumerate() {
                         ui.collapsing(format!("Sphere {}", idx), |ui| {

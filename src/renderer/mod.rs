@@ -64,6 +64,7 @@ const MAX_SAMPLE_COUNT: usize = 1024;
 pub struct Renderer {
     pub last_frame_start: Option<Instant>,
     pub last_frame_duration: Option<Duration>,
+    pub last_sample_duration: Option<Duration>,
     pub sample_count: usize,
 
     frame_buffer: Option<Rgba32FImage>,
@@ -71,21 +72,17 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn render_frame(&mut self, scene: &Scene) -> RgbaImage {
-        let mut frame_buffer = self.blank_frame_buffer(scene);
-
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
-        let frame_started_at = Instant::now();
+        self.new_frame(scene);
+        let mut frame_buffer = self.frame_buffer(scene);
 
-        self.sample_count = 0;
         while self.sample_count < MAX_SAMPLE_COUNT {
             self.render_next_sample(scene, &mut frame_buffer);
         }
         self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
 
-        self.last_frame_duration = Some(frame_started_at.elapsed());
-        self.last_frame_start = Some(frame_started_at);
         self.frame_buffer = Some(frame_buffer);
         rendered_frame
     }
@@ -114,7 +111,13 @@ impl Renderer {
         Some(rendered_frame)
     }
 
+    pub fn max_sample_count(&self) -> usize {
+        MAX_SAMPLE_COUNT
+    }
+
     fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
+        let sample_started_at = Instant::now();
+
         for (x, y, pixel) in frame_buffer.enumerate_pixels_mut() {
             let uv_coord = Vector2::new(
                 x as f32 / scene.camera.resolution_x() as f32,
@@ -130,6 +133,13 @@ impl Renderer {
         }
 
         self.sample_count += 1;
+        if self.sample_count == MAX_SAMPLE_COUNT {
+            if let Some(last_frame_start) = self.last_frame_start {
+                self.last_frame_duration = Some(last_frame_start.elapsed());
+            }
+        }
+
+        self.last_sample_duration = Some(sample_started_at.elapsed());
     }
 
     fn print_frame_buffer(&self, frame_buffer: &Rgba32FImage, image: &mut RgbaImage) {
