@@ -109,6 +109,8 @@ impl Renderer {
         self.render_next_sample(scene, &mut frame_buffer);
         self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
 
+        self.frame_buffer = Some(frame_buffer);
+
         Some(rendered_frame)
     }
 
