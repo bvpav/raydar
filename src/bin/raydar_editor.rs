@@ -176,6 +176,41 @@ impl eframe::App for EditorApp {
                                         },
                                     );
                                     ui.end_row();
+
+                                    ui.label("Emission Color");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            if ui
+                                                .color_edit_button_rgb(
+                                                    sphere.material.emission_color.as_mut(),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
+                                        },
+                                    );
+                                    ui.end_row();
+
+                                    ui.label("Emission Strength");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut sphere.material.emission_strength,
+                                                    )
+                                                    .speed(0.1)
+                                                    .range(0.0..=f32::INFINITY),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
+                                        },
+                                    );
                                 });
                         });
                     }
