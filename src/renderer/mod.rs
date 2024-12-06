@@ -1,8 +1,6 @@
 use std::time::{Duration, Instant};
 
-use cgmath::{
-    ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace, Zero,
-};
+use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
@@ -190,16 +188,7 @@ impl Renderer {
                     direction: utils::random_in_unit_hemisphere(hit_record.world_normal),
                 }
             } else {
-                let up = Vector3::unit_y();
-                let cosine_similarity =
-                    ray.direction.dot(up) / (ray.direction.magnitude() * up.magnitude());
-
-                let top_color = Vector3::new(0.53, 0.8, 0.92);
-                let bottom_color = Vector3::new(1.0, 1.0, 1.0);
-
-                let sky_color = bottom_color.lerp(top_color, (cosine_similarity + 1.0) * 0.5);
-
-                light += sky_color.mul_element_wise(throughput);
+                light += scene.world.sample(ray).mul_element_wise(throughput);
                 break;
             };
         }
