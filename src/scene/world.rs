@@ -2,6 +2,7 @@ use cgmath::{InnerSpace, Vector3, VectorSpace};
 
 use crate::renderer::Ray;
 
+#[derive(PartialEq)]
 pub enum World {
     SkyColor {
         top_color: Vector3<f32>,
@@ -27,7 +28,7 @@ impl World {
                 sky_color
             }
             World::SolidColor(color) => *color,
-            World::Transparent => todo!("Transparent world support"),
+            World::Transparent => todo!("transparent world support"),
         }
     }
 }
