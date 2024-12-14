@@ -59,12 +59,14 @@ impl eframe::App for EditorApp {
                                 ui.with_layout(
                                     Layout::top_down_justified(egui::Align::Min),
                                     |ui| {
+                                        ui.set_min_width(ui.available_width());
                                         egui::ComboBox::from_id_salt("world_type")
                                             .selected_text(match &self.scene.world {
                                                 World::SkyColor { .. } => "Sky",
                                                 World::SolidColor(_) => "Solid",
                                                 World::Transparent => "Transparent",
                                             })
+                                            .width(ui.available_width() - 10.0)
                                             .show_ui(ui, |ui| {
                                                 let mut changed = false;
                                                 changed |= ui
@@ -110,7 +112,7 @@ impl eframe::App for EditorApp {
                                         top_color,
                                         bottom_color,
                                     } => {
-                                        ui.label("Top Color");
+                                        ui.label("Top");
                                         ui.with_layout(
                                             Layout::top_down_justified(egui::Align::Min),
                                             |ui| {
@@ -124,7 +126,7 @@ impl eframe::App for EditorApp {
                                         );
                                         ui.end_row();
 
-                                        ui.label("Bottom Color");
+                                        ui.label("Bottom");
                                         ui.with_layout(
                                             Layout::top_down_justified(egui::Align::Min),
                                             |ui| {
