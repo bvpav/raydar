@@ -213,10 +213,15 @@ impl Renderer {
         sphere: &'a Sphere,
     ) -> Option<HitRecord<'a>> {
         let world_position = ray.at(hit_distance);
+        let mut world_normal = (world_position - sphere.center).normalize();
+        if world_normal.dot(ray.direction) > 0.0 {
+            world_normal = -world_normal;
+        }
+
         Some(HitRecord {
             hit_distance,
             world_position,
-            world_normal: (world_position - sphere.center).normalize(),
+            world_normal,
             sphere,
         })
     }
