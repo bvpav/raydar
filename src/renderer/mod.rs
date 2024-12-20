@@ -175,20 +175,23 @@ impl Renderer {
         };
 
         let mut light = Vector3::zero();
-        let mut throughput = Vector3::new(1.0, 1.0, 1.0);
+        let mut attenuation = Vector3::new(1.0, 1.0, 1.0);
 
         for _ in 0..MAX_BOUNCES {
             if let Some(hit_record) = self.trace_ray(&ray, scene) {
-                throughput = throughput.mul_element_wise(hit_record.sphere.material.albedo);
-                light += hit_record.sphere.material.emission_color
-                    * hit_record.sphere.material.emission_strength;
-
+                attenuation = attenuation.mul_element_wise(hit_record.sphere.material.albedo);
                 ray = Ray {
                     origin: hit_record.world_position + hit_record.world_normal * 0.0001,
-                    direction: utils::random_in_unit_hemisphere(hit_record.world_normal),
+                    direction: hit_record.world_normal + utils::random_in_unit_sphere(),
+                };
+                if ray.direction.magnitude2() < 1e-10 {
+                    ray.direction = hit_record.world_normal;
                 }
+
+                light += hit_record.sphere.material.emission_color
+                    * hit_record.sphere.material.emission_strength;
             } else {
-                light += scene.world.sample(ray).mul_element_wise(throughput);
+                light += scene.world.sample(ray).mul_element_wise(attenuation);
                 break;
             };
         }

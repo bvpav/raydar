@@ -27,7 +27,7 @@ pub fn random_in_unit_sphere() -> Vector3<f32> {
     .normalize()
 }
 
-pub fn random_in_unit_hemisphere(normal: Vector3<f32>) -> Vector3<f32> {
+pub fn _random_in_unit_hemisphere(normal: Vector3<f32>) -> Vector3<f32> {
     let random = random_in_unit_sphere();
     if random.dot(normal) > 0.0 {
         random
