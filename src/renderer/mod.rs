@@ -158,7 +158,9 @@ impl Renderer {
         }
     }
 
+    /// Performs Monte Carlo path tracing for a single pixel by solving the rendering equation.
     fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
+        // 1. Ray generation
         let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
             .extend(-1.0)
             .extend(-1.0);
@@ -181,8 +183,11 @@ impl Renderer {
         let mut light = Vector3::zero();
         let mut attenuation = Vector3::new(1.0, 1.0, 1.0);
 
+        // 5. Indirect light transport (main integration loop)
         for _ in 0..MAX_BOUNCES {
+            // 2. Ray intersection
             if let Some(hit_record) = self.trace_ray(&ray, scene) {
+                // 3. BRDF sampling
                 let mut diffuse_direction =
                     hit_record.world_normal + utils::random_in_unit_sphere();
                 if diffuse_direction.dot(hit_record.world_normal) < 0.0 {
@@ -191,23 +196,39 @@ impl Renderer {
 
                 let perfect_reflection = ray.direction.reflect(hit_record.world_normal);
 
-                let sqrt_roughness_factor = hit_record.sphere.material.roughness;
+                // The roughness is squared to achieve perceptual linearity.
+                // (based on https://www.pbr-book.org/3ed-2018/Reflection_Models/Microfacet_Models.html
+                //           https://www.pbr-book.org/4ed/Reflection_Models/Roughness_Using_Microfacet_Theory
+                //           and research by Disney)
+                let perceived_roughness =
+                    hit_record.sphere.material.roughness * hit_record.sphere.material.roughness;
+
+                // We perturb the reflection direction to achieve a more realistic reflection.
+                // TODO: use a GGX (Trowbridge-Reitz) microfacet distribution.
+                let random_offset = utils::random_in_unit_sphere() * perceived_roughness;
+                let specular_direction = (perfect_reflection + random_offset).normalize();
+
+                let direction = if rand::random::<f32>() < perceived_roughness {
+                    diffuse_direction
+                } else {
+                    specular_direction
+                };
+
                 ray = Ray {
                     origin: hit_record.world_position + hit_record.world_normal * 0.0001,
-                    direction: perfect_reflection.lerp(
-                        diffuse_direction,
-                        sqrt_roughness_factor * sqrt_roughness_factor,
-                    ),
+                    direction,
                 };
                 if ray.direction.magnitude2() < 1e-10 {
                     ray.direction = hit_record.world_normal;
                 }
 
+                // 4. Accumulation (add outgoing radiance)
                 attenuation = attenuation.mul_element_wise(hit_record.sphere.material.albedo);
 
                 light += hit_record.sphere.material.emission_color
                     * hit_record.sphere.material.emission_strength;
             } else {
+                // Add environment light contribution
                 light += scene.world.sample(ray).mul_element_wise(attenuation);
                 break;
             };
