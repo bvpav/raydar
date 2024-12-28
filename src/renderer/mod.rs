@@ -1,12 +1,16 @@
 use std::time::{Duration, Instant};
 
-use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
+use cgmath::{
+    ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace, Zero,
+};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
     scene::{objects::Sphere, Scene},
     utils,
 };
+
+use self::utils::Reflect;
 
 #[derive(Debug)]
 pub struct Ray {
@@ -59,7 +63,7 @@ struct HitRecord<'a> {
 }
 
 const MAX_SAMPLE_COUNT: usize = 1024;
-const MAX_BOUNCES: usize = 2;
+const MAX_BOUNCES: usize = 12;
 
 #[derive(Default)]
 pub struct Renderer {
@@ -179,14 +183,27 @@ impl Renderer {
 
         for _ in 0..MAX_BOUNCES {
             if let Some(hit_record) = self.trace_ray(&ray, scene) {
-                attenuation = attenuation.mul_element_wise(hit_record.sphere.material.albedo);
+                let mut diffuse_direction =
+                    hit_record.world_normal + utils::random_in_unit_sphere();
+                if diffuse_direction.dot(hit_record.world_normal) < 0.0 {
+                    diffuse_direction = -diffuse_direction;
+                }
+
+                let perfect_reflection = ray.direction.reflect(hit_record.world_normal);
+
+                let sqrt_roughness_factor = hit_record.sphere.material.roughness;
                 ray = Ray {
                     origin: hit_record.world_position + hit_record.world_normal * 0.0001,
-                    direction: hit_record.world_normal + utils::random_in_unit_sphere(),
+                    direction: perfect_reflection.lerp(
+                        diffuse_direction,
+                        sqrt_roughness_factor * sqrt_roughness_factor,
+                    ),
                 };
                 if ray.direction.magnitude2() < 1e-10 {
                     ray.direction = hit_record.world_normal;
                 }
+
+                attenuation = attenuation.mul_element_wise(hit_record.sphere.material.albedo);
 
                 light += hit_record.sphere.material.emission_color
                     * hit_record.sphere.material.emission_strength;

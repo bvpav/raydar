@@ -259,7 +259,7 @@ impl eframe::App for EditorApp {
                                                         &mut sphere.material.roughness,
                                                     )
                                                     .speed(0.1)
-                                                    .range(0.0..=f32::INFINITY),
+                                                    .range(0.0..=1.0),
                                                 )
                                                 .changed()
                                             {

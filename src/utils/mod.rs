@@ -3,7 +3,6 @@ use std::ops::{Mul, Sub};
 use cgmath::{InnerSpace, Vector3};
 use rand::Rng;
 
-#[allow(dead_code)]
 pub trait Reflect {
     fn reflect(&self, normal: Self) -> Self;
 }
