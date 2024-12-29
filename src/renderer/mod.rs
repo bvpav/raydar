@@ -1,8 +1,6 @@
 use std::time::{Duration, Instant};
 
-use cgmath::{
-    ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, VectorSpace, Zero,
-};
+use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
@@ -188,26 +186,31 @@ impl Renderer {
                 // (based on https://www.pbr-book.org/3ed-2018/Reflection_Models/Microfacet_Models.html
                 //           https://www.pbr-book.org/4ed/Reflection_Models/Roughness_Using_Microfacet_Theory
                 //           and research by Disney)
-                let perceived_roughness =
+                let roughness =
                     hit_record.sphere.material.roughness * hit_record.sphere.material.roughness;
+                let metallic = hit_record.sphere.material.metallic;
 
-                let direction = if rand::random::<f32>() < perceived_roughness {
-                    let mut diffuse_direction =
-                        hit_record.world_normal + utils::random_in_unit_sphere();
-                    if diffuse_direction.dot(hit_record.world_normal) < 0.0 {
-                        diffuse_direction = -diffuse_direction;
-                    }
+                let mut diffuse_direction =
+                    hit_record.world_normal + utils::random_in_unit_sphere();
+                if diffuse_direction.dot(hit_record.world_normal) < 0.0 {
+                    diffuse_direction = -diffuse_direction;
+                }
 
-                    diffuse_direction
-                } else {
-                    let perfect_reflection = ray.direction.reflect(hit_record.world_normal);
+                let perfect_reflection = ray.direction.reflect(hit_record.world_normal);
 
-                    // We perturb the reflection direction to achieve a more realistic reflection.
-                    // TODO: use a GGX (Trowbridge-Reitz) microfacet distribution.
-                    let random_offset = utils::random_in_unit_sphere() * perceived_roughness;
-                    let specular_direction = (perfect_reflection + random_offset).normalize();
+                // We perturb the reflection direction to achieve a more realistic reflection.
+                // TODO: use a GGX (Trowbridge-Reitz) microfacet distribution.
+                let random_offset = utils::random_in_unit_sphere() * roughness;
+                let specular_direction = (perfect_reflection + random_offset).normalize();
 
+                let direction = if rand::random::<f32>() < metallic {
                     specular_direction
+                } else {
+                    if rand::random::<f32>() < roughness {
+                        diffuse_direction
+                    } else {
+                        specular_direction
+                    }
                 };
 
                 ray = Ray {
