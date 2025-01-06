@@ -16,6 +16,24 @@ where
     }
 }
 
+pub trait Refract {
+    fn refract(&self, normal: Self, ior: f32) -> Self;
+}
+
+impl Refract for cgmath::Vector3<f32> {
+    fn refract(&self, normal: Self, ior_ratio: f32) -> Self {
+        assert!((self.magnitude2() - 1.0).abs() < 1e-6);
+        assert!((normal.magnitude2() - 1.0).abs() < 1e-6);
+
+        let cos_theta = self.dot(-normal).min(1.0);
+
+        let perpendicular = ior_ratio * (self + cos_theta * normal);
+        let parallel = -(1.0 - perpendicular.magnitude2()).abs().sqrt() * normal;
+
+        perpendicular + parallel
+    }
+}
+
 pub fn random_in_unit_sphere() -> Vector3<f32> {
     let mut rng = rand::thread_rng();
     Vector3::new(

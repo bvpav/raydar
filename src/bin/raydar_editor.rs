@@ -288,6 +288,24 @@ impl eframe::App for EditorApp {
                                         },
                                     );
                                     ui.end_row();
+
+                                    ui.label("IOR");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(&mut sphere.material.ior)
+                                                        .speed(0.1),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
+                                        },
+                                    );
+                                    ui.end_row();
+
                                     ui.label("Metallic");
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),

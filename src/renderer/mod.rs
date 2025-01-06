@@ -8,7 +8,7 @@ use crate::{
     utils,
 };
 
-use self::utils::Reflect;
+use self::utils::{Reflect, Refract};
 
 #[derive(Debug)]
 pub struct Ray {
@@ -55,6 +55,7 @@ impl Ray {
 struct HitRecord<'a> {
     #[allow(unused)]
     hit_distance: f32,
+    is_front_face: bool,
     world_position: Point3<f32>,
     world_normal: Vector3<f32>,
     sphere: &'a Sphere,
@@ -205,7 +206,14 @@ impl Renderer {
                 let specular_direction = (perfect_reflection + random_offset).normalize();
 
                 let direction = if rand::random::<f32>() < transmission {
+                    let mut ior = hit_record.sphere.material.ior;
+                    if hit_record.is_front_face {
+                        ior = 1.0 / ior;
+                    }
+
                     ray.direction
+                        .normalize()
+                        .refract(hit_record.world_normal, ior)
                 } else if rand::random::<f32>() < metallic {
                     specular_direction
                 } else {
@@ -256,12 +264,14 @@ impl Renderer {
     ) -> Option<HitRecord<'a>> {
         let world_position = ray.at(hit_distance);
         let mut world_normal = (world_position - sphere.center).normalize();
-        if world_normal.dot(ray.direction) > 0.0 {
+        let is_front_face = world_normal.dot(ray.direction) <= 0.0;
+        if !is_front_face {
             world_normal = -world_normal;
-        }
+        };
 
         Some(HitRecord {
             hit_distance,
+            is_front_face,
             world_position,
             world_normal,
             sphere,
@@ -275,12 +285,14 @@ impl Renderer {
     fn frame_buffer(&mut self, scene: &Scene) -> Rgba32FImage {
         self.frame_buffer
             .take()
-            .map(|mut frame_buffer| {
+            .map(|frame_buffer| {
                 if frame_buffer.width() != scene.camera.resolution_x()
                     || frame_buffer.height() != scene.camera.resolution_y()
                 {
-                    frame_buffer =
-                        Rgba32FImage::new(scene.camera.resolution_x(), scene.camera.resolution_y());
+                    return Rgba32FImage::new(
+                        scene.camera.resolution_x(),
+                        scene.camera.resolution_y(),
+                    );
                 }
                 frame_buffer
             })
