@@ -205,7 +205,8 @@ impl Renderer {
                 let random_offset = utils::random_in_unit_sphere() * roughness;
                 let specular_direction = (perfect_reflection + random_offset).normalize();
 
-                let direction = if rand::random::<f32>() < transmission {
+                let transmission_ray = rand::random::<f32>() < transmission;
+                let direction = if transmission_ray {
                     let mut ior = hit_record.sphere.material.ior;
                     if hit_record.is_front_face {
                         ior = 1.0 / ior;
@@ -224,8 +225,14 @@ impl Renderer {
                     }
                 };
 
+                // Move the ray origin slightly along the direction of travel to avoid self-intersections
+                let offset = if transmission_ray {
+                    direction
+                } else {
+                    hit_record.world_normal
+                };
                 ray = Ray {
-                    origin: hit_record.world_position + hit_record.world_normal * 0.0001,
+                    origin: hit_record.world_position + offset * 0.0001,
                     direction,
                 };
                 if ray.direction.magnitude2() < 1e-10 {
