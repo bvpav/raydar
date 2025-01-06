@@ -269,6 +269,25 @@ impl eframe::App for EditorApp {
                                     );
                                     ui.end_row();
 
+                                    ui.label("Transmission");
+                                    ui.with_layout(
+                                        Layout::top_down_justified(egui::Align::Min),
+                                        |ui| {
+                                            if ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut sphere.material.transmission,
+                                                    )
+                                                    .speed(0.1)
+                                                    .range(0.0..=1.0),
+                                                )
+                                                .changed()
+                                            {
+                                                self.needs_rerender = true;
+                                            }
+                                        },
+                                    );
+                                    ui.end_row();
                                     ui.label("Metallic");
                                     ui.with_layout(
                                         Layout::top_down_justified(egui::Align::Min),

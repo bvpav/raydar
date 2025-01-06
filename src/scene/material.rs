@@ -6,6 +6,7 @@ pub struct Material {
     pub metallic: f32,
     pub emission_color: Vector3<f32>,
     pub emission_strength: f32,
+    pub transmission: f32,
 }
 
 impl Default for Material {
@@ -16,6 +17,7 @@ impl Default for Material {
             metallic: 0.0,
             emission_color: Vector3::new(0.0, 0.0, 0.0),
             emission_strength: 0.0,
+            transmission: 0.0,
         }
     }
 }
@@ -32,6 +34,13 @@ impl Material {
         Self {
             emission_color,
             emission_strength,
+            ..Default::default()
+        }
+    }
+
+    pub fn with_transmission(transmission: f32) -> Self {
+        Self {
+            transmission,
             ..Default::default()
         }
     }

@@ -189,6 +189,7 @@ impl Renderer {
                 let roughness =
                     hit_record.sphere.material.roughness * hit_record.sphere.material.roughness;
                 let metallic = hit_record.sphere.material.metallic;
+                let transmission = hit_record.sphere.material.transmission;
 
                 let mut diffuse_direction =
                     hit_record.world_normal + utils::random_in_unit_sphere();
@@ -203,7 +204,9 @@ impl Renderer {
                 let random_offset = utils::random_in_unit_sphere() * roughness;
                 let specular_direction = (perfect_reflection + random_offset).normalize();
 
-                let direction = if rand::random::<f32>() < metallic {
+                let direction = if rand::random::<f32>() < transmission {
+                    ray.direction
+                } else if rand::random::<f32>() < metallic {
                     specular_direction
                 } else {
                     if rand::random::<f32>() < roughness {
