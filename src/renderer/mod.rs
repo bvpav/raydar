@@ -214,7 +214,16 @@ impl Renderer {
 
                     let ray_direction = ray.direction.normalize();
 
-                    if ray_direction.can_refract(hit_record.world_normal, ior) {
+                    // Apply Schlick's approximation for the Fresnel effect.
+                    let cos_theta = ray_direction.dot(-hit_record.world_normal).min(1.0);
+                    let reflection_coefficient = {
+                        let r0 = ((ior - 1.0) / (ior + 1.0)).powi(2);
+                        r0 + (1.0 - r0) * (1.0 - cos_theta).powi(5)
+                    };
+
+                    if reflection_coefficient < rand::random::<f32>()
+                        && ray_direction.can_refract(hit_record.world_normal, ior)
+                    {
                         ray_direction.refract(hit_record.world_normal, ior)
                     } else {
                         specular_direction
