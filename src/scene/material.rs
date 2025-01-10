@@ -19,7 +19,7 @@ impl Default for Material {
             emission_color: Vector3::new(0.0, 0.0, 0.0),
             emission_strength: 0.0,
             transmission: 0.0,
-            ior: 1.0,
+            ior: 1.5,
         }
     }
 }

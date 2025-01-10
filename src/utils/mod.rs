@@ -17,7 +17,8 @@ where
 }
 
 pub trait Refract {
-    fn refract(&self, normal: Self, ior: f32) -> Self;
+    fn refract(&self, normal: Self, ior_ratio: f32) -> Self;
+    fn can_refract(&self, normal: Self, ior_ratio: f32) -> bool;
 }
 
 impl Refract for cgmath::Vector3<f32> {
@@ -31,6 +32,15 @@ impl Refract for cgmath::Vector3<f32> {
         let parallel = -(1.0 - perpendicular.magnitude2()).abs().sqrt() * normal;
 
         perpendicular + parallel
+    }
+
+    fn can_refract(&self, normal: Self, ior_ratio: f32) -> bool {
+        assert!((self.magnitude2() - 1.0).abs() < 1e-6);
+
+        let cos_theta = self.dot(-normal).min(1.0);
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+
+        ior_ratio * sin_theta <= 1.0
     }
 }
 

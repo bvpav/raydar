@@ -212,9 +212,13 @@ impl Renderer {
                         ior = 1.0 / ior;
                     }
 
-                    ray.direction
-                        .normalize()
-                        .refract(hit_record.world_normal, ior)
+                    let ray_direction = ray.direction.normalize();
+
+                    if ray_direction.can_refract(hit_record.world_normal, ior) {
+                        ray_direction.refract(hit_record.world_normal, ior)
+                    } else {
+                        specular_direction
+                    }
                 } else if rand::random::<f32>() < metallic {
                     specular_direction
                 } else {
