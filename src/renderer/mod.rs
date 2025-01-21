@@ -224,7 +224,10 @@ impl Renderer {
                     if reflection_coefficient < rand::random::<f32>()
                         && ray_direction.can_refract(hit_record.world_normal, ior)
                     {
-                        ray_direction.refract(hit_record.world_normal, ior)
+                        let refracted = ray_direction.refract(hit_record.world_normal, ior);
+                        // Add roughness perturbation to refracted direction
+                        let random_offset = utils::random_in_unit_sphere() * roughness;
+                        (refracted + random_offset).normalize()
                     } else {
                         specular_direction
                     }
