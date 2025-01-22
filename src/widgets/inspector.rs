@@ -5,7 +5,7 @@ use crate::{
 use cgmath::Vector3;
 use egui::{Grid, Layout};
 
-use super::scene::SphereEditor;
+use super::scene::ObjectEditor;
 
 pub struct WorldEditor<'a> {
     world: &'a mut World,
@@ -170,8 +170,8 @@ impl<'a> Inspector<'a> {
 
                     WorldEditor::new(&mut self.scene.world, self.needs_rerender).show(ui);
 
-                    for (idx, sphere) in self.scene.spheres.iter_mut().enumerate() {
-                        SphereEditor::new(sphere, idx, self.needs_rerender).show(ui);
+                    for (idx, sphere) in self.scene.objects.iter_mut().enumerate() {
+                        ObjectEditor::new(sphere, idx, self.needs_rerender).show(ui);
                     }
                 });
             });

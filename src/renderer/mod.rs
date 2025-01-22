@@ -4,7 +4,10 @@ use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, 
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
-    scene::{objects::Sphere, Scene},
+    scene::{
+        objects::{Geometry, Object, Sphere},
+        Scene,
+    },
     utils,
 };
 
@@ -17,7 +20,17 @@ pub struct Ray {
 }
 
 impl Ray {
-    fn hit(&self, sphere: &Sphere) -> Option<f32> {
+    fn hit(&self, object: &Object) -> Option<f32> {
+        match &object.geometry {
+            Geometry::Sphere(sphere) => self.hit_sphere(sphere),
+        }
+    }
+
+    fn at(&self, t: f32) -> Point3<f32> {
+        self.origin + self.direction * t
+    }
+
+    fn hit_sphere(&self, sphere: &Sphere) -> Option<f32> {
         let origin_vec = self.origin.to_vec();
         let sphere_center_vec = sphere.center.to_vec();
 
@@ -46,10 +59,6 @@ impl Ray {
             }
         }
     }
-
-    fn at(&self, t: f32) -> Point3<f32> {
-        self.origin + self.direction * t
-    }
 }
 
 struct HitRecord<'a> {
@@ -58,7 +67,7 @@ struct HitRecord<'a> {
     is_front_face: bool,
     world_position: Point3<f32>,
     world_normal: Vector3<f32>,
-    sphere: &'a Sphere,
+    object: &'a Object,
 }
 
 const MAX_SAMPLE_COUNT: usize = 1024;
@@ -188,9 +197,9 @@ impl Renderer {
                 //           https://www.pbr-book.org/4ed/Reflection_Models/Roughness_Using_Microfacet_Theory
                 //           and research by Disney)
                 let roughness =
-                    hit_record.sphere.material.roughness * hit_record.sphere.material.roughness;
-                let metallic = hit_record.sphere.material.metallic;
-                let transmission = hit_record.sphere.material.transmission;
+                    hit_record.object.material.roughness * hit_record.object.material.roughness;
+                let metallic = hit_record.object.material.metallic;
+                let transmission = hit_record.object.material.transmission;
 
                 let mut diffuse_direction =
                     hit_record.world_normal + utils::random_in_unit_sphere();
@@ -207,7 +216,7 @@ impl Renderer {
 
                 let transmission_ray = rand::random::<f32>() < transmission;
                 let direction = if transmission_ray {
-                    let mut ior = hit_record.sphere.material.ior;
+                    let mut ior = hit_record.object.material.ior;
                     if hit_record.is_front_face {
                         ior = 1.0 / ior;
                     }
@@ -255,10 +264,10 @@ impl Renderer {
                     ray.direction = hit_record.world_normal;
                 }
 
-                attenuation = attenuation.mul_element_wise(hit_record.sphere.material.albedo);
+                attenuation = attenuation.mul_element_wise(hit_record.object.material.albedo);
 
-                light += hit_record.sphere.material.emission_color
-                    * hit_record.sphere.material.emission_strength;
+                light += hit_record.object.material.emission_color
+                    * hit_record.object.material.emission_strength;
             } else {
                 // Add environment light contribution
                 light += scene.world.sample(ray).mul_element_wise(attenuation);
@@ -271,11 +280,11 @@ impl Renderer {
 
     fn trace_ray<'a>(&self, ray: &Ray, scene: &'a Scene) -> Option<HitRecord<'a>> {
         scene
-            .spheres
+            .objects
             .iter()
-            .filter_map(|s| ray.hit(s).map(|t| (s, t)))
+            .filter_map(|o| ray.hit(o).map(|t| (o, t)))
             .min_by_key(|(_, t)| ordered_float::OrderedFloat(*t))
-            .and_then(|(s, t)| self.closest_hit(ray, t, s))
+            .and_then(|(o, t)| self.closest_hit(ray, t, o))
             .or_else(|| self.miss(ray, scene))
     }
 
@@ -283,10 +292,12 @@ impl Renderer {
         &self,
         ray: &Ray,
         hit_distance: f32,
-        sphere: &'a Sphere,
+        object: &'a Object,
     ) -> Option<HitRecord<'a>> {
         let world_position = ray.at(hit_distance);
-        let mut world_normal = (world_position - sphere.center).normalize();
+        let mut world_normal = match &object.geometry {
+            Geometry::Sphere(sphere) => (world_position - sphere.center).normalize(),
+        };
         let is_front_face = world_normal.dot(ray.direction) <= 0.0;
         if !is_front_face {
             world_normal = -world_normal;
@@ -297,7 +308,7 @@ impl Renderer {
             is_front_face,
             world_position,
             world_normal,
-            sphere,
+            object,
         })
     }
 

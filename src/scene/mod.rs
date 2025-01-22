@@ -1,7 +1,7 @@
 use camera::{Camera, Projection};
 use cgmath::{Deg, Point3, Vector3};
 use material::Material;
-use objects::Sphere;
+use objects::{Geometry, Object, Sphere};
 use world::World;
 
 pub mod camera;
@@ -12,7 +12,7 @@ pub mod world;
 pub struct Scene {
     pub camera: Camera,
     pub world: World,
-    pub spheres: Vec<Sphere>,
+    pub objects: Vec<Object>,
 }
 
 impl Default for Scene {
@@ -33,20 +33,26 @@ impl Default for Scene {
                 top_color: Vector3::new(0.53, 0.8, 0.92),
                 bottom_color: Vector3::new(1.0, 1.0, 1.0),
             },
-            spheres: vec![
-                Sphere {
-                    center: Point3::new(0.0, 0.0, 0.0),
-                    radius: 1.0,
+            objects: vec![
+                Object {
+                    geometry: Geometry::Sphere(Sphere {
+                        center: Point3::new(0.0, 0.0, 0.0),
+                        radius: 1.0,
+                    }),
                     material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.16)),
                 },
-                Sphere {
-                    center: Point3::new(0.0, -101.0, 0.0),
-                    radius: 100.0,
+                Object {
+                    geometry: Geometry::Sphere(Sphere {
+                        center: Point3::new(0.0, -101.0, 0.0),
+                        radius: 100.0,
+                    }),
                     material: Material::with_albedo(Vector3::new(0.1, 0.1, 0.5)),
                 },
-                Sphere {
-                    center: Point3::new(2.0, 0.0, 0.0),
-                    radius: 1.0,
+                Object {
+                    geometry: Geometry::Sphere(Sphere {
+                        center: Point3::new(2.0, 0.0, 0.0),
+                        radius: 1.0,
+                    }),
                     material: Material::with_emission(Vector3::new(0.8, 0.5, 0.2), 3.0),
                 },
             ],
