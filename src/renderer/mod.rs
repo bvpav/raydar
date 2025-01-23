@@ -62,7 +62,37 @@ impl Ray {
     }
 
     fn hit_cube(&self, cube: &Cube) -> Option<f32> {
-        todo!()
+        let half_side = cube.side_length * 0.5;
+        let min = cube.center - Vector3::new(half_side, half_side, half_side);
+        let max = cube.center + Vector3::new(half_side, half_side, half_side);
+
+        let tx1 = (min.x - self.origin.x) / self.direction.x;
+        let tx2 = (max.x - self.origin.x) / self.direction.x;
+        let ty1 = (min.y - self.origin.y) / self.direction.y;
+        let ty2 = (max.y - self.origin.y) / self.direction.y;
+        let tz1 = (min.z - self.origin.z) / self.direction.z;
+        let tz2 = (max.z - self.origin.z) / self.direction.z;
+
+        let tmin = tx1.min(tx2).max(ty1.min(ty2)).max(tz1.min(tz2));
+        let tmax = tx1.max(tx2).min(ty1.max(ty2)).min(tz1.max(tz2));
+
+        // If tmax < 0, ray is intersecting AABB, but entire AABB is behind us
+        if tmax < 0.0 {
+            return None;
+        }
+
+        // If tmin > tmax, ray doesn't intersect AABB
+        if tmin > tmax {
+            return None;
+        }
+
+        // If tmin < 0 then the ray starts inside the box
+        // In this case we return the exit point (tmax)
+        if tmin < 0.0 {
+            Some(tmax)
+        } else {
+            Some(tmin)
+        }
     }
 }
 
@@ -304,8 +334,21 @@ impl Renderer {
             Geometry::Sphere(sphere) => (world_position - sphere.center).normalize(),
             Geometry::Cube(cube) => {
                 let local_position = world_position - cube.center;
-                let local_normal = local_position.map(|x| x.signum());
-                local_normal
+                let half_side = cube.side_length / 2.0;
+
+                // Find which face was hit by comparing the hit position with the bounds
+                // and checking which one is closest to the bounds
+                let x_dist = (local_position.x.abs() - half_side).abs();
+                let y_dist = (local_position.y.abs() - half_side).abs();
+                let z_dist = (local_position.z.abs() - half_side).abs();
+
+                if x_dist < y_dist && x_dist < z_dist {
+                    Vector3::new(local_position.x.signum(), 0.0, 0.0)
+                } else if y_dist < z_dist {
+                    Vector3::new(0.0, local_position.y.signum(), 0.0)
+                } else {
+                    Vector3::new(0.0, 0.0, local_position.z.signum())
+                }
             }
         };
         let is_front_face = world_normal.dot(ray.direction) <= 0.0;

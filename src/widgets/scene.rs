@@ -1,6 +1,6 @@
 use crate::scene::{
     material::Material,
-    objects::{Geometry, Object, Sphere},
+    objects::{Cube, Geometry, Object, Sphere},
 };
 use egui::{Grid, Layout};
 
@@ -142,7 +142,7 @@ impl<'a> ObjectEditor<'a> {
                         Geometry::Sphere(sphere) => {
                             SphereEditor::new(sphere, self.needs_rerender).show(ui)
                         }
-                        Geometry::Cube(_) => todo!("Cube editor unsupported"),
+                        Geometry::Cube(cube) => CubeEditor::new(cube, self.needs_rerender).show(ui),
                     }
 
                     MaterialEditor::new(&mut self.object.material, self.needs_rerender).show(ui);
@@ -202,6 +202,66 @@ impl<'a> SphereEditor<'a> {
         ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
             if ui
                 .add(egui::DragValue::new(&mut self.sphere.radius).speed(0.1))
+                .changed()
+            {
+                *self.needs_rerender = true;
+            }
+        });
+        ui.end_row();
+    }
+}
+
+pub struct CubeEditor<'a> {
+    cube: &'a mut Cube,
+    needs_rerender: &'a mut bool,
+}
+
+impl<'a> CubeEditor<'a> {
+    pub fn new(cube: &'a mut Cube, needs_rerender: &'a mut bool) -> Self {
+        Self {
+            cube,
+            needs_rerender,
+        }
+    }
+
+    pub fn show(&mut self, ui: &mut egui::Ui) {
+        ui.label("X Location");
+        ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
+            if ui
+                .add(egui::DragValue::new(&mut self.cube.center.x).speed(0.1))
+                .changed()
+            {
+                *self.needs_rerender = true;
+            }
+        });
+        ui.end_row();
+
+        ui.label("Y Location");
+        ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
+            if ui
+                .add(egui::DragValue::new(&mut self.cube.center.y).speed(0.1))
+                .changed()
+            {
+                *self.needs_rerender = true;
+            }
+        });
+        ui.end_row();
+
+        ui.label("Z Location");
+        ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
+            if ui
+                .add(egui::DragValue::new(&mut self.cube.center.z).speed(0.1))
+                .changed()
+            {
+                *self.needs_rerender = true;
+            }
+        });
+        ui.end_row();
+
+        ui.label("Side Length");
+        ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
+            if ui
+                .add(egui::DragValue::new(&mut self.cube.side_length).speed(0.1))
                 .changed()
             {
                 *self.needs_rerender = true;

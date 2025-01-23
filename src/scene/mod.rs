@@ -37,7 +37,7 @@ impl Default for Scene {
                 Object {
                     geometry: Geometry::Cube(Cube {
                         center: Point3::new(0.0, 0.0, 0.0),
-                        side_length: 0.5,
+                        side_length: 2.0,
                     }),
                     material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.16)),
                 },
