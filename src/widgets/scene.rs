@@ -131,6 +131,7 @@ impl<'a> ObjectEditor<'a> {
     pub fn show(&mut self, ui: &mut egui::Ui) {
         let object_string = match &self.object.geometry {
             Geometry::Sphere(_) => "Sphere",
+            Geometry::Cube(_) => "Cube",
         };
         ui.collapsing(format!("{} {}", object_string, self.index), |ui| {
             Grid::new(format!("object_{}_grid", self.index))
@@ -141,6 +142,7 @@ impl<'a> ObjectEditor<'a> {
                         Geometry::Sphere(sphere) => {
                             SphereEditor::new(sphere, self.needs_rerender).show(ui)
                         }
+                        Geometry::Cube(_) => todo!("Cube editor unsupported"),
                     }
 
                     MaterialEditor::new(&mut self.object.material, self.needs_rerender).show(ui);

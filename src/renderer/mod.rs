@@ -5,7 +5,7 @@ use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
     scene::{
-        objects::{Geometry, Object, Sphere},
+        objects::{Cube, Geometry, Object, Sphere},
         Scene,
     },
     utils,
@@ -23,6 +23,7 @@ impl Ray {
     fn hit(&self, object: &Object) -> Option<f32> {
         match &object.geometry {
             Geometry::Sphere(sphere) => self.hit_sphere(sphere),
+            Geometry::Cube(cube) => self.hit_cube(cube),
         }
     }
 
@@ -58,6 +59,10 @@ impl Ray {
                 None
             }
         }
+    }
+
+    fn hit_cube(&self, cube: &Cube) -> Option<f32> {
+        todo!()
     }
 }
 
@@ -297,6 +302,11 @@ impl Renderer {
         let world_position = ray.at(hit_distance);
         let mut world_normal = match &object.geometry {
             Geometry::Sphere(sphere) => (world_position - sphere.center).normalize(),
+            Geometry::Cube(cube) => {
+                let local_position = world_position - cube.center;
+                let local_normal = local_position.map(|x| x.signum());
+                local_normal
+            }
         };
         let is_front_face = world_normal.dot(ray.direction) <= 0.0;
         if !is_front_face {

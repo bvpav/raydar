@@ -1,7 +1,7 @@
 use camera::{Camera, Projection};
 use cgmath::{Deg, Point3, Vector3};
 use material::Material;
-use objects::{Geometry, Object, Sphere};
+use objects::{Cube, Geometry, Object, Sphere};
 use world::World;
 
 pub mod camera;
@@ -35,9 +35,9 @@ impl Default for Scene {
             },
             objects: vec![
                 Object {
-                    geometry: Geometry::Sphere(Sphere {
+                    geometry: Geometry::Cube(Cube {
                         center: Point3::new(0.0, 0.0, 0.0),
-                        radius: 1.0,
+                        side_length: 0.5,
                     }),
                     material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.16)),
                 },
