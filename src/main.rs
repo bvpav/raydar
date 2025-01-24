@@ -1,5 +1,8 @@
 use color_eyre::eyre::{Context, Report};
-use raydar::{renderer::CpuRenderer, scene::Scene};
+use raydar::{
+    renderer::{CpuRenderer, Renderer},
+    scene::Scene,
+};
 
 fn main() -> Result<(), Report> {
     color_eyre::install()?;
@@ -13,7 +16,7 @@ fn main() -> Result<(), Report> {
 
     println!(
         "Frame took {}ms",
-        renderer.timer.last_frame_duration().unwrap().as_millis()
+        renderer.timer().last_frame_duration().unwrap().as_millis()
     );
 
     Ok(())

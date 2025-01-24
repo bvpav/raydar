@@ -14,6 +14,15 @@ use self::utils::{Reflect, Refract};
 
 pub mod timing;
 
+pub trait Renderer {
+    fn render_frame(&mut self, scene: &Scene) -> RgbaImage;
+    fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage>;
+    fn new_frame(&mut self, scene: &Scene);
+    fn max_sample_count(&self) -> usize;
+    fn timer(&self) -> &FrameTimer;
+    fn sample_count(&self) -> usize;
+}
+
 #[derive(Debug)]
 pub struct Ray {
     pub origin: Point3<f32>,
@@ -111,14 +120,13 @@ const MAX_BOUNCES: usize = 12;
 
 #[derive(Default)]
 pub struct CpuRenderer {
-    pub timer: FrameTimer,
-    pub sample_count: usize,
-
+    timer: FrameTimer,
     frame_buffer: Option<Rgba32FImage>,
+    sample_count: usize,
 }
 
-impl CpuRenderer {
-    pub fn render_frame(&mut self, scene: &Scene) -> RgbaImage {
+impl Renderer for CpuRenderer {
+    fn render_frame(&mut self, scene: &Scene) -> RgbaImage {
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
@@ -134,13 +142,13 @@ impl CpuRenderer {
         rendered_frame
     }
 
-    pub fn new_frame(&mut self, scene: &Scene) {
+    fn new_frame(&mut self, scene: &Scene) {
         self.frame_buffer = Some(self.blank_frame_buffer(scene));
         self.timer.start_frame();
         self.sample_count = 0;
     }
 
-    pub fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
+    fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
         if self.sample_count >= MAX_SAMPLE_COUNT {
             return None;
         }
@@ -158,10 +166,20 @@ impl CpuRenderer {
         Some(rendered_frame)
     }
 
-    pub fn max_sample_count(&self) -> usize {
+    fn max_sample_count(&self) -> usize {
         MAX_SAMPLE_COUNT
     }
 
+    fn timer(&self) -> &FrameTimer {
+        &self.timer
+    }
+
+    fn sample_count(&self) -> usize {
+        self.sample_count
+    }
+}
+
+impl CpuRenderer {
     fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
         self.timer.start_sample();
 

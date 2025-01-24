@@ -1,5 +1,5 @@
 use raydar::{
-    renderer::CpuRenderer,
+    renderer::{CpuRenderer, Renderer},
     scene::Scene,
     widgets::{Inspector, Viewport},
 };
