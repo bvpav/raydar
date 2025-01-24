@@ -1,5 +1,5 @@
 use crate::{
-    renderer::{CpuRenderer, Renderer},
+    renderer::Renderer,
     scene::{world::World, Scene},
 };
 use cgmath::Vector3;
@@ -109,7 +109,7 @@ impl<'a> WorldEditor<'a> {
 
 pub struct Inspector<'a> {
     scene: &'a mut Scene,
-    renderer: &'a CpuRenderer,
+    renderer: &'a dyn Renderer,
     needs_rerender: &'a mut bool,
     should_constantly_rerender: &'a mut bool,
 }
@@ -117,7 +117,7 @@ pub struct Inspector<'a> {
 impl<'a> Inspector<'a> {
     pub fn new(
         scene: &'a mut Scene,
-        renderer: &'a CpuRenderer,
+        renderer: &'a dyn Renderer,
         needs_rerender: &'a mut bool,
         should_constantly_rerender: &'a mut bool,
     ) -> Self {

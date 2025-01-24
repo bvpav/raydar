@@ -1,6 +1,6 @@
 use color_eyre::eyre::{Context, Report};
 use raydar::{
-    renderer::{CpuRenderer, Renderer},
+    renderer::{cpu::CpuRenderer, Renderer},
     scene::Scene,
 };
 

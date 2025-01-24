@@ -1,6 +1,6 @@
 use cgmath::{InnerSpace, Vector3, VectorSpace};
 
-use crate::renderer::Ray;
+use crate::renderer::cpu::Ray;
 
 #[derive(PartialEq)]
 pub enum World {

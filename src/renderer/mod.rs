@@ -1,0 +1,16 @@
+use image::RgbaImage;
+use timing::FrameTimer;
+
+use crate::scene::Scene;
+
+pub mod cpu;
+pub mod timing;
+
+pub trait Renderer {
+    fn render_frame(&mut self, scene: &Scene) -> RgbaImage;
+    fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage>;
+    fn new_frame(&mut self, scene: &Scene);
+    fn max_sample_count(&self) -> usize;
+    fn timer(&self) -> &FrameTimer;
+    fn sample_count(&self) -> usize;
+}
