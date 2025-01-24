@@ -1,6 +1,5 @@
 use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
-use timing::FrameTimer;
 
 use crate::{
     scene::{
@@ -12,16 +11,7 @@ use crate::{
 
 use self::utils::{Reflect, Refract};
 
-pub mod timing;
-
-pub trait Renderer {
-    fn render_frame(&mut self, scene: &Scene) -> RgbaImage;
-    fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage>;
-    fn new_frame(&mut self, scene: &Scene);
-    fn max_sample_count(&self) -> usize;
-    fn timer(&self) -> &FrameTimer;
-    fn sample_count(&self) -> usize;
-}
+use super::{timing::FrameTimer, Renderer};
 
 #[derive(Debug)]
 pub struct Ray {
