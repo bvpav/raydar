@@ -1,12 +1,12 @@
 use raydar::{
-    renderer::Renderer,
+    renderer::CpuRenderer,
     scene::Scene,
     widgets::{Inspector, Viewport},
 };
 
 struct EditorApp {
     scene: Scene,
-    renderer: Renderer,
+    renderer: CpuRenderer,
     needs_rerender: bool,
     should_constantly_rerender: bool,
     rendered_scene_handle: Option<egui::TextureHandle>,
@@ -70,7 +70,7 @@ fn main() -> eframe::Result {
         Box::new(|_cc| {
             Ok(Box::new(EditorApp {
                 scene,
-                renderer: Renderer::default(),
+                renderer: CpuRenderer::default(),
                 needs_rerender: true,
                 should_constantly_rerender: false,
                 rendered_scene_handle: None,

@@ -1,5 +1,5 @@
 use crate::{
-    renderer::Renderer,
+    renderer::CpuRenderer,
     scene::{world::World, Scene},
 };
 use cgmath::Vector3;
@@ -109,7 +109,7 @@ impl<'a> WorldEditor<'a> {
 
 pub struct Inspector<'a> {
     scene: &'a mut Scene,
-    renderer: &'a Renderer,
+    renderer: &'a CpuRenderer,
     needs_rerender: &'a mut bool,
     should_constantly_rerender: &'a mut bool,
 }
@@ -117,7 +117,7 @@ pub struct Inspector<'a> {
 impl<'a> Inspector<'a> {
     pub fn new(
         scene: &'a mut Scene,
-        renderer: &'a Renderer,
+        renderer: &'a CpuRenderer,
         needs_rerender: &'a mut bool,
         should_constantly_rerender: &'a mut bool,
     ) -> Self {
@@ -150,7 +150,7 @@ impl<'a> Inspector<'a> {
                         self.scene.camera.resolution_y()
                     ));
 
-                    if let Some(last_frame_duration) = self.renderer.last_frame_duration {
+                    if let Some(last_frame_duration) = self.renderer.timer.last_frame_duration() {
                         ui.label(format!(
                             "Last frame took {}ms",
                             last_frame_duration.as_millis()
@@ -159,7 +159,7 @@ impl<'a> Inspector<'a> {
                         ui.label("Frame is rendering...");
                     }
 
-                    if let Some(last_sample_duration) = self.renderer.last_sample_duration {
+                    if let Some(last_sample_duration) = self.renderer.timer.last_sample_duration() {
                         ui.label(format!(
                             "Sample {}/{} took {}ms",
                             self.renderer.sample_count,

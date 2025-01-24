@@ -1,7 +1,6 @@
-use std::time::{Duration, Instant};
-
 use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
+use timing::FrameTimer;
 
 use crate::{
     scene::{
@@ -12,6 +11,8 @@ use crate::{
 };
 
 use self::utils::{Reflect, Refract};
+
+pub mod timing;
 
 #[derive(Debug)]
 pub struct Ray {
@@ -109,16 +110,14 @@ const MAX_SAMPLE_COUNT: usize = 1024;
 const MAX_BOUNCES: usize = 12;
 
 #[derive(Default)]
-pub struct Renderer {
-    pub last_frame_start: Option<Instant>,
-    pub last_frame_duration: Option<Duration>,
-    pub last_sample_duration: Option<Duration>,
+pub struct CpuRenderer {
+    pub timer: FrameTimer,
     pub sample_count: usize,
 
     frame_buffer: Option<Rgba32FImage>,
 }
 
-impl Renderer {
+impl CpuRenderer {
     pub fn render_frame(&mut self, scene: &Scene) -> RgbaImage {
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
@@ -137,7 +136,7 @@ impl Renderer {
 
     pub fn new_frame(&mut self, scene: &Scene) {
         self.frame_buffer = Some(self.blank_frame_buffer(scene));
-        self.last_frame_start = Some(Instant::now());
+        self.timer.start_frame();
         self.sample_count = 0;
     }
 
@@ -164,7 +163,7 @@ impl Renderer {
     }
 
     fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
-        let sample_started_at = Instant::now();
+        self.timer.start_sample();
 
         for (x, y, pixel) in frame_buffer.enumerate_pixels_mut() {
             let uv_coord = Vector2::new(
@@ -182,12 +181,10 @@ impl Renderer {
 
         self.sample_count += 1;
         if self.sample_count == MAX_SAMPLE_COUNT {
-            if let Some(last_frame_start) = self.last_frame_start {
-                self.last_frame_duration = Some(last_frame_start.elapsed());
-            }
+            self.timer.end_frame();
         }
 
-        self.last_sample_duration = Some(sample_started_at.elapsed());
+        self.timer.end_sample();
     }
 
     fn print_frame_buffer(&self, frame_buffer: &Rgba32FImage, image: &mut RgbaImage) {
