@@ -1,12 +1,12 @@
 use raydar::{
-    renderer::{cpu::CpuRenderer, Renderer},
+    renderer::{vulkan::VulkanRenderer, Renderer},
     scene::Scene,
     widgets::{Inspector, Viewport},
 };
 
 struct EditorApp {
     scene: Scene,
-    renderer: CpuRenderer,
+    renderer: Box<dyn Renderer>,
     needs_rerender: bool,
     should_constantly_rerender: bool,
     rendered_scene_handle: Option<egui::TextureHandle>,
@@ -16,7 +16,7 @@ impl eframe::App for EditorApp {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
         Inspector::new(
             &mut self.scene,
-            &self.renderer,
+            Box::as_ref(&self.renderer),
             &mut self.needs_rerender,
             &mut self.should_constantly_rerender,
         )
@@ -70,7 +70,7 @@ fn main() -> eframe::Result {
         Box::new(|_cc| {
             Ok(Box::new(EditorApp {
                 scene,
-                renderer: CpuRenderer::default(),
+                renderer: Box::new(VulkanRenderer::new()),
                 needs_rerender: true,
                 should_constantly_rerender: false,
                 rendered_scene_handle: None,

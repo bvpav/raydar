@@ -4,6 +4,8 @@ use timing::FrameTimer;
 use crate::scene::Scene;
 
 pub mod cpu;
+pub mod vulkan;
+
 pub mod timing;
 
 pub trait Renderer {
