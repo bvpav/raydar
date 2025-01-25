@@ -11,7 +11,7 @@ use crate::{
 
 use self::utils::{Reflect, Refract};
 
-use super::{timing::FrameTimer, Renderer};
+use super::{timing::FrameTimer, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
 
 #[derive(Debug)]
 pub struct Ray {
@@ -104,9 +104,6 @@ struct HitRecord<'a> {
     world_normal: Vector3<f32>,
     object: &'a Object,
 }
-
-const MAX_SAMPLE_COUNT: usize = 1024;
-const MAX_BOUNCES: usize = 12;
 
 #[derive(Default)]
 pub struct CpuRenderer {

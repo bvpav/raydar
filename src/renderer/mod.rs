@@ -16,3 +16,6 @@ pub trait Renderer {
     fn timer(&self) -> &FrameTimer;
     fn sample_count(&self) -> usize;
 }
+
+pub(crate) const MAX_SAMPLE_COUNT: usize = 1024;
+pub(crate) const MAX_BOUNCES: usize = 12;
