@@ -1,5 +1,5 @@
 use raydar::{
-    renderer::{vulkan::VulkanRenderer, Renderer},
+    renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
     scene::Scene,
     widgets::{Inspector, Viewport},
 };
@@ -64,13 +64,20 @@ fn main() -> eframe::Result {
 
     let scene = Scene::default();
 
+    let cpu_arg = std::env::args().any(|arg| arg == "--cpu");
+    let renderer: Box<dyn Renderer> = if cpu_arg {
+        Box::new(CpuRenderer::default())
+    } else {
+        Box::new(VulkanRenderer::new())
+    };
+
     eframe::run_native(
         "Raydar Editor",
         native_options,
         Box::new(|_cc| {
             Ok(Box::new(EditorApp {
                 scene,
-                renderer: Box::new(VulkanRenderer::new()),
+                renderer,
                 needs_rerender: true,
                 should_constantly_rerender: false,
                 rendered_scene_handle: None,

@@ -1,11 +1,21 @@
-use std::sync::Arc;
+use std::{iter, sync::Arc};
 
+use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
 use image::RgbaImage;
+use shaders::raygen;
 use vulkano::{
-    buffer::{Buffer, BufferCreateInfo, BufferUsage},
+    acceleration_structure::{
+        AccelerationStructure, AccelerationStructureBuildGeometryInfo,
+        AccelerationStructureBuildRangeInfo, AccelerationStructureBuildType,
+        AccelerationStructureCreateInfo, AccelerationStructureGeometries,
+        AccelerationStructureGeometryInstancesData, AccelerationStructureGeometryInstancesDataType,
+        AccelerationStructureGeometryTrianglesData, AccelerationStructureInstance,
+        AccelerationStructureType, BuildAccelerationStructureFlags, BuildAccelerationStructureMode,
+    },
+    buffer::{Buffer, BufferContents, BufferCreateInfo, BufferUsage, Subbuffer},
     command_buffer::{
         allocator::StandardCommandBufferAllocator, AutoCommandBufferBuilder, CommandBufferUsage,
-        CopyImageToBufferInfo,
+        CopyImageToBufferInfo, PrimaryCommandBufferAbstract,
     },
     descriptor_set::{
         allocator::StandardDescriptorSetAllocator,
@@ -13,21 +23,24 @@ use vulkano::{
             DescriptorSetLayout, DescriptorSetLayoutBinding, DescriptorSetLayoutCreateInfo,
             DescriptorType,
         },
+        DescriptorSet, WriteDescriptorSet,
     },
     device::{
         physical::PhysicalDeviceType, Device, DeviceCreateInfo, DeviceExtensions, DeviceFeatures,
         Queue, QueueCreateInfo, QueueFlags,
     },
     format::Format,
-    image::{Image, ImageCreateInfo, ImageUsage},
+    image::{view::ImageView, Image, ImageCreateInfo, ImageUsage},
     instance::{Instance, InstanceCreateFlags, InstanceCreateInfo, InstanceExtensions},
     memory::allocator::{AllocationCreateInfo, MemoryTypeFilter, StandardMemoryAllocator},
     pipeline::{
+        graphics::vertex_input,
         layout::PipelineLayoutCreateInfo,
         ray_tracing::{
             RayTracingPipeline, RayTracingPipelineCreateInfo, RayTracingShaderGroupCreateInfo,
+            ShaderBindingTable,
         },
-        PipelineLayout, PipelineShaderStageCreateInfo,
+        PipelineBindPoint, PipelineLayout, PipelineShaderStageCreateInfo,
     },
     shader::ShaderStages,
     sync::{self, GpuFuture},
@@ -46,41 +59,237 @@ pub struct VulkanRenderer {
     queue: Arc<Queue>,
     pipeline: Arc<RayTracingPipeline>,
     pipeline_layout: Arc<PipelineLayout>,
-
-    /// The render target image, used to store the rendered frame.
-    image: Option<Arc<Image>>,
+    shader_binding_table: ShaderBindingTable,
 
     memory_allocator: Arc<StandardMemoryAllocator>,
     command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
     descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>,
+
+    bound_scene: Option<BoundScene>,
+    sample_count: usize,
+}
+
+struct BoundScene {
+    tlas: Arc<AccelerationStructure>,
+    blas: Arc<AccelerationStructure>,
+    scene_descriptor_set: Arc<DescriptorSet>,
+    image_descriptor_set: Arc<DescriptorSet>,
+    image: Arc<Image>,
+    image_view: Arc<ImageView>,
+}
+
+#[derive(BufferContents, vertex_input::Vertex)]
+#[repr(C)]
+struct Vertex {
+    #[format(R32G32B32_SFLOAT)]
+    position: [f32; 3],
 }
 
 impl Renderer for VulkanRenderer {
-    fn render_frame(&mut self, _scene: &Scene) -> RgbaImage {
-        todo!()
+    fn render_frame(&mut self, scene: &Scene) -> RgbaImage {
+        self.new_frame(scene);
+
+        let frame = self.render_sample(scene).unwrap();
+
+        self.timer.end_frame();
+        frame
     }
 
-    fn render_sample(&mut self, _scene: &Scene) -> Option<RgbaImage> {
-        todo!()
+    fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
+        if self.sample_count >= MAX_SAMPLE_COUNT {
+            return None;
+        }
+
+        let mut builder = AutoCommandBufferBuilder::primary(
+            self.command_buffer_allocator.clone(),
+            self.queue.queue_family_index(),
+            CommandBufferUsage::OneTimeSubmit,
+        )
+        .unwrap();
+
+        let bound_scene = self.bound_scene.as_ref()?;
+
+        builder
+            .bind_descriptor_sets(
+                PipelineBindPoint::RayTracing,
+                self.pipeline_layout.clone(),
+                0,
+                vec![
+                    bound_scene.scene_descriptor_set.clone(),
+                    bound_scene.image_descriptor_set.clone(),
+                ],
+            )
+            .ok()?;
+
+        builder
+            .bind_pipeline_ray_tracing(self.pipeline.clone())
+            .ok()?;
+
+        let extent = bound_scene.image_view.image().extent();
+        unsafe {
+            builder
+                .trace_rays(
+                    self.shader_binding_table.addresses().clone(),
+                    extent[0],
+                    extent[1],
+                    1,
+                )
+                .ok()?;
+        }
+
+        let output_buffer = Buffer::new_slice::<u8>(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::TRANSFER_DST,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                    | MemoryTypeFilter::HOST_RANDOM_ACCESS,
+                ..Default::default()
+            },
+            (scene.camera.resolution_x() * scene.camera.resolution_y() * 4) as u64,
+        )
+        .ok()?;
+
+        builder
+            .copy_image_to_buffer(CopyImageToBufferInfo::image_buffer(
+                bound_scene.image.clone(),
+                output_buffer.clone(),
+            ))
+            .ok()?;
+
+        let command_buffer = builder.build().unwrap();
+
+        let future = sync::now(self.device.clone())
+            .then_execute(self.queue.clone(), command_buffer)
+            .unwrap()
+            .then_signal_fence_and_flush()
+            .unwrap();
+
+        future.wait(None).unwrap();
+
+        // Read the buffer data and save it as an image
+        let buffer_content = output_buffer.read().ok()?;
+
+        self.sample_count = MAX_SAMPLE_COUNT;
+
+        image::RgbaImage::from_raw(
+            scene.camera.resolution_x(),
+            scene.camera.resolution_y(),
+            buffer_content.to_vec(),
+        )
     }
 
     fn new_frame(&mut self, scene: &Scene) {
-        self.image = Some(
-            Image::new(
-                self.memory_allocator.clone(),
-                ImageCreateInfo {
-                    usage: ImageUsage::STORAGE | ImageUsage::TRANSFER_SRC,
-                    format: Format::R8G8B8A8_UNORM,
-                    extent: [scene.camera.resolution_x(), scene.camera.resolution_y(), 1],
-                    ..Default::default()
-                },
-                AllocationCreateInfo {
-                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
-                    ..Default::default()
-                },
-            )
-            .unwrap(),
+        let image = Image::new(
+            self.memory_allocator.clone(),
+            ImageCreateInfo {
+                usage: ImageUsage::STORAGE | ImageUsage::TRANSFER_SRC,
+                format: Format::R8G8B8A8_UNORM,
+                extent: [scene.camera.resolution_x(), scene.camera.resolution_y(), 1],
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        let vertices = [
+            Vertex {
+                position: [-0.5, -0.25, 0.0],
+            },
+            Vertex {
+                position: [0.0, 0.5, 0.0],
+            },
+            Vertex {
+                position: [0.25, -0.1, 0.0],
+            },
+        ];
+        let vertex_buffer = Buffer::from_iter(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::VERTEX_BUFFER
+                    | BufferUsage::SHADER_DEVICE_ADDRESS
+                    | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            vertices,
+        )
+        .unwrap();
+
+        let blas = build_blas_triangles(
+            vertex_buffer,
+            self.device.clone(),
+            self.memory_allocator.clone(),
+            self.command_buffer_allocator.clone(),
+            self.queue.clone(),
         );
+
+        let tlas = build_tlas(
+            blas.clone(),
+            self.device.clone(),
+            self.memory_allocator.clone(),
+            self.command_buffer_allocator.clone(),
+            self.queue.clone(),
+        );
+
+        let uniform_buffer = Buffer::from_data(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::UNIFORM_BUFFER,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            raygen::Camera {
+                view_proj: (scene.camera.proj_matrix() * scene.camera.view_matrix()).into(),
+                inverse_view: scene.camera.inverse_view_matrix().into(),
+                inverse_proj: scene.camera.inverse_proj_matrix().into(),
+            },
+        )
+        .unwrap();
+
+        let scene_descriptor_set = DescriptorSet::new(
+            self.descriptor_set_allocator.clone(),
+            self.pipeline_layout.set_layouts()[0].clone(),
+            [
+                WriteDescriptorSet::acceleration_structure(0, tlas.clone()),
+                WriteDescriptorSet::buffer(1, uniform_buffer.clone()),
+            ],
+            [],
+        )
+        .unwrap();
+
+        let image_view = ImageView::new_default(image.clone()).unwrap();
+        let image_descriptor_set = DescriptorSet::new(
+            self.descriptor_set_allocator.clone(),
+            self.pipeline_layout.set_layouts()[1].clone(),
+            [WriteDescriptorSet::image_view(0, image_view.clone())],
+            [],
+        )
+        .unwrap();
+
+        self.bound_scene = Some(BoundScene {
+            tlas,
+            blas,
+            scene_descriptor_set,
+            image_descriptor_set,
+            image_view,
+            image,
+        });
+        self.timer.start_frame();
+        self.sample_count = 0;
     }
 
     fn max_sample_count(&self) -> usize {
@@ -92,7 +301,7 @@ impl Renderer for VulkanRenderer {
     }
 
     fn sample_count(&self) -> usize {
-        0
+        self.sample_count
     }
 }
 
@@ -280,6 +489,9 @@ impl VulkanRenderer {
             .unwrap()
         };
 
+        let shader_binding_table =
+            ShaderBindingTable::new(memory_allocator.clone(), &pipeline).unwrap();
+
         Self {
             timer: FrameTimer::default(),
 
@@ -288,21 +500,182 @@ impl VulkanRenderer {
             queue,
             pipeline,
             pipeline_layout,
-
-            image: None,
+            shader_binding_table,
 
             memory_allocator,
             command_buffer_allocator,
             descriptor_set_allocator,
+
+            bound_scene: None,
+            sample_count: 0,
         }
     }
+}
+
+fn build_blas_triangles(
+    vertex_buffer: Subbuffer<[Vertex]>,
+    device: Arc<Device>,
+    memory_allocator: Arc<StandardMemoryAllocator>,
+    command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
+    queue: Arc<Queue>,
+) -> Arc<AccelerationStructure> {
+    let triangle_count = (vertex_buffer.len() / 3) as u32;
+    let triangles_data = AccelerationStructureGeometryTrianglesData {
+        max_vertex: vertex_buffer.len() as _,
+        vertex_data: Some(vertex_buffer.into_bytes()),
+        vertex_stride: size_of::<Vertex>() as _,
+        ..AccelerationStructureGeometryTrianglesData::new(Format::R32G32B32_SFLOAT)
+    };
+    let triangles_geometries = AccelerationStructureGeometries::Triangles(vec![triangles_data]);
+
+    build_acceleration_structure(
+        AccelerationStructureType::BottomLevel,
+        triangles_geometries,
+        triangle_count,
+        device,
+        memory_allocator,
+        command_buffer_allocator,
+        queue,
+    )
+}
+
+fn build_tlas(
+    blas: Arc<AccelerationStructure>,
+    device: Arc<Device>,
+    memory_allocator: Arc<StandardMemoryAllocator>,
+    command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
+    queue: Arc<Queue>,
+) -> Arc<AccelerationStructure> {
+    let instance = AccelerationStructureInstance {
+        acceleration_structure_reference: blas.device_address().into(),
+        ..Default::default()
+    };
+
+    let instance_buffer = Buffer::from_iter(
+        memory_allocator.clone(),
+        BufferCreateInfo {
+            usage: BufferUsage::SHADER_DEVICE_ADDRESS
+                | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+            ..Default::default()
+        },
+        AllocationCreateInfo {
+            memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+            ..Default::default()
+        },
+        [instance],
+    )
+    .unwrap();
+
+    let geometry_instances_data = AccelerationStructureGeometryInstancesData::new(
+        AccelerationStructureGeometryInstancesDataType::Values(Some(instance_buffer)),
+    );
+
+    let geometries = AccelerationStructureGeometries::Instances(geometry_instances_data);
+
+    build_acceleration_structure(
+        AccelerationStructureType::TopLevel,
+        geometries,
+        1,
+        device,
+        memory_allocator,
+        command_buffer_allocator,
+        queue,
+    )
+}
+
+fn build_acceleration_structure(
+    ty: AccelerationStructureType,
+    geometries: AccelerationStructureGeometries,
+    primitive_count: u32,
+    device: Arc<Device>,
+    memory_allocator: Arc<StandardMemoryAllocator>,
+    command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
+    queue: Arc<Queue>,
+) -> Arc<AccelerationStructure> {
+    let mut build_geometry_info = AccelerationStructureBuildGeometryInfo {
+        mode: BuildAccelerationStructureMode::Build,
+        flags: BuildAccelerationStructureFlags::PREFER_FAST_TRACE,
+        ..AccelerationStructureBuildGeometryInfo::new(geometries)
+    };
+    let build_sizes_info = device
+        .acceleration_structure_build_sizes(
+            AccelerationStructureBuildType::Device,
+            &build_geometry_info,
+            &[primitive_count],
+        )
+        .unwrap();
+
+    let scratch_buffer = Buffer::new_slice::<u8>(
+        memory_allocator.clone(),
+        BufferCreateInfo {
+            usage: BufferUsage::SHADER_DEVICE_ADDRESS | BufferUsage::STORAGE_BUFFER,
+            ..Default::default()
+        },
+        AllocationCreateInfo::default(),
+        build_sizes_info.build_scratch_size,
+    )
+    .unwrap();
+
+    let create_info = AccelerationStructureCreateInfo {
+        ty,
+        ..AccelerationStructureCreateInfo::new(
+            Buffer::new_slice::<u8>(
+                memory_allocator,
+                BufferCreateInfo {
+                    usage: BufferUsage::ACCELERATION_STRUCTURE_STORAGE
+                        | BufferUsage::SHADER_DEVICE_ADDRESS,
+                    ..Default::default()
+                },
+                AllocationCreateInfo::default(),
+                build_sizes_info.acceleration_structure_size,
+            )
+            .unwrap(),
+        )
+    };
+
+    let acceleration_structure =
+        unsafe { AccelerationStructure::new(device, create_info).unwrap() };
+
+    build_geometry_info.dst_acceleration_structure = Some(acceleration_structure.clone());
+    build_geometry_info.scratch_data = Some(scratch_buffer);
+
+    let range_info = AccelerationStructureBuildRangeInfo {
+        primitive_count,
+        ..Default::default()
+    };
+
+    let mut builder = AutoCommandBufferBuilder::primary(
+        command_buffer_allocator,
+        queue.queue_family_index(),
+        CommandBufferUsage::OneTimeSubmit,
+    )
+    .unwrap();
+
+    unsafe {
+        builder
+            .build_acceleration_structure(build_geometry_info, iter::once(range_info).collect())
+            .unwrap();
+    }
+
+    builder
+        .build()
+        .unwrap()
+        .execute(queue)
+        .unwrap()
+        .then_signal_fence_and_flush()
+        .unwrap()
+        .wait(None)
+        .unwrap();
+
+    acceleration_structure
 }
 
 mod shaders {
     pub(super) mod raygen {
         vulkano_shaders::shader! {
             ty: "raygen",
-            path: "raytrace.rgen",
+            path: "shaders/vulkan/raytrace.rgen",
             vulkan_version: "1.2"
         }
     }
@@ -310,7 +683,7 @@ mod shaders {
     pub(super) mod closest_hit {
         vulkano_shaders::shader! {
             ty: "closesthit",
-            path: "raytrace.rchit",
+            path: "shaders/vulkan/raytrace.rchit",
             vulkan_version: "1.2"
         }
     }
@@ -318,7 +691,7 @@ mod shaders {
     pub(super) mod miss {
         vulkano_shaders::shader! {
             ty: "miss",
-            path: "raytrace.miss",
+            path: "shaders/vulkan/raytrace.miss",
             vulkan_version: "1.2"
         }
     }

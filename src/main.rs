@@ -1,6 +1,6 @@
 use color_eyre::eyre::{Context, Report};
 use raydar::{
-    renderer::{cpu::CpuRenderer, Renderer},
+    renderer::{vulkan::VulkanRenderer, Renderer},
     scene::Scene,
 };
 
@@ -9,7 +9,8 @@ fn main() -> Result<(), Report> {
 
     let scene = Scene::default();
 
-    let mut renderer = CpuRenderer::default();
+    // let mut renderer = CpuRenderer::default();
+    let mut renderer = VulkanRenderer::new();
 
     let image = renderer.render_frame(&scene);
     image.save("output.png").wrap_err("Cannot save image")?;
