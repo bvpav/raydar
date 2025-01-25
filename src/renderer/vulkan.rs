@@ -33,6 +33,7 @@ use vulkano::{
     image::{view::ImageView, Image, ImageCreateInfo, ImageUsage},
     instance::{Instance, InstanceCreateFlags, InstanceCreateInfo, InstanceExtensions},
     memory::allocator::{AllocationCreateInfo, MemoryTypeFilter, StandardMemoryAllocator},
+    padded::Padded,
     pipeline::{
         graphics::vertex_input,
         layout::PipelineLayoutCreateInfo,
@@ -47,7 +48,7 @@ use vulkano::{
     Version, VulkanLibrary,
 };
 
-use crate::scene::{objects::Geometry, Scene};
+use crate::scene::{objects::Geometry, world::World, Scene};
 
 use super::{timing::FrameTimer, Renderer, MAX_SAMPLE_COUNT};
 
@@ -238,7 +239,7 @@ impl Renderer for VulkanRenderer {
             )
         };
 
-        let uniform_buffer = Buffer::from_data(
+        let camera_uniform_buffer = Buffer::from_data(
             self.memory_allocator.clone(),
             BufferCreateInfo {
                 usage: BufferUsage::UNIFORM_BUFFER,
@@ -257,12 +258,41 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        let world_uniform_buffer = Buffer::from_data(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::UNIFORM_BUFFER,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            match scene.world {
+                World::SkyColor {
+                    top_color,
+                    bottom_color,
+                } => raygen::World {
+                    top_color: Padded(top_color.into()),
+                    bottom_color: bottom_color.into(),
+                },
+                World::SolidColor(color) => raygen::World {
+                    top_color: Padded(color.into()),
+                    bottom_color: color.into(),
+                },
+                World::Transparent => todo!(),
+            },
+        )
+        .unwrap();
+
         let scene_descriptor_set = DescriptorSet::new(
             self.descriptor_set_allocator.clone(),
             self.pipeline_layout.set_layouts()[0].clone(),
             [
                 WriteDescriptorSet::acceleration_structure(0, tlas.clone()),
-                WriteDescriptorSet::buffer(1, uniform_buffer.clone()),
+                WriteDescriptorSet::buffer(1, camera_uniform_buffer.clone()),
+                WriteDescriptorSet::buffer(2, world_uniform_buffer.clone()),
             ],
             [],
         )
@@ -398,8 +428,19 @@ impl VulkanRenderer {
                                         )
                                     },
                                 ),
+                                // Camera uniform buffer binding
                                 (
                                     1,
+                                    DescriptorSetLayoutBinding {
+                                        stages: ShaderStages::RAYGEN,
+                                        ..DescriptorSetLayoutBinding::descriptor_type(
+                                            DescriptorType::UniformBuffer,
+                                        )
+                                    },
+                                ),
+                                // World uniform buffer binding
+                                (
+                                    2,
                                     DescriptorSetLayoutBinding {
                                         stages: ShaderStages::RAYGEN,
                                         ..DescriptorSetLayoutBinding::descriptor_type(
