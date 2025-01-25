@@ -61,6 +61,8 @@ pub struct VulkanRenderer {
     pipeline_layout: Arc<PipelineLayout>,
     shader_binding_table: ShaderBindingTable,
 
+    cube_blas: Arc<AccelerationStructure>,
+
     memory_allocator: Arc<StandardMemoryAllocator>,
     command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
     descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>,
@@ -71,7 +73,6 @@ pub struct VulkanRenderer {
 
 struct BoundScene {
     tlas: Arc<AccelerationStructure>,
-    blas: Arc<AccelerationStructure>,
     scene_descriptor_set: Arc<DescriptorSet>,
     image_descriptor_set: Arc<DescriptorSet>,
     image: Arc<Image>,
@@ -197,93 +198,8 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
-        // Cube vertices
-        let vertices = [
-            Vertex {
-                position: [-0.5, 0.5, -0.5],
-            },
-            Vertex {
-                position: [-0.5, -0.5, -0.5],
-            },
-            Vertex {
-                position: [0.5, 0.5, -0.5],
-            },
-            Vertex {
-                position: [0.5, -0.5, -0.5],
-            },
-            Vertex {
-                position: [-0.5, 0.5, 0.5],
-            },
-            Vertex {
-                position: [-0.5, -0.5, 0.5],
-            },
-            Vertex {
-                position: [0.5, 0.5, 0.5],
-            },
-            Vertex {
-                position: [0.5, -0.5, 0.5],
-            },
-        ];
-        let indices: [u32; 36] = [
-            0, 1, 2, //
-            2, 3, 1, //
-            3, 2, 6, //
-            6, 7, 3, //
-            7, 6, 5, //
-            5, 4, 6, //
-            5, 4, 1, //
-            1, 0, 4, //
-            1, 3, 5, //
-            5, 7, 3, //
-            0, 2, 4, //
-            4, 6, 2, //
-        ];
-
-        let vertex_buffer = Buffer::from_iter(
-            self.memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::VERTEX_BUFFER
-                    | BufferUsage::SHADER_DEVICE_ADDRESS
-                    | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
-                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
-                ..Default::default()
-            },
-            vertices,
-        )
-        .unwrap();
-
-        let index_buffer = Buffer::from_iter(
-            self.memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::INDEX_BUFFER
-                    | BufferUsage::SHADER_DEVICE_ADDRESS
-                    | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
-                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
-                ..Default::default()
-            },
-            indices,
-        )
-        .unwrap();
-
-        let blas = build_blas_triangles(
-            vertex_buffer,
-            index_buffer,
-            self.device.clone(),
-            self.memory_allocator.clone(),
-            self.command_buffer_allocator.clone(),
-            self.queue.clone(),
-        );
-
         let tlas = build_tlas(
-            blas.clone(),
+            self.cube_blas.clone(),
             self.device.clone(),
             self.memory_allocator.clone(),
             self.command_buffer_allocator.clone(),
@@ -340,7 +256,6 @@ impl Renderer for VulkanRenderer {
 
         self.bound_scene = Some(BoundScene {
             tlas,
-            blas,
             scene_descriptor_set,
             image_descriptor_set,
             image_view,
@@ -550,6 +465,92 @@ impl VulkanRenderer {
         let shader_binding_table =
             ShaderBindingTable::new(memory_allocator.clone(), &pipeline).unwrap();
 
+        let cube_blas = {
+            let vertices = [
+                Vertex {
+                    position: [-0.5, 0.5, -0.5],
+                },
+                Vertex {
+                    position: [-0.5, -0.5, -0.5],
+                },
+                Vertex {
+                    position: [0.5, 0.5, -0.5],
+                },
+                Vertex {
+                    position: [0.5, -0.5, -0.5],
+                },
+                Vertex {
+                    position: [-0.5, 0.5, 0.5],
+                },
+                Vertex {
+                    position: [-0.5, -0.5, 0.5],
+                },
+                Vertex {
+                    position: [0.5, 0.5, 0.5],
+                },
+                Vertex {
+                    position: [0.5, -0.5, 0.5],
+                },
+            ];
+            let indices: [u32; 36] = [
+                0, 1, 2, //
+                2, 3, 1, //
+                3, 2, 6, //
+                6, 7, 3, //
+                7, 6, 5, //
+                5, 4, 6, //
+                5, 4, 1, //
+                1, 0, 4, //
+                1, 3, 5, //
+                5, 7, 3, //
+                0, 2, 4, //
+                4, 6, 2, //
+            ];
+
+            let vertex_buffer = Buffer::from_iter(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::VERTEX_BUFFER
+                        | BufferUsage::SHADER_DEVICE_ADDRESS
+                        | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                        | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                    ..Default::default()
+                },
+                vertices,
+            )
+            .unwrap();
+
+            let index_buffer = Buffer::from_iter(
+                memory_allocator.clone(),
+                BufferCreateInfo {
+                    usage: BufferUsage::INDEX_BUFFER
+                        | BufferUsage::SHADER_DEVICE_ADDRESS
+                        | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+                    ..Default::default()
+                },
+                AllocationCreateInfo {
+                    memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                        | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                    ..Default::default()
+                },
+                indices,
+            )
+            .unwrap();
+
+            build_blas_triangles(
+                vertex_buffer,
+                index_buffer,
+                device.clone(),
+                memory_allocator.clone(),
+                command_buffer_allocator.clone(),
+                queue.clone(),
+            )
+        };
+
         Self {
             timer: FrameTimer::default(),
 
@@ -559,6 +560,8 @@ impl VulkanRenderer {
             pipeline,
             pipeline_layout,
             shader_binding_table,
+
+            cube_blas,
 
             memory_allocator,
             command_buffer_allocator,
