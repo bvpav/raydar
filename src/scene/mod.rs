@@ -43,16 +43,16 @@ impl Default for Scene {
                     material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.16)),
                 },
                 Object {
-                    geometry: Geometry::Sphere(Sphere {
+                    geometry: Geometry::Cube(Cube {
                         center: Point3::new(0.0, -101.0, 0.0),
-                        radius: 100.0,
+                        side_length: 200.0,
                     }),
                     material: Material::with_albedo(Vector3::new(0.1, 0.1, 0.5)),
                 },
                 Object {
-                    geometry: Geometry::Sphere(Sphere {
+                    geometry: Geometry::Cube(Cube {
                         center: Point3::new(2.0, 0.0, 0.0),
-                        radius: 1.0,
+                        side_length: 2.0,
                     }),
                     material: Material::with_emission(Vector3::new(0.8, 0.5, 0.2), 3.0),
                 },
