@@ -1,6 +1,6 @@
 use std::{iter, sync::Arc};
 
-use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
+use cgmath::{Matrix4, SquareMatrix};
 use image::RgbaImage;
 use shaders::raygen;
 use vulkano::{
@@ -12,7 +12,7 @@ use vulkano::{
         AccelerationStructureGeometryTrianglesData, AccelerationStructureInstance,
         AccelerationStructureType, BuildAccelerationStructureFlags, BuildAccelerationStructureMode,
     },
-    buffer::{Buffer, BufferContents, BufferCreateInfo, BufferUsage, Subbuffer},
+    buffer::{Buffer, BufferContents, BufferCreateInfo, BufferUsage, IndexBuffer, Subbuffer},
     command_buffer::{
         allocator::StandardCommandBufferAllocator, AutoCommandBufferBuilder, CommandBufferUsage,
         CopyImageToBufferInfo, PrimaryCommandBufferAbstract,
@@ -197,17 +197,48 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        // Cube vertices
         let vertices = [
             Vertex {
-                position: [-1.0, 1.0, -1.0],
+                position: [-0.5, 0.5, -0.5],
             },
             Vertex {
-                position: [-1.0, -1.0, -1.0],
+                position: [-0.5, -0.5, -0.5],
             },
             Vertex {
-                position: [1.0, 1.0, -1.0],
+                position: [0.5, 0.5, -0.5],
+            },
+            Vertex {
+                position: [0.5, -0.5, -0.5],
+            },
+            Vertex {
+                position: [-0.5, 0.5, 0.5],
+            },
+            Vertex {
+                position: [-0.5, -0.5, 0.5],
+            },
+            Vertex {
+                position: [0.5, 0.5, 0.5],
+            },
+            Vertex {
+                position: [0.5, -0.5, 0.5],
             },
         ];
+        let indices: [u32; 36] = [
+            0, 1, 2, //
+            2, 3, 1, //
+            3, 2, 6, //
+            6, 7, 3, //
+            7, 6, 5, //
+            5, 4, 6, //
+            5, 4, 1, //
+            1, 0, 4, //
+            1, 3, 5, //
+            5, 7, 3, //
+            0, 2, 4, //
+            4, 6, 2, //
+        ];
+
         let vertex_buffer = Buffer::from_iter(
             self.memory_allocator.clone(),
             BufferCreateInfo {
@@ -225,8 +256,26 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        let index_buffer = Buffer::from_iter(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::INDEX_BUFFER
+                    | BufferUsage::SHADER_DEVICE_ADDRESS
+                    | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            indices,
+        )
+        .unwrap();
+
         let blas = build_blas_triangles(
             vertex_buffer,
+            index_buffer,
             self.device.clone(),
             self.memory_allocator.clone(),
             self.command_buffer_allocator.clone(),
@@ -523,16 +572,18 @@ impl VulkanRenderer {
 
 fn build_blas_triangles(
     vertex_buffer: Subbuffer<[Vertex]>,
+    index_buffer: Subbuffer<[u32]>,
     device: Arc<Device>,
     memory_allocator: Arc<StandardMemoryAllocator>,
     command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
     queue: Arc<Queue>,
 ) -> Arc<AccelerationStructure> {
-    let triangle_count = (vertex_buffer.len() / 3) as u32;
+    let triangle_count = (index_buffer.len() / 3) as u32;
     let triangles_data = AccelerationStructureGeometryTrianglesData {
         max_vertex: vertex_buffer.len() as _,
         vertex_data: Some(vertex_buffer.into_bytes()),
         vertex_stride: size_of::<Vertex>() as _,
+        index_data: Some(IndexBuffer::U32(index_buffer)),
         ..AccelerationStructureGeometryTrianglesData::new(Format::R32G32B32_SFLOAT)
     };
     let triangles_geometries = AccelerationStructureGeometries::Triangles(vec![triangles_data]);
