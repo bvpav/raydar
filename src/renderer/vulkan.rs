@@ -139,8 +139,10 @@ impl Renderer for VulkanRenderer {
                 .ok()?;
         }
 
+        let scratch_memory_allocator =
+            Arc::new(StandardMemoryAllocator::new_default(self.device.clone()));
         let output_buffer = Buffer::new_slice::<u8>(
-            self.memory_allocator.clone(),
+            scratch_memory_allocator.clone(),
             BufferCreateInfo {
                 usage: BufferUsage::TRANSFER_DST,
                 ..Default::default()
