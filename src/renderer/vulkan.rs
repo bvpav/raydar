@@ -1,6 +1,6 @@
 use std::{iter, sync::Arc};
 
-use cgmath::{Matrix4, SquareMatrix};
+use cgmath::{EuclideanSpace, Matrix4, SquareMatrix};
 use image::RgbaImage;
 use shaders::raygen;
 use vulkano::{
@@ -47,7 +47,7 @@ use vulkano::{
     Version, VulkanLibrary,
 };
 
-use crate::scene::Scene;
+use crate::scene::{objects::Geometry, Scene};
 
 use super::{timing::FrameTimer, Renderer, MAX_SAMPLE_COUNT};
 
@@ -198,8 +198,31 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        let instances: Vec<_> = scene
+            .objects
+            .iter()
+            // FIXME: Add support for spheres
+            .filter_map(|object| match &object.geometry {
+                Geometry::Sphere(_) => None,
+                Geometry::Cube(cube) => {
+                    let transform = Matrix4::from_translation(cube.center.to_vec())
+                        * Matrix4::from_scale(cube.side_length);
+
+                    Some(AccelerationStructureInstance {
+                        acceleration_structure_reference: self.cube_blas.device_address().into(),
+                        transform: [
+                            [transform.x.x, transform.x.y, transform.x.z, transform.w.x],
+                            [transform.y.x, transform.y.y, transform.y.z, transform.w.y],
+                            [transform.z.x, transform.z.y, transform.z.z, transform.w.z],
+                        ],
+                        ..Default::default()
+                    })
+                }
+            })
+            .collect();
+
         let tlas = build_tlas(
-            self.cube_blas.clone(),
+            instances,
             self.device.clone(),
             self.memory_allocator.clone(),
             self.command_buffer_allocator.clone(),
@@ -603,17 +626,13 @@ fn build_blas_triangles(
 }
 
 fn build_tlas(
-    blas: Arc<AccelerationStructure>,
+    instances: Vec<AccelerationStructureInstance>,
     device: Arc<Device>,
     memory_allocator: Arc<StandardMemoryAllocator>,
     command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
     queue: Arc<Queue>,
 ) -> Arc<AccelerationStructure> {
-    let instance = AccelerationStructureInstance {
-        acceleration_structure_reference: blas.device_address().into(),
-        ..Default::default()
-    };
-
+    let instance_count = instances.len() as u32;
     let instance_buffer = Buffer::from_iter(
         memory_allocator.clone(),
         BufferCreateInfo {
@@ -626,7 +645,7 @@ fn build_tlas(
                 | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
             ..Default::default()
         },
-        [instance],
+        instances,
     )
     .unwrap();
 
@@ -639,7 +658,7 @@ fn build_tlas(
     build_acceleration_structure(
         AccelerationStructureType::TopLevel,
         geometries,
-        1,
+        instance_count,
         device,
         memory_allocator,
         command_buffer_allocator,
