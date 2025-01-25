@@ -241,6 +241,21 @@ impl Renderer for VulkanRenderer {
             self.queue.clone(),
         );
 
+        // Convert from left-handed to right-handed coordinate system and flip Y
+        let view = {
+            let mut right_handed = scene.camera.view_matrix();
+            // Flip the Z coordinates by negating the third row and column
+            right_handed.z.x *= -1.0;
+            right_handed.z.y *= -1.0;
+            right_handed.z.z *= -1.0;
+            right_handed.x.z *= -1.0;
+            right_handed.y.z *= -1.0;
+            right_handed.w.z *= -1.0;
+            // Flip Y by negating the Y scale
+            right_handed.y.y *= -1.0;
+            right_handed
+        };
+
         let uniform_buffer = Buffer::from_data(
             self.memory_allocator.clone(),
             BufferCreateInfo {
@@ -253,8 +268,8 @@ impl Renderer for VulkanRenderer {
                 ..Default::default()
             },
             raygen::Camera {
-                view_proj: (scene.camera.proj_matrix() * scene.camera.view_matrix()).into(),
-                inverse_view: scene.camera.inverse_view_matrix().into(),
+                view_proj: (scene.camera.proj_matrix() * view).into(),
+                inverse_view: view.invert().unwrap().into(),
                 inverse_proj: scene.camera.inverse_proj_matrix().into(),
             },
         )
