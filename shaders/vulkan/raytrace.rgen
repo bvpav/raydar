@@ -2,9 +2,9 @@
 #extension GL_EXT_ray_tracing : require
 
 struct Camera {
-  mat4 viewProj;     // Camera view * projection
-  mat4 viewInverse;  // Camera inverse view matrix
-  mat4 projInverse;  // Camera inverse projection matrix
+  mat4 view_proj;     // Camera view * projection
+  mat4 inverse_view;  // Camera inverse view matrix
+  mat4 inverse_proj;  // Camera inverse projection matrix
 };
 
 layout(location = 0) rayPayloadEXT vec3 hitValue;
@@ -18,9 +18,9 @@ void main() {
   const vec2 inUV = pixelCenter / vec2(gl_LaunchSizeEXT.xy);
   vec2 d = inUV * 2.0 - 1.0;
 
-  vec4 origin = camera.viewInverse * vec4(0, 0, 0, 1);
-  vec4 target = camera.projInverse * vec4(d.x, d.y, 1, 1);
-  vec4 direction = camera.viewInverse * vec4(normalize(target.xyz), 0);
+  vec4 origin = camera.inverse_view * vec4(0, 0, 0, 1);
+  vec4 target = camera.inverse_proj * vec4(d.x, d.y, 1, 1);
+  vec4 direction = camera.inverse_view * vec4(normalize(target.xyz), 0);
 
   uint rayFlags = gl_RayFlagsOpaqueEXT;
   float tMin = 0.001;
