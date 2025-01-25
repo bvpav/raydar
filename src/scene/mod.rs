@@ -19,7 +19,8 @@ impl Default for Scene {
     fn default() -> Self {
         Self {
             camera: Camera::new(
-                Point3::new(0.0, 0.0, 2.0), // Positioned to view the triangle vertices
+                Point3::new(-2.0, 0.0, -2.0), // Positioned to view the triangle vertices
+                // Point3::new(-2.0, 0.0, -2.0),
                 Point3::new(0.0, 0.0, 0.0),
                 Vector3::unit_y(),
                 854,
@@ -35,25 +36,25 @@ impl Default for Scene {
             },
             objects: vec![
                 Object {
-                    geometry: Geometry::Sphere(Sphere {
-                        center: Point3::new(-0.5, -0.25, 0.0),
-                        radius: 0.05,
+                    geometry: Geometry::Cube(Cube {
+                        center: Point3::new(0.0, 0.0, 0.0),
+                        side_length: 2.0,
                     }),
-                    material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.0)),
+                    material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.16)),
                 },
                 Object {
                     geometry: Geometry::Sphere(Sphere {
-                        center: Point3::new(0.0, 0.5, 0.0),
-                        radius: 0.05,
+                        center: Point3::new(0.0, -101.0, 0.0),
+                        radius: 100.0,
                     }),
-                    material: Material::with_albedo(Vector3::new(0.0, 1.0, 0.0)),
+                    material: Material::with_albedo(Vector3::new(0.1, 0.1, 0.5)),
                 },
                 Object {
                     geometry: Geometry::Sphere(Sphere {
-                        center: Point3::new(0.25, -0.1, 0.0),
-                        radius: 0.05,
+                        center: Point3::new(2.0, 0.0, 0.0),
+                        radius: 1.0,
                     }),
-                    material: Material::with_albedo(Vector3::new(0.0, 0.0, 1.0)),
+                    material: Material::with_emission(Vector3::new(0.8, 0.5, 0.2), 3.0),
                 },
             ],
         }

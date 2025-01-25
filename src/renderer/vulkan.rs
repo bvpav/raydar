@@ -199,13 +199,13 @@ impl Renderer for VulkanRenderer {
 
         let vertices = [
             Vertex {
-                position: [-0.5, -0.25, 0.0],
+                position: [-1.0, 1.0, -1.0],
             },
             Vertex {
-                position: [0.0, 0.5, 0.0],
+                position: [-1.0, -1.0, -1.0],
             },
             Vertex {
-                position: [0.25, -0.1, 0.0],
+                position: [1.0, 1.0, -1.0],
             },
         ];
         let vertex_buffer = Buffer::from_iter(
@@ -243,17 +243,11 @@ impl Renderer for VulkanRenderer {
 
         // Convert from left-handed to right-handed coordinate system and flip Y
         let view = {
-            let mut right_handed = scene.camera.view_matrix();
-            // Flip the Z coordinates by negating the third row and column
-            right_handed.z.x *= -1.0;
-            right_handed.z.y *= -1.0;
-            right_handed.z.z *= -1.0;
-            right_handed.x.z *= -1.0;
-            right_handed.y.z *= -1.0;
-            right_handed.w.z *= -1.0;
-            // Flip Y by negating the Y scale
-            right_handed.y.y *= -1.0;
-            right_handed
+            Matrix4::look_at_rh(
+                scene.camera.position(),
+                scene.camera.target(),
+                scene.camera.up() * -1.0,
+            )
         };
 
         let uniform_buffer = Buffer::from_data(
