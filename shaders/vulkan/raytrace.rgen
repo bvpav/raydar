@@ -1,6 +1,8 @@
 #version 460
 #extension GL_EXT_ray_tracing : require
 
+#include "common.glsl"
+
 struct Camera {
     mat4 view_proj;     // Camera view * projection
     mat4 inverse_view;  // Camera inverse view matrix
@@ -10,14 +12,6 @@ struct Camera {
 struct World {
     vec3 top_color;
     vec3 bottom_color;
-};
-
-struct HitRecord {
-    bool is_hit;
-    // float hit_distance;
-    // bool is_front_face;
-    // vec3 world_position;
-    // vec3 world_normal;
 };
 
 layout(location = 0) rayPayloadEXT HitRecord hit_record;
@@ -66,6 +60,7 @@ void main() {
 
     if (hit_record.is_hit) {
         // TODO: do the thing
+        light += hit_record.world_normal;
     } else {
         light += sample_world(ray_origin.xyz, ray_direction.xyz);
     }
