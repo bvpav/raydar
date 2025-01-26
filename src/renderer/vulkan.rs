@@ -85,6 +85,8 @@ struct BoundScene {
 struct Vertex {
     #[format(R32G32B32_SFLOAT)]
     position: [f32; 3],
+    #[format(R32G32B32_SFLOAT)]
+    normal: [f32; 3],
 }
 
 impl Renderer for VulkanRenderer {
@@ -94,6 +96,7 @@ impl Renderer for VulkanRenderer {
         let frame = self.render_sample(scene).unwrap();
 
         self.timer.end_frame();
+
         frame
     }
 
@@ -532,45 +535,126 @@ impl VulkanRenderer {
             ShaderBindingTable::new(memory_allocator.clone(), &pipeline).unwrap();
 
         let cube_blas = {
+            // TODO: Use Rust metaprogramming (macros) to generate the vertex data at compile time instead of hardcoding it manually
             let vertices = [
+                // Left Top Front
                 Vertex {
                     position: [-0.5, 0.5, -0.5],
+                    normal: [0.0, 0.0, -1.0],
+                },
+                Vertex {
+                    position: [-0.5, 0.5, -0.5],
+                    normal: [-1.0, 0.0, 0.0],
+                },
+                Vertex {
+                    position: [-0.5, 0.5, -0.5],
+                    normal: [0.0, 1.0, 0.0],
+                },
+                // Left Bottom Front
+                Vertex {
+                    position: [-0.5, -0.5, -0.5],
+                    normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
                     position: [-0.5, -0.5, -0.5],
+                    normal: [-1.0, 0.0, 0.0],
+                },
+                Vertex {
+                    position: [-0.5, -0.5, -0.5],
+                    normal: [0.0, -1.0, 0.0],
+                },
+                // Right Top Front
+                Vertex {
+                    position: [0.5, 0.5, -0.5],
+                    normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
                     position: [0.5, 0.5, -0.5],
+                    normal: [1.0, 0.0, 0.0],
+                },
+                Vertex {
+                    position: [0.5, 0.5, -0.5],
+                    normal: [0.0, 1.0, 0.0],
+                },
+                // Right Bottom Front
+                Vertex {
+                    position: [0.5, -0.5, -0.5],
+                    normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
                     position: [0.5, -0.5, -0.5],
+                    normal: [1.0, 0.0, 0.0],
+                },
+                Vertex {
+                    position: [0.5, -0.5, -0.5],
+                    normal: [0.0, -1.0, 0.0],
+                },
+                // Left Top Back
+                Vertex {
+                    position: [-0.5, 0.5, 0.5],
+                    normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
                     position: [-0.5, 0.5, 0.5],
+                    normal: [0.0, -1.0, 0.0],
+                },
+                Vertex {
+                    position: [-0.5, 0.5, 0.5],
+                    normal: [0.0, 1.0, 0.0],
+                },
+                // Left Bottom Back
+                Vertex {
+                    position: [-0.5, -0.5, 0.5],
+                    normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
                     position: [-0.5, -0.5, 0.5],
+                    normal: [-1.0, 0.0, 0.0],
+                },
+                Vertex {
+                    position: [-0.5, -0.5, 0.5],
+                    normal: [0.0, -1.0, 0.0],
+                },
+                // Right Top Back
+                Vertex {
+                    position: [0.5, 0.5, 0.5],
+                    normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
                     position: [0.5, 0.5, 0.5],
+                    normal: [1.0, 0.0, 0.0],
+                },
+                Vertex {
+                    position: [0.5, 0.5, 0.5],
+                    normal: [0.0, 1.0, 0.0],
+                },
+                // Right Bottom Back
+                Vertex {
+                    position: [0.5, -0.5, 0.5],
+                    normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
                     position: [0.5, -0.5, 0.5],
+                    normal: [1.0, 0.0, 0.0],
+                },
+                Vertex {
+                    position: [0.5, -0.5, 0.5],
+                    normal: [0.0, -1.0, 0.0],
                 },
             ];
             let indices: [u32; 36] = [
-                0, 1, 2, //
-                2, 3, 1, //
-                3, 2, 6, //
-                6, 7, 3, //
-                7, 6, 5, //
-                5, 4, 6, //
-                5, 4, 1, //
-                1, 0, 4, //
-                1, 3, 5, //
-                5, 7, 3, //
-                0, 2, 4, //
-                4, 6, 2, //
+                0, 3, 6, // Front 1
+                6, 9, 3, // Front 2
+                10, 7, 19, // Right 1
+                19, 22, 10, // Right 2
+                21, 18, 15, // Back 1
+                15, 12, 18, // Back 2
+                16, 13, 4, // Left 1
+                4, 1, 13, // Left 2
+                5, 11, 17, // Bottom 1
+                17, 23, 11, // Bottom 2
+                2, 8, 14, // Top 1
+                14, 20, 8, // Top 2
             ];
 
             let vertex_buffer = Buffer::from_iter(
