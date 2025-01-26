@@ -62,6 +62,8 @@ pub struct VulkanRenderer {
     pipeline_layout: Arc<PipelineLayout>,
     shader_binding_table: ShaderBindingTable,
 
+    cube_vertex_buffer: Subbuffer<[shaders::closest_hit::Vertex]>,
+    cube_index_buffer: Subbuffer<[u32]>,
     cube_blas: Arc<AccelerationStructure>,
 
     memory_allocator: Arc<StandardMemoryAllocator>,
@@ -78,15 +80,6 @@ struct BoundScene {
     image_descriptor_set: Arc<DescriptorSet>,
     image: Arc<Image>,
     image_view: Arc<ImageView>,
-}
-
-#[derive(BufferContents, vertex_input::Vertex)]
-#[repr(C)]
-struct Vertex {
-    #[format(R32G32B32_SFLOAT)]
-    position: [f32; 3],
-    #[format(R32G32B32_SFLOAT)]
-    normal: [f32; 3],
 }
 
 impl Renderer for VulkanRenderer {
@@ -298,6 +291,8 @@ impl Renderer for VulkanRenderer {
                 WriteDescriptorSet::acceleration_structure(0, tlas.clone()),
                 WriteDescriptorSet::buffer(1, camera_uniform_buffer.clone()),
                 WriteDescriptorSet::buffer(2, world_uniform_buffer.clone()),
+                WriteDescriptorSet::buffer(3, self.cube_vertex_buffer.clone()),
+                WriteDescriptorSet::buffer(4, self.cube_index_buffer.clone()),
             ],
             [],
         )
@@ -453,6 +448,26 @@ impl VulkanRenderer {
                                         )
                                     },
                                 ),
+                                // Vertex buffer binding
+                                (
+                                    3,
+                                    DescriptorSetLayoutBinding {
+                                        stages: ShaderStages::CLOSEST_HIT,
+                                        ..DescriptorSetLayoutBinding::descriptor_type(
+                                            DescriptorType::StorageBuffer,
+                                        )
+                                    },
+                                ),
+                                // Index buffer binding
+                                (
+                                    4,
+                                    DescriptorSetLayoutBinding {
+                                        stages: ShaderStages::CLOSEST_HIT,
+                                        ..DescriptorSetLayoutBinding::descriptor_type(
+                                            DescriptorType::StorageBuffer,
+                                        )
+                                    },
+                                ),
                             ]
                             .into_iter()
                             .collect(),
@@ -534,111 +549,113 @@ impl VulkanRenderer {
         let shader_binding_table =
             ShaderBindingTable::new(memory_allocator.clone(), &pipeline).unwrap();
 
-        let cube_blas = {
+        let (cube_vertex_buffer, cube_index_buffer) = {
+            use shaders::closest_hit::Vertex;
+
             // TODO: Use Rust metaprogramming (macros) to generate the vertex data at compile time instead of hardcoding it manually
             let vertices = [
                 // Left Top Front
                 Vertex {
-                    position: [-0.5, 0.5, -0.5],
+                    position: Padded([-0.5, 0.5, -0.5]),
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: [-0.5, 0.5, -0.5],
+                    position: Padded([-0.5, 0.5, -0.5]),
                     normal: [-1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: [-0.5, 0.5, -0.5],
+                    position: Padded([-0.5, 0.5, -0.5]),
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Left Bottom Front
                 Vertex {
-                    position: [-0.5, -0.5, -0.5],
+                    position: Padded([-0.5, -0.5, -0.5]),
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: [-0.5, -0.5, -0.5],
+                    position: Padded([-0.5, -0.5, -0.5]),
                     normal: [-1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: [-0.5, -0.5, -0.5],
+                    position: Padded([-0.5, -0.5, -0.5]),
                     normal: [0.0, -1.0, 0.0],
                 },
                 // Right Top Front
                 Vertex {
-                    position: [0.5, 0.5, -0.5],
+                    position: Padded([0.5, 0.5, -0.5]),
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: [0.5, 0.5, -0.5],
+                    position: Padded([0.5, 0.5, -0.5]),
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: [0.5, 0.5, -0.5],
+                    position: Padded([0.5, 0.5, -0.5]),
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Right Bottom Front
                 Vertex {
-                    position: [0.5, -0.5, -0.5],
+                    position: Padded([0.5, -0.5, -0.5]),
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: [0.5, -0.5, -0.5],
+                    position: Padded([0.5, -0.5, -0.5]),
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: [0.5, -0.5, -0.5],
+                    position: Padded([0.5, -0.5, -0.5]),
                     normal: [0.0, -1.0, 0.0],
                 },
                 // Left Top Back
                 Vertex {
-                    position: [-0.5, 0.5, 0.5],
+                    position: Padded([-0.5, 0.5, 0.5]),
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: [-0.5, 0.5, 0.5],
+                    position: Padded([-0.5, 0.5, 0.5]),
                     normal: [0.0, -1.0, 0.0],
                 },
                 Vertex {
-                    position: [-0.5, 0.5, 0.5],
+                    position: Padded([-0.5, 0.5, 0.5]),
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Left Bottom Back
                 Vertex {
-                    position: [-0.5, -0.5, 0.5],
+                    position: Padded([-0.5, -0.5, 0.5]),
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: [-0.5, -0.5, 0.5],
+                    position: Padded([-0.5, -0.5, 0.5]),
                     normal: [-1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: [-0.5, -0.5, 0.5],
+                    position: Padded([-0.5, -0.5, 0.5]),
                     normal: [0.0, -1.0, 0.0],
                 },
                 // Right Top Back
                 Vertex {
-                    position: [0.5, 0.5, 0.5],
+                    position: Padded([0.5, 0.5, 0.5]),
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: [0.5, 0.5, 0.5],
+                    position: Padded([0.5, 0.5, 0.5]),
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: [0.5, 0.5, 0.5],
+                    position: Padded([0.5, 0.5, 0.5]),
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Right Bottom Back
                 Vertex {
-                    position: [0.5, -0.5, 0.5],
+                    position: Padded([0.5, -0.5, 0.5]),
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: [0.5, -0.5, 0.5],
+                    position: Padded([0.5, -0.5, 0.5]),
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: [0.5, -0.5, 0.5],
+                    position: Padded([0.5, -0.5, 0.5]),
                     normal: [0.0, -1.0, 0.0],
                 },
             ];
@@ -662,7 +679,8 @@ impl VulkanRenderer {
                 BufferCreateInfo {
                     usage: BufferUsage::VERTEX_BUFFER
                         | BufferUsage::SHADER_DEVICE_ADDRESS
-                        | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+                        | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY
+                        | BufferUsage::STORAGE_BUFFER,
                     ..Default::default()
                 },
                 AllocationCreateInfo {
@@ -679,7 +697,8 @@ impl VulkanRenderer {
                 BufferCreateInfo {
                     usage: BufferUsage::INDEX_BUFFER
                         | BufferUsage::SHADER_DEVICE_ADDRESS
-                        | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+                        | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY
+                        | BufferUsage::STORAGE_BUFFER,
                     ..Default::default()
                 },
                 AllocationCreateInfo {
@@ -691,9 +710,13 @@ impl VulkanRenderer {
             )
             .unwrap();
 
+            (vertex_buffer, index_buffer)
+        };
+
+        let cube_blas = {
             build_blas_triangles(
-                vertex_buffer,
-                index_buffer,
+                cube_vertex_buffer.clone(),
+                cube_index_buffer.clone(),
                 device.clone(),
                 memory_allocator.clone(),
                 command_buffer_allocator.clone(),
@@ -711,6 +734,8 @@ impl VulkanRenderer {
             pipeline_layout,
             shader_binding_table,
 
+            cube_vertex_buffer,
+            cube_index_buffer,
             cube_blas,
 
             memory_allocator,
@@ -724,7 +749,7 @@ impl VulkanRenderer {
 }
 
 fn build_blas_triangles(
-    vertex_buffer: Subbuffer<[Vertex]>,
+    vertex_buffer: Subbuffer<[shaders::closest_hit::Vertex]>,
     index_buffer: Subbuffer<[u32]>,
     device: Arc<Device>,
     memory_allocator: Arc<StandardMemoryAllocator>,
@@ -735,7 +760,7 @@ fn build_blas_triangles(
     let triangles_data = AccelerationStructureGeometryTrianglesData {
         max_vertex: vertex_buffer.len() as _,
         vertex_data: Some(vertex_buffer.into_bytes()),
-        vertex_stride: size_of::<Vertex>() as _,
+        vertex_stride: size_of::<shaders::closest_hit::Vertex>() as _,
         index_data: Some(IndexBuffer::U32(index_buffer)),
         ..AccelerationStructureGeometryTrianglesData::new(Format::R32G32B32_SFLOAT)
     };
