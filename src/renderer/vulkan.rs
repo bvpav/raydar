@@ -80,6 +80,7 @@ struct BoundScene {
     image_descriptor_set: Arc<DescriptorSet>,
     image: Arc<Image>,
     image_view: Arc<ImageView>,
+    output_buffer: Subbuffer<[u8]>,
 }
 
 #[derive(BufferContents, vertex_input::Vertex)]
@@ -97,12 +98,12 @@ impl Renderer for VulkanRenderer {
 
         let frame = self.render_sample(scene).unwrap();
 
-        self.timer.end_frame();
-
         frame
     }
 
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
+        self.timer.start_sample();
+
         if self.sample_count >= MAX_SAMPLE_COUNT {
             return None;
         }
@@ -144,27 +145,10 @@ impl Renderer for VulkanRenderer {
                 .ok()?;
         }
 
-        let scratch_memory_allocator =
-            Arc::new(StandardMemoryAllocator::new_default(self.device.clone()));
-        let output_buffer = Buffer::new_slice::<u8>(
-            scratch_memory_allocator.clone(),
-            BufferCreateInfo {
-                usage: BufferUsage::TRANSFER_DST,
-                ..Default::default()
-            },
-            AllocationCreateInfo {
-                memory_type_filter: MemoryTypeFilter::PREFER_HOST
-                    | MemoryTypeFilter::HOST_RANDOM_ACCESS,
-                ..Default::default()
-            },
-            (scene.camera.resolution_x() * scene.camera.resolution_y() * 4) as u64,
-        )
-        .ok()?;
-
         builder
             .copy_image_to_buffer(CopyImageToBufferInfo::image_buffer(
                 bound_scene.image.clone(),
-                output_buffer.clone(),
+                bound_scene.output_buffer.clone(),
             ))
             .ok()?;
 
@@ -179,9 +163,12 @@ impl Renderer for VulkanRenderer {
         future.wait(None).unwrap();
 
         // Read the buffer data and save it as an image
-        let buffer_content = output_buffer.read().ok()?;
+        let buffer_content = bound_scene.output_buffer.read().unwrap();
 
         self.sample_count = MAX_SAMPLE_COUNT;
+
+        self.timer.end_sample();
+        self.timer.end_frame();
 
         image::RgbaImage::from_raw(
             scene.camera.resolution_x(),
@@ -341,12 +328,30 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        let scratch_memory_allocator =
+            Arc::new(StandardMemoryAllocator::new_default(self.device.clone()));
+        let output_buffer = Buffer::new_slice::<u8>(
+            scratch_memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::TRANSFER_DST,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_HOST
+                    | MemoryTypeFilter::HOST_RANDOM_ACCESS,
+                ..Default::default()
+            },
+            (scene.camera.resolution_x() * scene.camera.resolution_y() * 4) as u64,
+        )
+        .unwrap();
+
         self.bound_scene = Some(BoundScene {
             tlas,
             scene_descriptor_set,
             image_descriptor_set,
             image_view,
             image,
+            output_buffer,
         });
         self.timer.start_frame();
         self.sample_count = 0;
