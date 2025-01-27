@@ -19,8 +19,7 @@ impl Default for Scene {
     fn default() -> Self {
         Self {
             camera: Camera::new(
-                Point3::new(-2.0, 0.0, -2.0), // Positioned to view the triangle vertices
-                // Point3::new(-2.0, 0.0, -2.0),
+                Point3::new(-3.09, 0.03, -1.16),
                 Point3::new(0.0, 0.0, 0.0),
                 Vector3::unit_y(),
                 854,
@@ -37,24 +36,29 @@ impl Default for Scene {
             objects: vec![
                 Object {
                     geometry: Geometry::Cube(Cube {
-                        center: Point3::new(0.0, 0.0, 0.0),
+                        center: Point3::new(0.0, 0.001, 0.0),
                         side_length: 2.0,
                     }),
-                    material: Material::with_albedo(Vector3::new(1.0, 0.0, 0.16)),
+                    material: Material {
+                        albedo: Vector3::new(1.0, 1.0, 1.0),
+                        roughness: 0.2,
+                        transmission: 1.0,
+                        ..Default::default()
+                    },
                 },
                 Object {
                     geometry: Geometry::Cube(Cube {
                         center: Point3::new(0.0, -101.0, 0.0),
                         side_length: 200.0,
                     }),
-                    material: Material::with_albedo(Vector3::new(0.1, 0.1, 0.5)),
+                    material: Material::with_albedo(Vector3::new(0.34, 0.34, 0.44)),
                 },
                 Object {
                     geometry: Geometry::Cube(Cube {
-                        center: Point3::new(2.0, 0.0, 0.0),
-                        side_length: 2.0,
+                        center: Point3::new(7.0, 3.0, 0.0),
+                        side_length: 1.8,
                     }),
-                    material: Material::with_emission(Vector3::new(0.8, 0.5, 0.2), 3.0),
+                    material: Material::with_emission(Vector3::new(0.8, 0.5, 0.2), 30.0),
                 },
             ],
         }
