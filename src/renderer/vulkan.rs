@@ -62,7 +62,7 @@ pub struct VulkanRenderer {
     pipeline_layout: Arc<PipelineLayout>,
     shader_binding_table: ShaderBindingTable,
 
-    cube_vertex_buffer: Subbuffer<[shaders::closest_hit::Vertex]>,
+    cube_vertex_buffer: Subbuffer<[Vertex]>,
     cube_index_buffer: Subbuffer<[u32]>,
     cube_blas: Arc<AccelerationStructure>,
 
@@ -80,6 +80,15 @@ struct BoundScene {
     image_descriptor_set: Arc<DescriptorSet>,
     image: Arc<Image>,
     image_view: Arc<ImageView>,
+}
+
+#[derive(BufferContents, vertex_input::Vertex)]
+#[repr(C)]
+struct Vertex {
+    #[format(R32G32B32_SFLOAT)]
+    position: [f32; 3],
+    #[format(R32G32B32_SFLOAT)]
+    normal: [f32; 3],
 }
 
 impl Renderer for VulkanRenderer {
@@ -550,112 +559,110 @@ impl VulkanRenderer {
             ShaderBindingTable::new(memory_allocator.clone(), &pipeline).unwrap();
 
         let (cube_vertex_buffer, cube_index_buffer) = {
-            use shaders::closest_hit::Vertex;
-
             // TODO: Use Rust metaprogramming (macros) to generate the vertex data at compile time instead of hardcoding it manually
             let vertices = [
                 // Left Top Front
                 Vertex {
-                    position: Padded([-0.5, 0.5, -0.5]),
+                    position: [-0.5, 0.5, -0.5],
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, 0.5, -0.5]),
+                    position: [-0.5, 0.5, -0.5],
                     normal: [-1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, 0.5, -0.5]),
+                    position: [-0.5, 0.5, -0.5],
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Left Bottom Front
                 Vertex {
-                    position: Padded([-0.5, -0.5, -0.5]),
+                    position: [-0.5, -0.5, -0.5],
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, -0.5, -0.5]),
+                    position: [-0.5, -0.5, -0.5],
                     normal: [-1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, -0.5, -0.5]),
+                    position: [-0.5, -0.5, -0.5],
                     normal: [0.0, -1.0, 0.0],
                 },
                 // Right Top Front
                 Vertex {
-                    position: Padded([0.5, 0.5, -0.5]),
+                    position: [0.5, 0.5, -0.5],
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: Padded([0.5, 0.5, -0.5]),
+                    position: [0.5, 0.5, -0.5],
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([0.5, 0.5, -0.5]),
+                    position: [0.5, 0.5, -0.5],
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Right Bottom Front
                 Vertex {
-                    position: Padded([0.5, -0.5, -0.5]),
+                    position: [0.5, -0.5, -0.5],
                     normal: [0.0, 0.0, -1.0],
                 },
                 Vertex {
-                    position: Padded([0.5, -0.5, -0.5]),
+                    position: [0.5, -0.5, -0.5],
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([0.5, -0.5, -0.5]),
+                    position: [0.5, -0.5, -0.5],
                     normal: [0.0, -1.0, 0.0],
                 },
                 // Left Top Back
                 Vertex {
-                    position: Padded([-0.5, 0.5, 0.5]),
+                    position: [-0.5, 0.5, 0.5],
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, 0.5, 0.5]),
+                    position: [-0.5, 0.5, 0.5],
                     normal: [0.0, -1.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, 0.5, 0.5]),
+                    position: [-0.5, 0.5, 0.5],
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Left Bottom Back
                 Vertex {
-                    position: Padded([-0.5, -0.5, 0.5]),
+                    position: [-0.5, -0.5, 0.5],
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, -0.5, 0.5]),
+                    position: [-0.5, -0.5, 0.5],
                     normal: [-1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([-0.5, -0.5, 0.5]),
+                    position: [-0.5, -0.5, 0.5],
                     normal: [0.0, -1.0, 0.0],
                 },
                 // Right Top Back
                 Vertex {
-                    position: Padded([0.5, 0.5, 0.5]),
+                    position: [0.5, 0.5, 0.5],
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: Padded([0.5, 0.5, 0.5]),
+                    position: [0.5, 0.5, 0.5],
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([0.5, 0.5, 0.5]),
+                    position: [0.5, 0.5, 0.5],
                     normal: [0.0, 1.0, 0.0],
                 },
                 // Right Bottom Back
                 Vertex {
-                    position: Padded([0.5, -0.5, 0.5]),
+                    position: [0.5, -0.5, 0.5],
                     normal: [0.0, 0.0, 1.0],
                 },
                 Vertex {
-                    position: Padded([0.5, -0.5, 0.5]),
+                    position: [0.5, -0.5, 0.5],
                     normal: [1.0, 0.0, 0.0],
                 },
                 Vertex {
-                    position: Padded([0.5, -0.5, 0.5]),
+                    position: [0.5, -0.5, 0.5],
                     normal: [0.0, -1.0, 0.0],
                 },
             ];
@@ -749,7 +756,7 @@ impl VulkanRenderer {
 }
 
 fn build_blas_triangles(
-    vertex_buffer: Subbuffer<[shaders::closest_hit::Vertex]>,
+    vertex_buffer: Subbuffer<[Vertex]>,
     index_buffer: Subbuffer<[u32]>,
     device: Arc<Device>,
     memory_allocator: Arc<StandardMemoryAllocator>,
@@ -760,7 +767,7 @@ fn build_blas_triangles(
     let triangles_data = AccelerationStructureGeometryTrianglesData {
         max_vertex: vertex_buffer.len() as _,
         vertex_data: Some(vertex_buffer.into_bytes()),
-        vertex_stride: size_of::<shaders::closest_hit::Vertex>() as _,
+        vertex_stride: size_of::<Vertex>() as _,
         index_data: Some(IndexBuffer::U32(index_buffer)),
         ..AccelerationStructureGeometryTrianglesData::new(Format::R32G32B32_SFLOAT)
     };
