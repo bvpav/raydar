@@ -22,6 +22,8 @@ struct Material {
     float emission_strength;
     float transmission;
     float ior;
+    // HACK: This is done to fix an issue with the shader compiler and the data layout it generates
+    vec2 _padding;
 };
 
 layout(location = 0) rayPayloadEXT HitRecord hit_record;

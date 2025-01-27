@@ -288,6 +288,8 @@ impl Renderer for VulkanRenderer {
             emission_strength: object.material.emission_strength,
             transmission: object.material.transmission,
             ior: object.material.ior,
+            // HACK: This is done to fix an issue with the shader compiler and the data layout it generates
+            _padding: [0.0, 0.0],
         });
         let materials_buffer = Buffer::from_iter(
             self.memory_allocator.clone(),
