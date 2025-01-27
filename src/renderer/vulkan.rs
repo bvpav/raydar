@@ -45,7 +45,7 @@ use vulkano::{
     },
     shader::ShaderStages,
     sync::{self, GpuFuture},
-    Version, VulkanLibrary,
+    Packed24_8, Version, VulkanLibrary,
 };
 
 use crate::scene::{objects::Geometry, world::World, Scene};
@@ -209,8 +209,9 @@ impl Renderer for VulkanRenderer {
         let instances: Vec<_> = scene
             .objects
             .iter()
+            .enumerate()
             // FIXME: Add support for spheres
-            .filter_map(|object| match &object.geometry {
+            .filter_map(|(index, object)| match &object.geometry {
                 Geometry::Sphere(_) => None,
                 Geometry::Cube(cube) => {
                     let transform = Matrix4::from_translation(cube.center.to_vec())
@@ -223,6 +224,7 @@ impl Renderer for VulkanRenderer {
                             [transform.y.x, transform.y.y, transform.y.z, transform.w.y],
                             [transform.z.x, transform.z.y, transform.z.z, transform.w.z],
                         ],
+                        instance_custom_index_and_mask: Packed24_8::new(index as u32, 0xFF),
                         ..Default::default()
                     })
                 }
@@ -238,13 +240,11 @@ impl Renderer for VulkanRenderer {
         );
 
         // Convert from left-handed to right-handed coordinate system and flip Y
-        let view = {
-            Matrix4::look_at_rh(
-                scene.camera.position(),
-                scene.camera.target(),
-                scene.camera.up() * -1.0,
-            )
-        };
+        let view = Matrix4::look_at_rh(
+            scene.camera.position(),
+            scene.camera.target(),
+            scene.camera.up() * -1.0,
+        );
 
         let camera_uniform_buffer = Buffer::from_data(
             self.memory_allocator.clone(),
@@ -293,6 +293,30 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        let materials = scene.objects.iter().map(|object| raygen::Material {
+            albedo: object.material.albedo.into(),
+            roughness: object.material.roughness,
+            metallic: Padded(object.material.metallic),
+            emission_color: object.material.emission_color.into(),
+            emission_strength: object.material.emission_strength,
+            transmission: object.material.transmission,
+            ior: object.material.ior,
+        });
+        let materials_buffer = Buffer::from_iter(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::STORAGE_BUFFER,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            materials,
+        )
+        .unwrap();
+
         let scene_descriptor_set = DescriptorSet::new(
             self.descriptor_set_allocator.clone(),
             self.pipeline_layout.set_layouts()[0].clone(),
@@ -302,6 +326,7 @@ impl Renderer for VulkanRenderer {
                 WriteDescriptorSet::buffer(2, world_uniform_buffer.clone()),
                 WriteDescriptorSet::buffer(3, self.cube_vertex_buffer.clone()),
                 WriteDescriptorSet::buffer(4, self.cube_index_buffer.clone()),
+                WriteDescriptorSet::buffer(5, materials_buffer.clone()),
             ],
             [],
         )
@@ -428,6 +453,7 @@ impl VulkanRenderer {
                         device.clone(),
                         DescriptorSetLayoutCreateInfo {
                             bindings: [
+                                // Acceleration structure binding
                                 (
                                     0,
                                     DescriptorSetLayoutBinding {
@@ -472,6 +498,16 @@ impl VulkanRenderer {
                                     4,
                                     DescriptorSetLayoutBinding {
                                         stages: ShaderStages::CLOSEST_HIT,
+                                        ..DescriptorSetLayoutBinding::descriptor_type(
+                                            DescriptorType::StorageBuffer,
+                                        )
+                                    },
+                                ),
+                                // Materials buffer binding
+                                (
+                                    5,
+                                    DescriptorSetLayoutBinding {
+                                        stages: ShaderStages::RAYGEN,
                                         ..DescriptorSetLayoutBinding::descriptor_type(
                                             DescriptorType::StorageBuffer,
                                         )

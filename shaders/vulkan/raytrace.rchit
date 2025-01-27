@@ -22,6 +22,8 @@ void main() {
     hit_record.world_normal = get_normal(cube_indices[3 * gl_PrimitiveID]);
     hit_record.is_front_face = dot(hit_record.world_normal, gl_WorldRayDirectionEXT) <= 0.0;
     hit_record.world_normal *= float(hit_record.is_front_face) * 2.0 - 1.0;
+
+    hit_record.material_index = gl_InstanceCustomIndexEXT;
 }
 
 vec3 get_normal(uint index) {
