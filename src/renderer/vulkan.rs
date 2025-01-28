@@ -1,16 +1,17 @@
 use std::{iter, sync::Arc};
 
-use cgmath::{EuclideanSpace, Matrix4, SquareMatrix};
+use cgmath::{EuclideanSpace, Matrix4, Point3, SquareMatrix};
 use image::RgbaImage;
 use shaders::raygen;
 use vulkano::{
     acceleration_structure::{
-        AccelerationStructure, AccelerationStructureBuildGeometryInfo,
+        AabbPositions, AccelerationStructure, AccelerationStructureBuildGeometryInfo,
         AccelerationStructureBuildRangeInfo, AccelerationStructureBuildType,
         AccelerationStructureCreateInfo, AccelerationStructureGeometries,
-        AccelerationStructureGeometryInstancesData, AccelerationStructureGeometryInstancesDataType,
-        AccelerationStructureGeometryTrianglesData, AccelerationStructureInstance,
-        AccelerationStructureType, BuildAccelerationStructureFlags, BuildAccelerationStructureMode,
+        AccelerationStructureGeometryAabbsData, AccelerationStructureGeometryInstancesData,
+        AccelerationStructureGeometryInstancesDataType, AccelerationStructureGeometryTrianglesData,
+        AccelerationStructureInstance, AccelerationStructureType, BuildAccelerationStructureFlags,
+        BuildAccelerationStructureMode,
     },
     buffer::{Buffer, BufferContents, BufferCreateInfo, BufferUsage, IndexBuffer, Subbuffer},
     command_buffer::{
@@ -65,6 +66,7 @@ pub struct VulkanRenderer {
     cube_vertex_buffer: Subbuffer<[Vertex]>,
     cube_index_buffer: Subbuffer<[u32]>,
     cube_blas: Arc<AccelerationStructure>,
+    sphere_blas: Arc<AccelerationStructure>,
 
     memory_allocator: Arc<StandardMemoryAllocator>,
     command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
@@ -198,22 +200,30 @@ impl Renderer for VulkanRenderer {
             .iter()
             .enumerate()
             // FIXME: Add support for spheres
-            .filter_map(|(index, object)| match &object.geometry {
-                Geometry::Sphere(_) => None,
-                Geometry::Cube(cube) => {
-                    let transform = Matrix4::from_translation(cube.center.to_vec())
-                        * Matrix4::from_scale(cube.side_length);
+            .map(|(index, object)| {
+                let get_transform_matrix = |location: Point3<f32>, scale: f32| {
+                    let transform =
+                        Matrix4::from_translation(location.to_vec()) * Matrix4::from_scale(scale);
+                    [
+                        [transform.x.x, transform.x.y, transform.x.z, transform.w.x],
+                        [transform.y.x, transform.y.y, transform.y.z, transform.w.y],
+                        [transform.z.x, transform.z.y, transform.z.z, transform.w.z],
+                    ]
+                };
 
-                    Some(AccelerationStructureInstance {
-                        acceleration_structure_reference: self.cube_blas.device_address().into(),
-                        transform: [
-                            [transform.x.x, transform.x.y, transform.x.z, transform.w.x],
-                            [transform.y.x, transform.y.y, transform.y.z, transform.w.y],
-                            [transform.z.x, transform.z.y, transform.z.z, transform.w.z],
-                        ],
+                match &object.geometry {
+                    Geometry::Sphere(sphere) => AccelerationStructureInstance {
+                        acceleration_structure_reference: self.sphere_blas.device_address().into(),
+                        transform: get_transform_matrix(sphere.center, sphere.radius),
                         instance_custom_index_and_mask: Packed24_8::new(index as u32, 0xFF),
                         ..Default::default()
-                    })
+                    },
+                    Geometry::Cube(cube) => AccelerationStructureInstance {
+                        acceleration_structure_reference: self.cube_blas.device_address().into(),
+                        transform: get_transform_matrix(cube.center, cube.side_length),
+                        instance_custom_index_and_mask: Packed24_8::new(index as u32, 0xFF),
+                        ..Default::default()
+                    },
                 }
             })
             .collect();
@@ -774,6 +784,33 @@ impl VulkanRenderer {
             )
         };
 
+        let sphere_aabb_buffer = Buffer::from_iter(
+            memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::SHADER_DEVICE_ADDRESS
+                    | BufferUsage::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            vec![AabbPositions {
+                min: [-0.5, -0.5, -0.5],
+                max: [0.5, 0.5, 0.5],
+            }],
+        )
+        .unwrap();
+
+        let sphere_blas = build_blas_aabb(
+            sphere_aabb_buffer.clone(),
+            device.clone(),
+            memory_allocator.clone(),
+            command_buffer_allocator.clone(),
+            queue.clone(),
+        );
+
         Self {
             timer: FrameTimer::default(),
 
@@ -787,6 +824,7 @@ impl VulkanRenderer {
             cube_vertex_buffer,
             cube_index_buffer,
             cube_blas,
+            sphere_blas,
 
             memory_allocator,
             command_buffer_allocator,
@@ -820,6 +858,31 @@ fn build_blas_triangles(
         AccelerationStructureType::BottomLevel,
         triangles_geometries,
         triangle_count,
+        device,
+        memory_allocator,
+        command_buffer_allocator,
+        queue,
+    )
+}
+
+fn build_blas_aabb(
+    aabb_buffer: Subbuffer<[AabbPositions]>,
+    device: Arc<Device>,
+    memory_allocator: Arc<StandardMemoryAllocator>,
+    command_buffer_allocator: Arc<StandardCommandBufferAllocator>,
+    queue: Arc<Queue>,
+) -> Arc<AccelerationStructure> {
+    let aabb_data = AccelerationStructureGeometryAabbsData {
+        data: Some(aabb_buffer.into_bytes()),
+        stride: size_of::<AabbPositions>() as _,
+        ..Default::default()
+    };
+    let aabb_geometries = AccelerationStructureGeometries::Aabbs(vec![aabb_data]);
+
+    build_acceleration_structure(
+        AccelerationStructureType::BottomLevel,
+        aabb_geometries,
+        1,
         device,
         memory_allocator,
         command_buffer_allocator,

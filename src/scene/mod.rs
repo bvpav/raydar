@@ -35,9 +35,9 @@ impl Default for Scene {
             },
             objects: vec![
                 Object {
-                    geometry: Geometry::Cube(Cube {
+                    geometry: Geometry::Sphere(Sphere {
                         center: Point3::new(0.0, 0.001, 0.0),
-                        side_length: 2.0,
+                        radius: 1.0,
                     }),
                     material: Material {
                         albedo: Vector3::new(1.0, 1.0, 1.0),
