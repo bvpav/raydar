@@ -6,3 +6,8 @@ struct HitRecord {
     vec3 world_normal;
     uint material_index;
 };
+
+struct Sphere {
+    vec3 center;
+    float radius;
+};

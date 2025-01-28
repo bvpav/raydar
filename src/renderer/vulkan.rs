@@ -216,6 +216,9 @@ impl Renderer for VulkanRenderer {
                         acceleration_structure_reference: self.sphere_blas.device_address().into(),
                         transform: get_transform_matrix(sphere.center, sphere.radius),
                         instance_custom_index_and_mask: Packed24_8::new(index as u32, 0xFF),
+                        instance_shader_binding_table_record_offset_and_flags: Packed24_8::new(
+                            1, 0,
+                        ),
                         ..Default::default()
                     },
                     Geometry::Cube(cube) => AccelerationStructureInstance {
@@ -316,6 +319,31 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        let sphere_data = scene.objects.iter().map(|object| match &object.geometry {
+            Geometry::Sphere(sphere) => shaders::intersection::Sphere {
+                center: sphere.center.into(),
+                radius: sphere.radius,
+            },
+            _ => shaders::intersection::Sphere {
+                center: [0.0, 0.0, 0.0],
+                radius: 0.0,
+            },
+        });
+        let sphere_buffer = Buffer::from_iter(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::STORAGE_BUFFER,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            sphere_data,
+        )
+        .unwrap();
+
         let scene_descriptor_set = DescriptorSet::new(
             self.descriptor_set_allocator.clone(),
             self.pipeline_layout.set_layouts()[0].clone(),
@@ -326,6 +354,7 @@ impl Renderer for VulkanRenderer {
                 WriteDescriptorSet::buffer(3, self.cube_vertex_buffer.clone()),
                 WriteDescriptorSet::buffer(4, self.cube_index_buffer.clone()),
                 WriteDescriptorSet::buffer(5, materials_buffer.clone()),
+                WriteDescriptorSet::buffer(6, sphere_buffer.clone()),
             ],
             [],
         )
@@ -530,6 +559,17 @@ impl VulkanRenderer {
                                         )
                                     },
                                 ),
+                                // Sphere buffer binding
+                                (
+                                    6,
+                                    DescriptorSetLayoutBinding {
+                                        stages: ShaderStages::INTERSECTION
+                                            | ShaderStages::CLOSEST_HIT,
+                                        ..DescriptorSetLayoutBinding::descriptor_type(
+                                            DescriptorType::StorageBuffer,
+                                        )
+                                    },
+                                ),
                             ]
                             .into_iter()
                             .collect(),
@@ -566,7 +606,11 @@ impl VulkanRenderer {
                 .unwrap()
                 .entry_point("main")
                 .unwrap();
-            let closest_hit = shaders::closest_hit::load(device.clone())
+            let triangle_closest_hit = shaders::triangle_closest_hit::load(device.clone())
+                .unwrap()
+                .entry_point("main")
+                .unwrap();
+            let sphere_closest_hit = shaders::sphere_closest_hit::load(device.clone())
                 .unwrap()
                 .entry_point("main")
                 .unwrap();
@@ -575,12 +619,18 @@ impl VulkanRenderer {
                 .unwrap()
                 .entry_point("main")
                 .unwrap();
+            let intersection = shaders::intersection::load(device.clone())
+                .unwrap()
+                .entry_point("main")
+                .unwrap();
 
             // Make a list of the shader stages that the pipeline will have.
             let stages = [
                 PipelineShaderStageCreateInfo::new(raygen),
                 PipelineShaderStageCreateInfo::new(miss),
-                PipelineShaderStageCreateInfo::new(closest_hit),
+                PipelineShaderStageCreateInfo::new(triangle_closest_hit),
+                PipelineShaderStageCreateInfo::new(sphere_closest_hit),
+                PipelineShaderStageCreateInfo::new(intersection),
             ];
 
             // Define the shader groups that will eventually turn into the shader binding table.
@@ -591,6 +641,11 @@ impl VulkanRenderer {
                 RayTracingShaderGroupCreateInfo::TrianglesHit {
                     closest_hit_shader: Some(2),
                     any_hit_shader: None,
+                },
+                RayTracingShaderGroupCreateInfo::ProceduralHit {
+                    closest_hit_shader: Some(3),
+                    any_hit_shader: None,
+                    intersection_shader: 4,
                 },
             ];
 
@@ -797,8 +852,8 @@ impl VulkanRenderer {
                 ..Default::default()
             },
             vec![AabbPositions {
-                min: [-0.5, -0.5, -0.5],
-                max: [0.5, 0.5, 0.5],
+                min: [-1.0, -1.0, -1.0],
+                max: [1.0, 1.0, 1.0],
             }],
         )
         .unwrap();
@@ -1027,10 +1082,18 @@ mod shaders {
         }
     }
 
-    pub(super) mod closest_hit {
+    pub(super) mod triangle_closest_hit {
         vulkano_shaders::shader! {
             ty: "closesthit",
-            path: "shaders/vulkan/raytrace.rchit",
+            path: "shaders/vulkan/raytrace_triangle.rchit",
+            vulkan_version: "1.2"
+        }
+    }
+
+    pub(super) mod sphere_closest_hit {
+        vulkano_shaders::shader! {
+            ty: "closesthit",
+            path: "shaders/vulkan/raytrace_sphere.rchit",
             vulkan_version: "1.2"
         }
     }
@@ -1039,6 +1102,14 @@ mod shaders {
         vulkano_shaders::shader! {
             ty: "miss",
             path: "shaders/vulkan/raytrace.miss",
+            vulkan_version: "1.2"
+        }
+    }
+
+    pub(super) mod intersection {
+        vulkano_shaders::shader! {
+            ty: "intersection",
+            path: "shaders/vulkan/raytrace.rint",
             vulkan_version: "1.2"
         }
     }
