@@ -15,7 +15,7 @@ pub struct Material {
 impl Default for Material {
     fn default() -> Self {
         Self {
-            albedo: Vector3::new(0.5, 0.5, 0.5),
+            albedo: Vector3::new(0.8, 0.8, 0.8),
             roughness: 0.5,
             metallic: 0.0,
             emission_color: Vector3::new(0.0, 0.0, 0.0),

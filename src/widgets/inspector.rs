@@ -89,6 +89,30 @@ impl<'a> Inspector<'a> {
                     )
                     .show(ui);
 
+                    ui.horizontal(|ui| {
+                        let available_width = ui.available_width();
+                        let button_width = (available_width - 8.0) / 2.0; // 8.0 for spacing
+
+                        ui.add_enabled_ui(true, |ui| {
+                            if ui
+                                .add_sized([button_width, 20.0], egui::Button::new("Add Sphere"))
+                                .clicked()
+                            {
+                                self.scene.objects.push(Object::default_sphere());
+                                *self.needs_rerender = true;
+                            }
+                        });
+                        ui.add_enabled_ui(true, |ui| {
+                            if ui
+                                .add_sized([button_width, 20.0], egui::Button::new("Add Cube"))
+                                .clicked()
+                            {
+                                self.scene.objects.push(Object::default_cube());
+                                *self.needs_rerender = true;
+                            }
+                        });
+                    });
+
                     for (idx, sphere) in self.scene.objects.iter_mut().enumerate() {
                         ObjectEditor::new(sphere, idx, self.needs_rerender).show(ui);
                     }
