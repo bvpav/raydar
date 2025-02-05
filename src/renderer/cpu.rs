@@ -11,7 +11,7 @@ use crate::{
 
 use self::utils::{Reflect, Refract};
 
-use super::{timing::Profiler, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
+use super::{timing::Profiler, Renderer, RendererConfig};
 
 #[derive(Debug)]
 pub struct Ray {
@@ -109,7 +109,8 @@ struct HitRecord<'a> {
 pub struct CpuRenderer {
     profiler: Profiler,
     frame_buffer: Option<Rgba32FImage>,
-    sample_count: usize,
+    sample_count: u32,
+    config: RendererConfig,
 }
 
 impl Renderer for CpuRenderer {
@@ -120,7 +121,7 @@ impl Renderer for CpuRenderer {
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
-        while self.sample_count < MAX_SAMPLE_COUNT {
+        while self.sample_count < self.config.max_sample_count {
             self.render_next_sample(scene, &mut frame_buffer);
         }
         self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
@@ -137,7 +138,7 @@ impl Renderer for CpuRenderer {
     }
 
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
-        if self.sample_count >= MAX_SAMPLE_COUNT {
+        if self.sample_count >= self.config.max_sample_count {
             return None;
         }
 
@@ -154,20 +155,27 @@ impl Renderer for CpuRenderer {
         Some(rendered_frame)
     }
 
-    fn max_sample_count(&self) -> usize {
-        MAX_SAMPLE_COUNT
+    fn max_sample_count(&self) -> u32 {
+        self.config.max_sample_count
     }
 
     fn profiler(&self) -> &Profiler {
         &self.profiler
     }
 
-    fn sample_count(&self) -> usize {
+    fn sample_count(&self) -> u32 {
         self.sample_count
     }
 }
 
 impl CpuRenderer {
+    pub fn new(config: RendererConfig) -> Self {
+        Self {
+            config,
+            ..Default::default()
+        }
+    }
+
     fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
         self.profiler.prepare_timer.end_if_not_ended();
         self.profiler.render_timer.start_if_not_started();
@@ -188,7 +196,7 @@ impl CpuRenderer {
         }
 
         self.sample_count += 1;
-        if self.sample_count == MAX_SAMPLE_COUNT {
+        if self.sample_count == self.config.max_sample_count {
             self.profiler.render_timer.end();
             self.profiler.frame_timer.end();
         }
@@ -231,7 +239,7 @@ impl CpuRenderer {
         let mut light = Vector3::zero();
         let mut attenuation = Vector3::new(1.0, 1.0, 1.0);
 
-        for _ in 0..MAX_BOUNCES {
+        for _ in 0..self.config.max_bounces {
             if let Some(hit_record) = self.trace_ray(&ray, scene) {
                 // The roughness is squared to achieve perceptual linearity.
                 // (based on https://www.pbr-book.org/3ed-2018/Reflection_Models/Microfacet_Models.html

@@ -68,7 +68,7 @@ fn main() -> eframe::Result {
     let renderer: Box<dyn Renderer> = if cpu_arg {
         Box::new(CpuRenderer::default())
     } else {
-        Box::new(VulkanRenderer::new())
+        Box::new(VulkanRenderer::default())
     };
 
     eframe::run_native(

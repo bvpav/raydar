@@ -8,14 +8,25 @@ pub mod vulkan;
 
 pub mod timing;
 
+pub struct RendererConfig {
+    pub max_sample_count: u32,
+    pub max_bounces: u32,
+}
+
+impl Default for RendererConfig {
+    fn default() -> Self {
+        Self {
+            max_sample_count: 1024,
+            max_bounces: 12,
+        }
+    }
+}
+
 pub trait Renderer {
     fn render_frame(&mut self, scene: &Scene) -> RgbaImage;
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage>;
     fn new_frame(&mut self, scene: &Scene);
-    fn max_sample_count(&self) -> usize;
+    fn max_sample_count(&self) -> u32;
     fn profiler(&self) -> &Profiler;
-    fn sample_count(&self) -> usize;
+    fn sample_count(&self) -> u32;
 }
-
-pub(crate) const MAX_SAMPLE_COUNT: usize = 1024;
-pub(crate) const MAX_BOUNCES: usize = 12;

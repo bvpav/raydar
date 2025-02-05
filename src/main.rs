@@ -1,7 +1,7 @@
 use color_eyre::eyre::{Context, OptionExt, Report};
 use owo_colors::OwoColorize;
 use raydar::{
-    renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
+    renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer, RendererConfig},
     scene::Scene,
 };
 
@@ -15,7 +15,7 @@ fn main() -> Result<(), Report> {
     let mut renderer: Box<dyn Renderer> = if cpu_arg {
         Box::new(CpuRenderer::default())
     } else {
-        Box::new(VulkanRenderer::new())
+        Box::new(VulkanRenderer::default())
     };
 
     let image = renderer.render_frame(&scene);

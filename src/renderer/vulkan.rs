@@ -51,10 +51,11 @@ use vulkano::{
 
 use crate::scene::{objects::Geometry, world::World, Scene};
 
-use super::{timing::Profiler, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
+use super::{timing::Profiler, Renderer, RendererConfig};
 
 pub struct VulkanRenderer {
     profiler: Profiler,
+    config: RendererConfig,
 
     instance: Arc<Instance>,
     device: Arc<Device>,
@@ -73,7 +74,7 @@ pub struct VulkanRenderer {
     descriptor_set_allocator: Arc<StandardDescriptorSetAllocator>,
 
     bound_scene: Option<BoundScene>,
-    sample_count: usize,
+    sample_count: u32,
 }
 
 struct BoundScene {
@@ -106,7 +107,7 @@ impl Renderer for VulkanRenderer {
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
         self.profiler.sample_timer.start();
 
-        if self.sample_count >= MAX_SAMPLE_COUNT {
+        if self.sample_count >= self.config.max_sample_count {
             return None;
         }
 
@@ -167,11 +168,11 @@ impl Renderer for VulkanRenderer {
         // Read the buffer data and save it as an image
         let buffer_content = bound_scene.output_buffer.read().unwrap();
 
-        self.sample_count = MAX_SAMPLE_COUNT;
+        self.sample_count = self.config.max_sample_count;
 
         self.profiler
             .sample_timer
-            .end_multiple(MAX_SAMPLE_COUNT as u32);
+            .end_multiple(self.config.max_sample_count);
         self.profiler.render_timer.end();
         self.profiler.frame_timer.end();
 
@@ -351,8 +352,8 @@ impl Renderer for VulkanRenderer {
         .unwrap();
 
         let renderer_properties = shaders::raygen::RendererProperties {
-            max_bounces: MAX_BOUNCES as u32,
-            max_sample_count: self.max_sample_count() as u32,
+            max_bounces: self.config.max_bounces,
+            max_sample_count: self.config.max_sample_count,
         };
         let renderer_properties_buffer = Buffer::from_data(
             self.memory_allocator.clone(),
@@ -426,21 +427,21 @@ impl Renderer for VulkanRenderer {
         self.sample_count = 0;
     }
 
-    fn max_sample_count(&self) -> usize {
-        MAX_SAMPLE_COUNT
+    fn max_sample_count(&self) -> u32 {
+        self.config.max_sample_count
     }
 
     fn profiler(&self) -> &Profiler {
         &self.profiler
     }
 
-    fn sample_count(&self) -> usize {
+    fn sample_count(&self) -> u32 {
         self.sample_count
     }
 }
 
 impl VulkanRenderer {
-    pub fn new() -> Self {
+    pub fn new(config: RendererConfig) -> Self {
         let library = VulkanLibrary::new().unwrap();
         let instance = Instance::new(
             library,
@@ -906,6 +907,7 @@ impl VulkanRenderer {
 
         Self {
             profiler: Profiler::default(),
+            config,
 
             instance,
             device,
@@ -926,6 +928,12 @@ impl VulkanRenderer {
             bound_scene: None,
             sample_count: 0,
         }
+    }
+}
+
+impl Default for VulkanRenderer {
+    fn default() -> Self {
+        Self::new(RendererConfig::default())
     }
 }
 
