@@ -11,7 +11,7 @@ use crate::{
 
 use self::utils::{Reflect, Refract};
 
-use super::{timing::FrameTimer, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
+use super::{timing::Profiler, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
 
 #[derive(Debug)]
 pub struct Ray {
@@ -107,7 +107,7 @@ struct HitRecord<'a> {
 
 #[derive(Default)]
 pub struct CpuRenderer {
-    timer: FrameTimer,
+    profiler: Profiler,
     frame_buffer: Option<Rgba32FImage>,
     sample_count: usize,
 }
@@ -131,7 +131,7 @@ impl Renderer for CpuRenderer {
 
     fn new_frame(&mut self, scene: &Scene) {
         self.frame_buffer = Some(self.blank_frame_buffer(scene));
-        self.timer.start_frame();
+        self.profiler.frame_timer.start();
         self.sample_count = 0;
     }
 
@@ -157,8 +157,8 @@ impl Renderer for CpuRenderer {
         MAX_SAMPLE_COUNT
     }
 
-    fn timer(&self) -> &FrameTimer {
-        &self.timer
+    fn profiler(&self) -> &Profiler {
+        &self.profiler
     }
 
     fn sample_count(&self) -> usize {
@@ -168,7 +168,7 @@ impl Renderer for CpuRenderer {
 
 impl CpuRenderer {
     fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
-        self.timer.start_sample();
+        self.profiler.sample_timer.start();
 
         for (x, y, pixel) in frame_buffer.enumerate_pixels_mut() {
             let uv_coord = Vector2::new(
@@ -186,10 +186,10 @@ impl CpuRenderer {
 
         self.sample_count += 1;
         if self.sample_count == MAX_SAMPLE_COUNT {
-            self.timer.end_frame();
+            self.profiler.frame_timer.end();
         }
 
-        self.timer.end_sample();
+        self.profiler.sample_timer.end();
     }
 
     fn print_frame_buffer(&self, frame_buffer: &Rgba32FImage, image: &mut RgbaImage) {

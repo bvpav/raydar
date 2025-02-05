@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Context, Report};
+use color_eyre::eyre::{Context, OptionExt, Report};
 use raydar::{
     renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
     scene::Scene,
@@ -22,7 +22,12 @@ fn main() -> Result<(), Report> {
 
     println!(
         "Frame took {}ms",
-        renderer.timer().last_frame_duration().unwrap().as_millis()
+        renderer
+            .profiler()
+            .frame_timer()
+            .duration()
+            .ok_or_eyre("Frame timer not started")?
+            .as_millis()
     );
 
     Ok(())

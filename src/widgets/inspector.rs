@@ -150,7 +150,9 @@ impl<'a> Inspector<'a> {
                         self.scene.camera.resolution_y()
                     ));
 
-                    if let Some(last_frame_duration) = self.renderer.timer().last_frame_duration() {
+                    if let Some(last_frame_duration) =
+                        self.renderer.profiler().frame_timer().duration()
+                    {
                         ui.label(format!(
                             "Last frame took {}ms",
                             last_frame_duration.as_millis()
@@ -159,7 +161,8 @@ impl<'a> Inspector<'a> {
                         ui.label("Frame is rendering...");
                     }
 
-                    if let Some(last_sample_duration) = self.renderer.timer().last_sample_duration()
+                    if let Some(last_sample_duration) =
+                        self.renderer.profiler().sample_timer().duration()
                     {
                         ui.label(format!(
                             "Sample {}/{} took {}ms",

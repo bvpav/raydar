@@ -51,10 +51,10 @@ use vulkano::{
 
 use crate::scene::{objects::Geometry, world::World, Scene};
 
-use super::{timing::FrameTimer, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
+use super::{timing::Profiler, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
 
 pub struct VulkanRenderer {
-    timer: FrameTimer,
+    profiler: Profiler,
 
     instance: Arc<Instance>,
     device: Arc<Device>,
@@ -104,7 +104,7 @@ impl Renderer for VulkanRenderer {
     }
 
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
-        self.timer.start_sample();
+        self.profiler.sample_timer.start();
 
         if self.sample_count >= MAX_SAMPLE_COUNT {
             return None;
@@ -169,8 +169,10 @@ impl Renderer for VulkanRenderer {
 
         self.sample_count = MAX_SAMPLE_COUNT;
 
-        self.timer.end_sample();
-        self.timer.end_frame();
+        self.profiler
+            .sample_timer
+            .end_multiple(MAX_SAMPLE_COUNT as u32);
+        self.profiler.frame_timer.end();
 
         image::RgbaImage::from_raw(
             scene.camera.resolution_x(),
@@ -414,7 +416,7 @@ impl Renderer for VulkanRenderer {
             image,
             output_buffer,
         });
-        self.timer.start_frame();
+        self.profiler.frame_timer.start();
         self.sample_count = 0;
     }
 
@@ -422,8 +424,8 @@ impl Renderer for VulkanRenderer {
         MAX_SAMPLE_COUNT
     }
 
-    fn timer(&self) -> &FrameTimer {
-        &self.timer
+    fn profiler(&self) -> &Profiler {
+        &self.profiler
     }
 
     fn sample_count(&self) -> usize {
@@ -897,7 +899,7 @@ impl VulkanRenderer {
         );
 
         Self {
-            timer: FrameTimer::default(),
+            profiler: Profiler::default(),
 
             instance,
             device,

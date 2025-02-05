@@ -1,5 +1,5 @@
 use image::RgbaImage;
-use timing::FrameTimer;
+use timing::Profiler;
 
 use crate::scene::Scene;
 
@@ -13,7 +13,7 @@ pub trait Renderer {
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage>;
     fn new_frame(&mut self, scene: &Scene);
     fn max_sample_count(&self) -> usize;
-    fn timer(&self) -> &FrameTimer;
+    fn profiler(&self) -> &Profiler;
     fn sample_count(&self) -> usize;
 }
 
