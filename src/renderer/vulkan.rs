@@ -172,6 +172,7 @@ impl Renderer for VulkanRenderer {
         self.profiler
             .sample_timer
             .end_multiple(MAX_SAMPLE_COUNT as u32);
+        self.profiler.render_timer.end();
         self.profiler.frame_timer.end();
 
         image::RgbaImage::from_raw(
@@ -182,6 +183,9 @@ impl Renderer for VulkanRenderer {
     }
 
     fn new_frame(&mut self, scene: &Scene) {
+        self.profiler.frame_timer.start();
+        self.profiler.prepare_timer.start();
+
         let image = Image::new(
             self.memory_allocator.clone(),
             ImageCreateInfo {
@@ -408,6 +412,9 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        self.profiler.prepare_timer.end();
+        self.profiler.render_timer.start();
+
         self.bound_scene = Some(BoundScene {
             tlas,
             scene_descriptor_set,
@@ -416,7 +423,6 @@ impl Renderer for VulkanRenderer {
             image,
             output_buffer,
         });
-        self.profiler.frame_timer.start();
         self.sample_count = 0;
     }
 

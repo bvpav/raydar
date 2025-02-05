@@ -114,11 +114,11 @@ pub struct CpuRenderer {
 
 impl Renderer for CpuRenderer {
     fn render_frame(&mut self, scene: &Scene) -> RgbaImage {
-        let mut rendered_frame =
-            ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
-
         self.new_frame(scene);
         let mut frame_buffer = self.frame_buffer(scene);
+
+        let mut rendered_frame =
+            ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
         while self.sample_count < MAX_SAMPLE_COUNT {
             self.render_next_sample(scene, &mut frame_buffer);
@@ -130,8 +130,9 @@ impl Renderer for CpuRenderer {
     }
 
     fn new_frame(&mut self, scene: &Scene) {
-        self.frame_buffer = Some(self.blank_frame_buffer(scene));
         self.profiler.frame_timer.start();
+        self.profiler.prepare_timer.start();
+        self.frame_buffer = Some(self.blank_frame_buffer(scene));
         self.sample_count = 0;
     }
 
@@ -168,6 +169,8 @@ impl Renderer for CpuRenderer {
 
 impl CpuRenderer {
     fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
+        self.profiler.prepare_timer.end_if_not_ended();
+        self.profiler.render_timer.start_if_not_started();
         self.profiler.sample_timer.start();
 
         for (x, y, pixel) in frame_buffer.enumerate_pixels_mut() {
@@ -186,6 +189,7 @@ impl CpuRenderer {
 
         self.sample_count += 1;
         if self.sample_count == MAX_SAMPLE_COUNT {
+            self.profiler.render_timer.end();
             self.profiler.frame_timer.end();
         }
 

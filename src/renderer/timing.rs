@@ -1,3 +1,8 @@
+//! Time measurement utilities for profiling and benchmarking renderer operations.
+//!
+//! This module provides tools for measuring execution time of rendering operations,
+//! including frame timings and sample profiling.
+
 use std::time::{Duration, Instant};
 
 /// A profiler utility for measuring the duration of operations with manual start/stop control.
@@ -7,15 +12,31 @@ pub struct Profiler {
     pub(super) frame_timer: Timer,
     /// The timer for measuring the duration of the last sample
     pub(super) sample_timer: Timer,
+    /// The timer for measuring the time it takes to prepare the scene for rendering
+    pub(super) prepare_timer: Timer,
+    /// The timer for measuring the time it takes to render the next sample
+    pub(super) render_timer: Timer,
 }
 
 impl Profiler {
+    /// Returns a reference to the frame timer
     pub fn frame_timer(&self) -> &Timer {
         &self.frame_timer
     }
 
+    /// Returns a reference to the sample timer
     pub fn sample_timer(&self) -> &Timer {
         &self.sample_timer
+    }
+
+    /// Returns a reference to the prepare timer
+    pub fn prepare_timer(&self) -> &Timer {
+        &self.prepare_timer
+    }
+
+    /// Returns a reference to the render timer
+    pub fn render_timer(&self) -> &Timer {
+        &self.render_timer
     }
 }
 
@@ -60,12 +81,30 @@ impl Timer {
         self.start = Some(Instant::now());
     }
 
+    /// Starts the timer if it isn't already started.
+    ///
+    /// If the timer is already started, this method does nothing.
+    pub fn start_if_not_started(&mut self) {
+        if self.start.is_none() {
+            self.start();
+        }
+    }
+
     /// Ends the timer and calculates the duration since it was started.
     ///
     /// If the timer wasn't started, the duration remains `None`.
     pub fn end(&mut self) {
         if let Some(start) = self.start {
             self.duration = Some(start.elapsed());
+        }
+    }
+
+    /// Ends the timer and calculates the duration only if the timer is not already ended.
+    ///
+    /// If the timer wasn't started, the duration remains `None`.
+    pub fn end_if_not_ended(&mut self) {
+        if self.duration.is_none() {
+            self.end();
         }
     }
 
