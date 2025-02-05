@@ -51,7 +51,7 @@ use vulkano::{
 
 use crate::scene::{objects::Geometry, world::World, Scene};
 
-use super::{timing::FrameTimer, Renderer, MAX_SAMPLE_COUNT};
+use super::{timing::FrameTimer, Renderer, MAX_BOUNCES, MAX_SAMPLE_COUNT};
 
 pub struct VulkanRenderer {
     timer: FrameTimer,
@@ -344,17 +344,37 @@ impl Renderer for VulkanRenderer {
         )
         .unwrap();
 
+        let renderer_properties = shaders::raygen::RendererProperties {
+            max_bounces: MAX_BOUNCES as u32,
+            max_sample_count: self.max_sample_count() as u32,
+        };
+        let renderer_properties_buffer = Buffer::from_data(
+            self.memory_allocator.clone(),
+            BufferCreateInfo {
+                usage: BufferUsage::UNIFORM_BUFFER,
+                ..Default::default()
+            },
+            AllocationCreateInfo {
+                memory_type_filter: MemoryTypeFilter::PREFER_DEVICE
+                    | MemoryTypeFilter::HOST_SEQUENTIAL_WRITE,
+                ..Default::default()
+            },
+            renderer_properties,
+        )
+        .unwrap();
+
         let scene_descriptor_set = DescriptorSet::new(
             self.descriptor_set_allocator.clone(),
             self.pipeline_layout.set_layouts()[0].clone(),
             [
                 WriteDescriptorSet::acceleration_structure(0, tlas.clone()),
-                WriteDescriptorSet::buffer(1, camera_uniform_buffer.clone()),
-                WriteDescriptorSet::buffer(2, world_uniform_buffer.clone()),
+                WriteDescriptorSet::buffer(1, camera_uniform_buffer),
+                WriteDescriptorSet::buffer(2, world_uniform_buffer),
                 WriteDescriptorSet::buffer(3, self.cube_vertex_buffer.clone()),
                 WriteDescriptorSet::buffer(4, self.cube_index_buffer.clone()),
-                WriteDescriptorSet::buffer(5, materials_buffer.clone()),
-                WriteDescriptorSet::buffer(6, sphere_buffer.clone()),
+                WriteDescriptorSet::buffer(5, materials_buffer),
+                WriteDescriptorSet::buffer(6, sphere_buffer),
+                WriteDescriptorSet::buffer(7, renderer_properties_buffer),
             ],
             [],
         )
@@ -567,6 +587,16 @@ impl VulkanRenderer {
                                             | ShaderStages::CLOSEST_HIT,
                                         ..DescriptorSetLayoutBinding::descriptor_type(
                                             DescriptorType::StorageBuffer,
+                                        )
+                                    },
+                                ),
+                                // Renderer properties binding
+                                (
+                                    7,
+                                    DescriptorSetLayoutBinding {
+                                        stages: ShaderStages::RAYGEN,
+                                        ..DescriptorSetLayoutBinding::descriptor_type(
+                                            DescriptorType::UniformBuffer,
                                         )
                                     },
                                 ),
