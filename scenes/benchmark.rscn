@@ -1,0 +1,5455 @@
+{
+  "camera": {
+    "position": {
+      "x": -8.0,
+      "y": 4.0,
+      "z": -8.0
+    },
+    "target": {
+      "x": 0.0,
+      "y": 1.0,
+      "z": 0.0
+    },
+    "up": {
+      "x": 0.0,
+      "y": 1.0,
+      "z": 0.0
+    },
+    "resolution_x": 3840,
+    "resolution_y": 2160,
+    "projection": {
+      "Perspective": {
+        "fov": 70.0
+      }
+    },
+    "near_clip": 0.01,
+    "far_clip": 1000.0,
+    "view_matrix": {
+      "x": {
+        "x": 0.70710677,
+        "y": 0.18123662,
+        "z": 0.68348616,
+        "w": 0.0
+      },
+      "y": {
+        "x": 0.0,
+        "y": 0.9665954,
+        "z": -0.2563073,
+        "w": 0.0
+      },
+      "z": {
+        "x": -0.70710677,
+        "y": 0.18123662,
+        "z": 0.68348616,
+        "w": 0.0
+      },
+      "w": {
+        "x": -0.0,
+        "y": -0.96659565,
+        "z": 11.961008,
+        "w": 1.0
+      }
+    },
+    "proj_matrix": {
+      "x": {
+        "x": 0.8033333,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+      },
+      "y": {
+        "x": 0.0,
+        "y": 1.428148,
+        "z": 0.0,
+        "w": 0.0
+      },
+      "z": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -1.00002,
+        "w": -1.0
+      },
+      "w": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -0.0200002,
+        "w": 0.0
+      }
+    },
+    "inverse_view_matrix": {
+      "x": {
+        "x": 0.7071068,
+        "y": -0.0,
+        "z": -0.7071068,
+        "w": -0.0
+      },
+      "y": {
+        "x": 0.18123661,
+        "y": 0.9665953,
+        "z": 0.18123661,
+        "w": -0.0
+      },
+      "z": {
+        "x": 0.6834861,
+        "y": -0.25630724,
+        "z": 0.6834861,
+        "w": -0.0
+      },
+      "w": {
+        "x": -8.0,
+        "y": 4.0,
+        "z": -8.0,
+        "w": 1.0
+      }
+    },
+    "inverse_proj_matrix": {
+      "x": {
+        "x": 1.2448133,
+        "y": 0.0,
+        "z": -0.0,
+        "w": 0.0
+      },
+      "y": {
+        "x": 0.0,
+        "y": 0.7002075,
+        "z": 0.0,
+        "w": -0.0
+      },
+      "z": {
+        "x": -0.0,
+        "y": 0.0,
+        "z": -0.0,
+        "w": -49.999496
+      },
+      "w": {
+        "x": 0.0,
+        "y": -0.0,
+        "z": -1.0,
+        "w": 50.000496
+      }
+    }
+  },
+  "world": {
+    "SkyColor": {
+      "top_color": {
+        "x": 0.53,
+        "y": 0.8,
+        "z": 0.92
+      },
+      "bottom_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      }
+    }
+  },
+  "objects": [
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "side_length": 20.0
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.2,
+          "y": 0.2,
+          "z": 0.25
+        },
+        "roughness": 0.7,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "radius": 1.0
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.0,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 3.0,
+            "y": 0.3,
+            "z": 0.0
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.3,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 2.2273865,
+            "y": 0.35000002,
+            "z": 2.2273865
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.315,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -1.4424758e-7,
+            "y": 0.4,
+            "z": 3.3
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.32999998,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -2.4395185,
+            "y": 0.45000002,
+            "z": 2.4395185
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.345,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -3.6,
+            "y": 0.5,
+            "z": -3.14722e-7
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.35999998,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -2.65165,
+            "y": 0.55,
+            "z": -2.651651
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.375,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 4.6507036e-8,
+            "y": 0.6,
+            "z": -3.9
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.39000002,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 2.8637836,
+            "y": 0.65,
+            "z": -2.8637817
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.40500003,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 4.2,
+            "y": 0.70000005,
+            "z": 7.343513e-7
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.42,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 3.0759144,
+            "y": 0.75,
+            "z": 3.0759144
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.435,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -0.0000015199481,
+            "y": 0.8,
+            "z": 4.5
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.45,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -3.2880487,
+            "y": 0.85,
+            "z": 3.2880442
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.465,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -4.8,
+            "y": 0.90000004,
+            "z": -1.1447886e-7
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.48000002,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -3.5001771,
+            "y": 0.95000005,
+            "z": -3.5001795
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.49499997,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.000003384399,
+            "y": 1.0,
+            "z": -5.1000004
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.51000005,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 3.7123108,
+            "y": 1.05,
+            "z": -3.7123106
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.525,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 5.4,
+            "y": 1.1,
+            "z": 0.000001888332
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.54,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 3.9244401,
+            "y": 1.1500001,
+            "z": 3.9244454
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.555,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -2.0391545e-7,
+            "y": 1.2,
+            "z": 5.7
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.57,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -4.136576,
+            "y": 1.25,
+            "z": 4.1365733
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.58500004,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -6.0,
+            "y": 1.3,
+            "z": -0.000004053195
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.6,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -4.3487024,
+            "y": 1.3500001,
+            "z": -4.348711
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.615,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.000008286329,
+            "y": 1.4000001,
+            "z": -6.3
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.63,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 4.5608373,
+            "y": 1.45,
+            "z": -4.5608397
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.645,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 6.6000004,
+            "y": 1.5,
+            "z": 3.1481687e-7
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.66,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 4.7729692,
+            "y": 1.55,
+            "z": 4.7729726
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.675,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -0.000004743456,
+            "y": 1.6000001,
+            "z": 6.9
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.69,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -4.985108,
+            "y": 1.6500001,
+            "z": 4.985098
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.70500004,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -7.2000003,
+            "y": 1.7,
+            "z": -0.00000955595
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.72,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -5.1972365,
+            "y": 1.75,
+            "z": -5.1972337
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.735,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 4.4718303e-7,
+            "y": 1.8,
+            "z": -7.5
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.75,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 5.409369,
+            "y": 1.8500001,
+            "z": -5.409365
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.765,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 7.8,
+            "y": 1.9000001,
+            "z": 0.0000054551815
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.78000003,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 5.6214933,
+            "y": 1.95,
+            "z": 5.621505
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.795,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -0.000010847036,
+            "y": 2.0,
+            "z": 8.1
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.81000006,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -5.8336406,
+            "y": 2.05,
+            "z": 5.833621
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.825,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -8.4,
+            "y": 2.1000001,
+            "z": -6.0101394e-7
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.84,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -6.045761,
+            "y": 2.15,
+            "z": -6.0457654
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.855,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0000061883725,
+            "y": 2.2,
+            "z": -8.700001
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.87000006,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 6.2579017,
+            "y": 2.25,
+            "z": -6.257889
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.88500005,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 9.0,
+            "y": 2.3,
+            "z": 0.000012159585
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 6.4700284,
+            "y": 2.35,
+            "z": 6.470025
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -0.000018514651,
+            "y": 2.4,
+            "z": 9.3
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -6.6821623,
+            "y": 2.45,
+            "z": 6.6821566
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -9.6,
+            "y": 2.5,
+            "z": -0.000025253576
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -6.8942842,
+            "y": 2.55,
+            "z": -6.8942986
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -0.0000053891517,
+            "y": 2.6,
+            "z": -9.9
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 7.1064353,
+            "y": 2.65,
+            "z": -7.106411
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 10.200001,
+            "y": 2.7,
+            "z": 9.730703e-7
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 7.3185387,
+            "y": 2.75,
+            "z": 7.3185725
+          },
+          "radius": 0.3
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.95,
+          "y": 0.95,
+          "z": 0.95
+        },
+        "roughness": 0.9,
+        "metallic": 1.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.6035534,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.67499995,
+          "z": 0.0
+        },
+        "roughness": 0.70710677,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.5701562,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.58242804,
+          "z": 0.0071156323
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.5415476,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.47537616,
+          "z": 0.022564298
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.51925826,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.34904936,
+          "z": 0.03460055
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.504951,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.2039969,
+          "z": 0.042326435
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.5,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.044999957,
+          "z": 0.044999957
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.504951,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.042326435,
+          "z": 0.20399702
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.51925826,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.03460055,
+          "z": 0.34904954
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.5415476,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.022564298,
+          "z": 0.47537616
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.5701562,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.0071156323,
+          "z": 0.58242786
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -7.5,
+            "y": 0.6035534,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.0,
+          "z": 0.67499995
+        },
+        "roughness": 0.70710677,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.5701562,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.7711299,
+          "z": 0.0071156323
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.53284276,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.6818162,
+          "z": 0.027264923
+        },
+        "roughness": 0.5656854,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.5,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.57039595,
+          "z": 0.044999957
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.47360682,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.43149403,
+          "z": 0.059252303
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.4561553,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.26315394,
+          "z": 0.06867614
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.45,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.07199998,
+          "z": 0.07199998
+        },
+        "roughness": 0.4,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.4561553,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.06867614,
+          "z": 0.26315376
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.47360682,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.059252303,
+          "z": 0.43149415
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.5,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.044999957,
+          "z": 0.5703959
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.53284276,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.027264923,
+          "z": 0.6818162
+        },
+        "roughness": 0.5656854,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -6.0,
+            "y": 0.5701562,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.0071156323,
+          "z": 0.77112997
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.5415476,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.8859061,
+          "z": 0.022564298
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.5,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.8021039,
+          "z": 0.044999957
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.46213204,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.69136214,
+          "z": 0.06544869
+        },
+        "roughness": 0.42426407,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.4302776,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.541593,
+          "z": 0.082650125
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.4081139,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.34207132,
+          "z": 0.094618514
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.4,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.09900001,
+          "z": 0.09900001
+        },
+        "roughness": 0.3,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.4081139,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.094618514,
+          "z": 0.34207124
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.4302776,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.082650125,
+          "z": 0.5415929
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.46213204,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.06544869,
+          "z": 0.69136214
+        },
+        "roughness": 0.42426407,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.5,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.044999957,
+          "z": 0.80210406
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -4.5,
+            "y": 0.5415476,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.022564298,
+          "z": 0.8859059
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.51925826,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.78174895,
+          "y": 0.9,
+          "z": 0.03460055
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.47360682,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.85186774,
+          "y": 0.9,
+          "z": 0.059252303
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.4302776,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.849732,
+          "z": 0.082650125
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.39142138,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.70090806,
+          "z": 0.10363245
+        },
+        "roughness": 0.2828427,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.3618034,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.4651373,
+          "z": 0.11962614
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.35,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.12599999,
+          "z": 0.12599999
+        },
+        "roughness": 0.2,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.3618034,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.11962614,
+          "z": 0.46513742
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.39142138,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.10363245,
+          "z": 0.70090806
+        },
+        "roughness": 0.2828427,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.4302776,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.9,
+          "y": 0.082650125,
+          "z": 0.8497321
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.47360682,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.85186756,
+          "y": 0.059252303,
+          "z": 0.9
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -3.0,
+            "y": 0.51925826,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.78174883,
+          "y": 0.03460055,
+          "z": 0.9
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.504951,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.6328336,
+          "y": 0.9,
+          "z": 0.042326435
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.4561553,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.67881566,
+          "y": 0.9,
+          "z": 0.06867614
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.4081139,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.74476206,
+          "y": 0.9,
+          "z": 0.094618514
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.3618034,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.85532415,
+          "y": 0.9,
+          "z": 0.11962614
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.3618034,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.8553239,
+          "y": 0.11962614,
+          "z": 0.9
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.4081139,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.74476194,
+          "y": 0.094618514,
+          "z": 0.9
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.4561553,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.67881566,
+          "y": 0.06867614,
+          "z": 0.9
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": -1.5,
+            "y": 0.504951,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.6328334,
+          "y": 0.042326435,
+          "z": 0.9
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.5,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.47249997,
+          "y": 0.9,
+          "z": 0.044999957
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.45,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.48599994,
+          "y": 0.9,
+          "z": 0.07199998
+        },
+        "roughness": 0.4,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.4,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.4995,
+          "y": 0.9,
+          "z": 0.09900001
+        },
+        "roughness": 0.3,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.35,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.51299995,
+          "y": 0.9,
+          "z": 0.12599999
+        },
+        "roughness": 0.2,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.35,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.51299995,
+          "y": 0.12599999,
+          "z": 0.9
+        },
+        "roughness": 0.2,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.4,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.4995,
+          "y": 0.09900001,
+          "z": 0.9
+        },
+        "roughness": 0.3,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.45,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.48599994,
+          "y": 0.07199998,
+          "z": 0.9
+        },
+        "roughness": 0.4,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 0.0,
+            "y": 0.5,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.47249997,
+          "y": 0.044999957,
+          "z": 0.9
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.504951,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.30949274,
+          "y": 0.9,
+          "z": 0.042326435
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.4561553,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.28986043,
+          "y": 0.9,
+          "z": 0.06867614
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.4081139,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.24985646,
+          "y": 0.9,
+          "z": 0.094618514
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.3618034,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.16430193,
+          "y": 0.9,
+          "z": 0.11962614
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.3618034,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.16430183,
+          "y": 0.11962614,
+          "z": 0.9
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.4081139,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.24985656,
+          "y": 0.094618514,
+          "z": 0.9
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.4561553,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.28986043,
+          "y": 0.06867614,
+          "z": 0.9
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 1.5,
+            "y": 0.504951,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.30949265,
+          "y": 0.042326435,
+          "z": 0.9
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.51925826,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.15285158,
+          "y": 0.9,
+          "z": 0.03460055
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.47360682,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.107384436,
+          "y": 0.9,
+          "z": 0.059252303
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.4302776,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.082650125,
+          "y": 0.9,
+          "z": 0.13291799
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.39142138,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.10363245,
+          "y": 0.9,
+          "z": 0.30272436
+        },
+        "roughness": 0.2828427,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.3618034,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.11962614,
+          "y": 0.9,
+          "z": 0.5544888
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.35,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.12599999,
+          "y": 0.9,
+          "z": 0.9
+        },
+        "roughness": 0.2,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.3618034,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.11962614,
+          "y": 0.5544888,
+          "z": 0.9
+        },
+        "roughness": 0.2236068,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.39142138,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.10363245,
+          "y": 0.30272436,
+          "z": 0.9
+        },
+        "roughness": 0.2828427,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.4302776,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.082650125,
+          "y": 0.13291799,
+          "z": 0.9
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.47360682,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.107384324,
+          "y": 0.059252303,
+          "z": 0.9
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 3.0,
+            "y": 0.51925826,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.15285169,
+          "y": 0.03460055,
+          "z": 0.9
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.5415476,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.022564298,
+          "y": 0.9,
+          "z": 0.03665834
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.5,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.044999957,
+          "y": 0.9,
+          "z": 0.14289607
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.46213204,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.06544869,
+          "y": 0.9,
+          "z": 0.2740865
+        },
+        "roughness": 0.42426407,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.4302776,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.082650125,
+          "y": 0.9,
+          "z": 0.44105718
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.4081139,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.094618514,
+          "y": 0.9,
+          "z": 0.65254724
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.4,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.09900001,
+          "y": 0.9,
+          "z": 0.9
+        },
+        "roughness": 0.3,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.4081139,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.094618514,
+          "y": 0.65254724,
+          "z": 0.9
+        },
+        "roughness": 0.31622776,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.4302776,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.082650125,
+          "y": 0.44105718,
+          "z": 0.9
+        },
+        "roughness": 0.36055514,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.46213204,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.06544869,
+          "y": 0.2740865,
+          "z": 0.9
+        },
+        "roughness": 0.42426407,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.5,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.044999957,
+          "y": 0.14289607,
+          "z": 0.9
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 4.5,
+            "y": 0.5415476,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.022564298,
+          "y": 0.03665834,
+          "z": 0.9
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.5701562,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.0071156323,
+          "y": 0.9,
+          "z": 0.13598585
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.53284276,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.027264923,
+          "y": 0.9,
+          "z": 0.24544868
+        },
+        "roughness": 0.5656854,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.5,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.044999957,
+          "y": 0.9,
+          "z": 0.37460384
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.47360682,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.059252303,
+          "y": 0.9,
+          "z": 0.5277582
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.4561553,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.06867614,
+          "y": 0.9,
+          "z": 0.7055221
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.45,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.07199998,
+          "y": 0.9,
+          "z": 0.9
+        },
+        "roughness": 0.4,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.4561553,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.06867614,
+          "y": 0.70552236,
+          "z": 0.9
+        },
+        "roughness": 0.41231057,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.47360682,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.059252303,
+          "y": 0.5277582,
+          "z": 0.9
+        },
+        "roughness": 0.4472136,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.5,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.044999957,
+          "y": 0.37460384,
+          "z": 0.9
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.53284276,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.027264923,
+          "y": 0.24544868,
+          "z": 0.9
+        },
+        "roughness": 0.5656854,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 6.0,
+            "y": 0.5701562,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.0071156323,
+          "y": 0.13598585,
+          "z": 0.9
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.6035534,
+            "z": -7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.0,
+          "y": 0.9,
+          "z": 0.225
+        },
+        "roughness": 0.70710677,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.5701562,
+            "z": -6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.0071156323,
+          "y": 0.9,
+          "z": 0.32468778
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.5415476,
+            "z": -4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.022564298,
+          "y": 0.9,
+          "z": 0.44718835
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.51925826,
+            "z": -3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.03460055,
+          "y": 0.9,
+          "z": 0.5855512
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.504951,
+            "z": -1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.042326435,
+          "y": 0.9,
+          "z": 0.7383294
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.5,
+            "z": 0.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.044999957,
+          "y": 0.9,
+          "z": 0.9
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.504951,
+            "z": 1.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.042326435,
+          "y": 0.7383294,
+          "z": 0.9
+        },
+        "roughness": 0.50990194,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.51925826,
+            "z": 3.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.03460055,
+          "y": 0.58555144,
+          "z": 0.9
+        },
+        "roughness": 0.53851646,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.5415476,
+            "z": 4.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.022564298,
+          "y": 0.4471881,
+          "z": 0.9
+        },
+        "roughness": 0.5830952,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.5701562,
+            "z": 6.0
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.0071156323,
+          "y": 0.32468757,
+          "z": 0.9
+        },
+        "roughness": 0.64031243,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Cube": {
+          "center": {
+            "x": 7.5,
+            "y": 0.6035534,
+            "z": 7.5
+          },
+          "side_length": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.0,
+          "y": 0.225,
+          "z": 0.9
+        },
+        "roughness": 0.70710677,
+        "metallic": 0.8,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -3.0,
+            "y": 0.4,
+            "z": 0.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -2.0,
+            "y": 0.4,
+            "z": -1.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -2.0,
+            "y": 0.4,
+            "z": 0.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -2.0,
+            "y": 0.4,
+            "z": 1.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -1.0,
+            "y": 0.4,
+            "z": -2.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -1.0,
+            "y": 0.4,
+            "z": 2.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": 0.4,
+            "z": -3.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": 0.4,
+            "z": -2.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": 0.4,
+            "z": 2.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": 0.4,
+            "z": 3.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 1.0,
+            "y": 0.4,
+            "z": -2.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 1.0,
+            "y": 0.4,
+            "z": 2.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 2.0,
+            "y": 0.4,
+            "z": -1.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 2.0,
+            "y": 0.4,
+            "z": 0.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 2.0,
+            "y": 0.4,
+            "z": 1.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 3.0,
+            "y": 0.4,
+            "z": 0.0
+          },
+          "radius": 0.2
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "roughness": 0.1,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "emission_strength": 0.0,
+        "transmission": 1.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 5.0,
+            "y": 5.0,
+            "z": -5.0
+          },
+          "radius": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 1.0,
+          "y": 0.9,
+          "z": 0.7
+        },
+        "emission_strength": 15.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": -5.0,
+            "y": 4.0,
+            "z": 5.0
+          },
+          "radius": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 0.7,
+          "y": 0.8,
+          "z": 1.0
+        },
+        "emission_strength": 12.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    },
+    {
+      "geometry": {
+        "Sphere": {
+          "center": {
+            "x": 0.0,
+            "y": 6.0,
+            "z": 0.0
+          },
+          "radius": 0.5
+        }
+      },
+      "material": {
+        "albedo": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        "roughness": 0.5,
+        "metallic": 0.0,
+        "emission_color": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "emission_strength": 20.0,
+        "transmission": 0.0,
+        "ior": 1.5
+      }
+    }
+  ]
+}
