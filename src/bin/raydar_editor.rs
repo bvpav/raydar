@@ -1,3 +1,4 @@
+use cgmath::Vector2;
 use raydar::{
     renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
     scene::{benchmark, Scene},
@@ -12,8 +13,7 @@ struct EditorApp {
     scene: Scene,
     renderer: Box<dyn Renderer>,
 
-    original_resolution_x: u32,
-    original_resolution_y: u32,
+    original_resolution: Vector2<u32>,
 
     needs_rerender: bool,
     should_constantly_rerender: bool,
@@ -30,6 +30,7 @@ impl eframe::App for EditorApp {
 
         Inspector::new(
             &mut self.scene,
+            &mut self.original_resolution,
             Box::as_ref(&self.renderer),
             &mut self.needs_rerender,
             &mut self.should_constantly_rerender,
@@ -58,8 +59,7 @@ impl EditorApp {
             scene,
             renderer,
 
-            original_resolution_x,
-            original_resolution_y,
+            original_resolution: Vector2::new(original_resolution_x, original_resolution_y),
 
             needs_rerender: true,
             should_constantly_rerender: false,
@@ -71,8 +71,8 @@ impl EditorApp {
         // Clone the scene to restore the original resolution
         let mut scene = self.scene.clone();
         let camera = &mut scene.camera;
-        camera.set_resolution_x(self.original_resolution_x);
-        camera.set_resolution_y(self.original_resolution_y);
+        camera.set_resolution_x(self.original_resolution.x);
+        camera.set_resolution_y(self.original_resolution.y);
 
         let json = serde_json::to_string_pretty(&scene)?;
         let file_name = "output.rscn";

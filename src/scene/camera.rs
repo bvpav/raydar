@@ -4,7 +4,7 @@ use cgmath::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum Projection {
     Perspective { fov: Deg<f32> },
     Orthographic { size: f32 },
