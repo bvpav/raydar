@@ -3,7 +3,10 @@ use raydar::{
     scene::{benchmark, Scene},
     widgets::{Inspector, Viewport},
 };
-use std::{fs::File, io::Write};
+use std::{
+    fs::File,
+    io::{Read, Write},
+};
 
 struct EditorApp {
     scene: Scene,
@@ -105,7 +108,15 @@ impl EditorApp {
 fn main() -> eframe::Result {
     let native_options = eframe::NativeOptions::default();
 
-    let scene = benchmark::benchmark_scene();
+    let scene = if let Some(path) = std::env::args().nth(1) {
+        let mut file = File::open(&path).expect("Cannot open scene file");
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)
+            .expect("Cannot read scene file");
+        serde_json::from_str(&contents).expect("Cannot parse scene file")
+    } else {
+        benchmark::benchmark_scene()
+    };
 
     let cpu_arg = std::env::args().any(|arg| arg == "--cpu");
     let renderer: Box<dyn Renderer> = if cpu_arg {
