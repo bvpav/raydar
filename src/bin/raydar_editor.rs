@@ -1,13 +1,13 @@
 use cgmath::Vector2;
+use clap::Parser;
+use color_eyre::eyre::{self, Result};
 use raydar::{
-    renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
-    scene::{benchmark, Scene},
+    cli::RaydarEditorArgs,
+    renderer::Renderer,
+    scene::Scene,
     widgets::{Inspector, Viewport},
 };
-use std::{
-    fs::File,
-    io::{Read, Write},
-};
+use std::{fs::File, io::Write};
 
 struct EditorApp {
     scene: Scene,
@@ -105,29 +105,18 @@ impl EditorApp {
     }
 }
 
-fn main() -> eframe::Result {
+fn main() -> eyre::Result<()> {
+    color_eyre::install()?;
+
     let native_options = eframe::NativeOptions::default();
+    let args = RaydarEditorArgs::parse();
 
-    let scene = if let Some(path) = std::env::args().nth(1) {
-        let mut file = File::open(&path).expect("Cannot open scene file");
-        let mut contents = String::new();
-        file.read_to_string(&mut contents)
-            .expect("Cannot read scene file");
-        serde_json::from_str(&contents).expect("Cannot parse scene file")
-    } else {
-        benchmark::benchmark_scene()
-    };
-
-    let cpu_arg = std::env::args().any(|arg| arg == "--cpu");
-    let renderer: Box<dyn Renderer> = if cpu_arg {
-        Box::new(CpuRenderer::default())
-    } else {
-        Box::new(VulkanRenderer::default())
-    };
+    let (scene, renderer) = args.common.initialize()?;
 
     eframe::run_native(
         "Raydar Editor",
         native_options,
         Box::new(|_cc| Ok(Box::new(EditorApp::new(scene, renderer)))),
     )
+    .map_err(|e| color_eyre::eyre::eyre!("Failed to run editor: {}", e))
 }

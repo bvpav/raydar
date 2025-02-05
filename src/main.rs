@@ -1,35 +1,16 @@
-use color_eyre::eyre::{Context, OptionExt, Report};
+use clap::Parser;
+use color_eyre::eyre::{self, Context, OptionExt};
 use owo_colors::OwoColorize;
-use raydar::{
-    renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
-    scene::benchmark,
-};
-use std::fs::File;
-use std::io::Read;
+use raydar::cli::RaydarArgs;
 
-fn main() -> Result<(), Report> {
+fn main() -> eyre::Result<()> {
     color_eyre::install()?;
 
-    let scene = if let Some(path) = std::env::args().nth(1) {
-        let mut file = File::open(&path).wrap_err("Cannot open scene file")?;
-        let mut contents = String::new();
-        file.read_to_string(&mut contents)
-            .wrap_err("Cannot read scene file")?;
-        serde_json::from_str(&contents).wrap_err("Cannot parse scene file")?
-    } else {
-        benchmark::benchmark_scene()
-    };
-
-    let cpu_arg = std::env::args().any(|arg| arg == "--cpu");
-
-    let mut renderer: Box<dyn Renderer> = if cpu_arg {
-        Box::new(CpuRenderer::default())
-    } else {
-        Box::new(VulkanRenderer::default())
-    };
+    let args = RaydarArgs::parse();
+    let (scene, mut renderer) = args.common.initialize()?;
 
     let image = renderer.render_frame(&scene);
-    image.save("output.png").wrap_err("Cannot save image")?;
+    image.save(&args.output).wrap_err("Cannot save image")?;
 
     let profiler = renderer.profiler();
 

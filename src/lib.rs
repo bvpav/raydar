@@ -1,3 +1,4 @@
+pub mod cli;
 pub mod renderer;
 pub mod scene;
 pub mod widgets;
