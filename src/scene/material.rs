@@ -1,7 +1,7 @@
 use cgmath::Vector3;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Material {
     pub albedo: Vector3<f32>,
     pub roughness: f32,

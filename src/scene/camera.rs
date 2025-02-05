@@ -10,7 +10,7 @@ pub enum Projection {
     Orthographic { size: f32 },
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Camera {
     position: Point3<f32>,
     target: Point3<f32>,

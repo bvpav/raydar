@@ -11,7 +11,7 @@ pub mod material;
 pub mod objects;
 pub mod world;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Scene {
     pub camera: Camera,
     pub world: World,

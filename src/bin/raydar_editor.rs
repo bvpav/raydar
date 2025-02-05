@@ -8,6 +8,10 @@ use std::{fs::File, io::Write};
 struct EditorApp {
     scene: Scene,
     renderer: Box<dyn Renderer>,
+
+    original_resolution_x: u32,
+    original_resolution_y: u32,
+
     needs_rerender: bool,
     should_constantly_rerender: bool,
     rendered_scene_handle: Option<egui::TextureHandle>,
@@ -43,8 +47,31 @@ impl eframe::App for EditorApp {
 }
 
 impl EditorApp {
+    fn new(scene: Scene, renderer: Box<dyn Renderer>) -> Self {
+        let original_resolution_x = scene.camera.resolution_x();
+        let original_resolution_y = scene.camera.resolution_y();
+
+        Self {
+            scene,
+            renderer,
+
+            original_resolution_x,
+            original_resolution_y,
+
+            needs_rerender: true,
+            should_constantly_rerender: false,
+            rendered_scene_handle: None,
+        }
+    }
+
     fn save_scene(&self) -> Result<(), std::io::Error> {
-        let json = serde_json::to_string_pretty(&self.scene)?;
+        // Clone the scene to restore the original resolution
+        let mut scene = self.scene.clone();
+        let camera = &mut scene.camera;
+        camera.set_resolution_x(self.original_resolution_x);
+        camera.set_resolution_y(self.original_resolution_y);
+
+        let json = serde_json::to_string_pretty(&scene)?;
         let file_name = "scene.rscn";
         let mut file = File::create(file_name)?;
         file.write_all(json.as_bytes())?;
@@ -90,14 +117,6 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "Raydar Editor",
         native_options,
-        Box::new(|_cc| {
-            Ok(Box::new(EditorApp {
-                scene,
-                renderer,
-                needs_rerender: true,
-                should_constantly_rerender: false,
-                rendered_scene_handle: None,
-            }))
-        }),
+        Box::new(|_cc| Ok(Box::new(EditorApp::new(scene, renderer)))),
     )
 }

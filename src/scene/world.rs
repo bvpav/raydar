@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::renderer::cpu::Ray;
 
-#[derive(PartialEq, Serialize, Deserialize)]
+#[derive(PartialEq, Serialize, Deserialize, Clone)]
 pub enum World {
     SkyColor {
         top_color: Vector3<f32>,
