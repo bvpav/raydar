@@ -72,7 +72,7 @@ impl EditorApp {
         camera.set_resolution_y(self.original_resolution_y);
 
         let json = serde_json::to_string_pretty(&scene)?;
-        let file_name = "scene.rscn";
+        let file_name = "output.rscn";
         let mut file = File::create(file_name)?;
         file.write_all(json.as_bytes())?;
         println!("Scene saved to {file_name}");
