@@ -3,6 +3,7 @@ use raydar::{
     scene::{benchmark, Scene},
     widgets::{Inspector, Viewport},
 };
+use std::{fs::File, io::Write};
 
 struct EditorApp {
     scene: Scene,
@@ -14,6 +15,12 @@ struct EditorApp {
 
 impl eframe::App for EditorApp {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
+        if ctx.input(|i| i.modifiers.ctrl && i.key_pressed(egui::Key::S)) {
+            if let Err(err) = self.save_scene() {
+                eprintln!("Failed to save scene: {err}");
+            }
+        }
+
         Inspector::new(
             &mut self.scene,
             Box::as_ref(&self.renderer),
@@ -36,6 +43,15 @@ impl eframe::App for EditorApp {
 }
 
 impl EditorApp {
+    fn save_scene(&self) -> Result<(), std::io::Error> {
+        let json = serde_json::to_string_pretty(&self.scene)?;
+        let file_name = "scene.rscn";
+        let mut file = File::create(file_name)?;
+        file.write_all(json.as_bytes())?;
+        println!("Scene saved to {file_name}");
+        Ok(())
+    }
+
     fn rerender(&mut self, ctx: &eframe::egui::Context) {
         if self.needs_rerender || self.should_constantly_rerender {
             self.renderer.new_frame(&self.scene);

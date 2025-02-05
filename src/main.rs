@@ -4,11 +4,21 @@ use raydar::{
     renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
     scene::benchmark,
 };
+use std::fs::File;
+use std::io::Read;
 
 fn main() -> Result<(), Report> {
     color_eyre::install()?;
 
-    let scene = benchmark::benchmark_scene();
+    let scene = if let Some(path) = std::env::args().nth(1) {
+        let mut file = File::open(&path).wrap_err("Cannot open scene file")?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)
+            .wrap_err("Cannot read scene file")?;
+        serde_json::from_str(&contents).wrap_err("Cannot parse scene file")?
+    } else {
+        benchmark::benchmark_scene()
+    };
 
     let cpu_arg = std::env::args().any(|arg| arg == "--cpu");
 
