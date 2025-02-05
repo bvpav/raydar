@@ -11,6 +11,7 @@ eframe = "0.29.1"
 egui = "0.29.1"
 image = "0.25.4"
 ordered-float = "4.5.0"
+owo-colors = { version = "4.1.0", features = ["supports-colors"] }
 rand = "0.8.5"
 vulkano = { git = "https://github.com/vulkano-rs/vulkano.git", rev = "ea30f65280360b1e1bc907cd42d4eb355fed3c9d" }
 vulkano-shaders = { git = "https://github.com/vulkano-rs/vulkano.git", rev = "ea30f65280360b1e1bc907cd42d4eb355fed3c9d" }
