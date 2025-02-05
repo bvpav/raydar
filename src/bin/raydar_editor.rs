@@ -1,6 +1,6 @@
 use raydar::{
     renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
-    scene::Scene,
+    scene::{benchmark, Scene},
     widgets::{Inspector, Viewport},
 };
 
@@ -62,7 +62,7 @@ impl EditorApp {
 fn main() -> eframe::Result {
     let native_options = eframe::NativeOptions::default();
 
-    let scene = Scene::default();
+    let scene = benchmark::benchmark_scene();
 
     let cpu_arg = std::env::args().any(|arg| arg == "--cpu");
     let renderer: Box<dyn Renderer> = if cpu_arg {

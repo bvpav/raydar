@@ -4,6 +4,7 @@ use material::Material;
 use objects::{Cube, Geometry, Object, Sphere};
 use world::World;
 
+pub mod benchmark;
 pub mod camera;
 pub mod material;
 pub mod objects;

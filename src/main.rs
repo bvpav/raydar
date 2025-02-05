@@ -1,14 +1,14 @@
 use color_eyre::eyre::{Context, OptionExt, Report};
 use owo_colors::OwoColorize;
 use raydar::{
-    renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer, RendererConfig},
-    scene::Scene,
+    renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer},
+    scene::benchmark,
 };
 
 fn main() -> Result<(), Report> {
     color_eyre::install()?;
 
-    let scene = Scene::default();
+    let scene = benchmark::benchmark_scene();
 
     let cpu_arg = std::env::args().any(|arg| arg == "--cpu");
 
