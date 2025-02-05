@@ -1,8 +1,9 @@
 use cgmath::{InnerSpace, Vector3, VectorSpace};
+use serde::{Deserialize, Serialize};
 
 use crate::renderer::cpu::Ray;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Serialize, Deserialize)]
 pub enum World {
     SkyColor {
         top_color: Vector3<f32>,

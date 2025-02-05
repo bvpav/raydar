@@ -2,6 +2,7 @@ use camera::{Camera, Projection};
 use cgmath::{Deg, Point3, Vector3};
 use material::Material;
 use objects::{Cube, Geometry, Object, Sphere};
+use serde::{Deserialize, Serialize};
 use world::World;
 
 pub mod benchmark;
@@ -10,6 +11,7 @@ pub mod material;
 pub mod objects;
 pub mod world;
 
+#[derive(Serialize, Deserialize)]
 pub struct Scene {
     pub camera: Camera,
     pub world: World,

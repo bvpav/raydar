@@ -2,12 +2,15 @@ use cgmath::{
     Deg, InnerSpace, Matrix4, MetricSpace, Point3, SquareMatrix, Transform, Vector2, Vector3,
     Vector4,
 };
-#[derive(Debug, Clone, Copy)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Projection {
     Perspective { fov: Deg<f32> },
     Orthographic { size: f32 },
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Camera {
     position: Point3<f32>,
     target: Point3<f32>,
@@ -22,8 +25,6 @@ pub struct Camera {
 
     view_matrix: Matrix4<f32>,
     proj_matrix: Matrix4<f32>,
-
-    // FIXME: do we need to store both original matrices and inverse matrices?
     inverse_view_matrix: Matrix4<f32>,
     inverse_proj_matrix: Matrix4<f32>,
 }
