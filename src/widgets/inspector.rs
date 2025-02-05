@@ -113,8 +113,19 @@ impl<'a> Inspector<'a> {
                         });
                     });
 
-                    for (idx, sphere) in self.scene.objects.iter_mut().enumerate() {
-                        ObjectEditor::new(sphere, idx, self.needs_rerender).show(ui);
+                    let mut index_to_delete = None;
+                    for (idx, object) in self.scene.objects.iter_mut().enumerate() {
+                        let mut delete_requested = false;
+                        ObjectEditor::new(object, idx, self.needs_rerender, &mut delete_requested)
+                            .show(ui);
+                        if delete_requested {
+                            index_to_delete = Some(idx);
+                        }
+                    }
+
+                    if let Some(idx) = index_to_delete {
+                        self.scene.objects.remove(idx);
+                        *self.needs_rerender = true;
                     }
                 });
             });
@@ -482,14 +493,21 @@ pub struct ObjectEditor<'a> {
     object: &'a mut Object,
     index: usize,
     needs_rerender: &'a mut bool,
+    delete_requested: &'a mut bool,
 }
 
 impl<'a> ObjectEditor<'a> {
-    pub fn new(object: &'a mut Object, index: usize, needs_rerender: &'a mut bool) -> Self {
+    pub fn new(
+        object: &'a mut Object,
+        index: usize,
+        needs_rerender: &'a mut bool,
+        delete_requested: &'a mut bool,
+    ) -> Self {
         Self {
             object,
             index,
             needs_rerender,
+            delete_requested,
         }
     }
 
@@ -512,6 +530,11 @@ impl<'a> ObjectEditor<'a> {
 
                     MaterialEditor::new(&mut self.object.material, self.needs_rerender).show(ui);
                 });
+
+            ui.add_space(8.0);
+            if ui.button("Delete").clicked() {
+                *self.delete_requested = true;
+            }
         });
     }
 }
