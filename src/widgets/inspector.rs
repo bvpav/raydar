@@ -41,92 +41,102 @@ impl<'a> Inspector<'a> {
         egui::SidePanel::right("inspector")
             .resizable(true)
             .show(ctx, |ui| {
-                ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
-                    ui.heading("Inspector");
-                    if ui.button("Re-Render").clicked() {
-                        *self.needs_rerender = true;
-                    }
-                    if ui
-                        .checkbox(self.should_constantly_rerender, "Constantly Re-Render")
-                        .changed()
-                    {
-                        *self.needs_rerender = true;
-                    }
-                    ui.label(format!(
-                        "Resolution: {}x{}",
-                        self.scene.camera.resolution_x(),
-                        self.scene.camera.resolution_y()
-                    ));
-
-                    if let Some(last_frame_duration) =
-                        self.renderer.profiler().frame_timer().duration()
-                    {
-                        ui.label(format!(
-                            "Last frame took {}ms",
-                            last_frame_duration.as_millis()
-                        ));
-                    } else {
-                        ui.label("Frame is rendering...");
-                    }
-
-                    if let Some(last_sample_duration) =
-                        self.renderer.profiler().sample_timer().duration()
-                    {
-                        ui.label(format!(
-                            "Sample {}/{} took {}ms",
-                            self.renderer.sample_count(),
-                            self.renderer.max_sample_count(),
-                            last_sample_duration.as_millis()
-                        ));
-                    }
-
-                    WorldEditor::new(&mut self.scene.world, self.needs_rerender).show(ui);
-
-                    CameraEditor::new(
-                        &mut self.scene.camera,
-                        self.original_resolution,
-                        self.needs_rerender,
-                    )
-                    .show(ui);
-
-                    ui.horizontal(|ui| {
-                        let available_width = ui.available_width();
-                        let button_width = (available_width - 8.0) / 2.0; // 8.0 for spacing
-
-                        ui.add_enabled_ui(true, |ui| {
-                            if ui
-                                .add_sized([button_width, 20.0], egui::Button::new("Add Sphere"))
-                                .clicked()
-                            {
-                                self.scene.objects.push(Object::default_sphere());
-                                *self.needs_rerender = true;
-                            }
-                        });
-                        ui.add_enabled_ui(true, |ui| {
-                            if ui
-                                .add_sized([button_width, 20.0], egui::Button::new("Add Cube"))
-                                .clicked()
-                            {
-                                self.scene.objects.push(Object::default_cube());
-                                *self.needs_rerender = true;
-                            }
-                        });
-                    });
-
-                    let mut index_to_delete = None;
-                    for (idx, object) in self.scene.objects.iter_mut().enumerate() {
-                        let mut delete_requested = false;
-                        ObjectEditor::new(object, idx, self.needs_rerender, &mut delete_requested)
-                            .show(ui);
-                        if delete_requested {
-                            index_to_delete = Some(idx);
+                egui::ScrollArea::vertical().show(ui, |ui| {
+                    ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
+                        ui.heading("Inspector");
+                        if ui.button("Re-Render").clicked() {
+                            *self.needs_rerender = true;
                         }
-                    }
+                        if ui
+                            .checkbox(self.should_constantly_rerender, "Constantly Re-Render")
+                            .changed()
+                        {
+                            *self.needs_rerender = true;
+                        }
+                        ui.label(format!(
+                            "Resolution: {}x{}",
+                            self.scene.camera.resolution_x(),
+                            self.scene.camera.resolution_y()
+                        ));
 
-                    if let Some(idx) = index_to_delete {
-                        self.scene.objects.remove(idx);
-                        *self.needs_rerender = true;
-                    }
+                        if let Some(last_frame_duration) =
+                            self.renderer.profiler().frame_timer().duration()
+                        {
+                            ui.label(format!(
+                                "Last frame took {}ms",
+                                last_frame_duration.as_millis()
+                            ));
+                        } else {
+                            ui.label("Frame is rendering...");
+                        }
+
+                        if let Some(last_sample_duration) =
+                            self.renderer.profiler().sample_timer().duration()
+                        {
+                            ui.label(format!(
+                                "Sample {}/{} took {}ms",
+                                self.renderer.sample_count(),
+                                self.renderer.max_sample_count(),
+                                last_sample_duration.as_millis()
+                            ));
+                        }
+
+                        WorldEditor::new(&mut self.scene.world, self.needs_rerender).show(ui);
+
+                        CameraEditor::new(
+                            &mut self.scene.camera,
+                            self.original_resolution,
+                            self.needs_rerender,
+                        )
+                        .show(ui);
+
+                        ui.horizontal(|ui| {
+                            let available_width = ui.available_width();
+                            let button_width = (available_width - 8.0) / 2.0; // 8.0 for spacing
+
+                            ui.add_enabled_ui(true, |ui| {
+                                if ui
+                                    .add_sized(
+                                        [button_width, 20.0],
+                                        egui::Button::new("Add Sphere"),
+                                    )
+                                    .clicked()
+                                {
+                                    self.scene.objects.push(Object::default_sphere());
+                                    *self.needs_rerender = true;
+                                }
+                            });
+                            ui.add_enabled_ui(true, |ui| {
+                                if ui
+                                    .add_sized([button_width, 20.0], egui::Button::new("Add Cube"))
+                                    .clicked()
+                                {
+                                    self.scene.objects.push(Object::default_cube());
+                                    *self.needs_rerender = true;
+                                }
+                            });
+                        });
+
+                        let mut index_to_delete = None;
+                        for (idx, object) in self.scene.objects.iter_mut().enumerate() {
+                            let mut delete_requested = false;
+                            ObjectEditor::new(
+                                object,
+                                idx,
+                                self.needs_rerender,
+                                &mut delete_requested,
+                            )
+                            .show(ui);
+                            if delete_requested {
+                                index_to_delete = Some(idx);
+                            }
+                        }
+
+                        if let Some(idx) = index_to_delete {
+                            self.scene.objects.remove(idx);
+                            *self.needs_rerender = true;
+                        }
+                    });
                 });
             });
     }
