@@ -32,6 +32,7 @@ fn print_info(args: &RaydarArgs, scene: &Scene, renderer: &dyn Renderer) {
     println!(
         "{} {}",
         "Renderer:".red().bold(),
+        // TODO: Add renderer name to renderer
         if args.common.cpu { "CPU" } else { "Vulkan" }
     );
 
