@@ -4,7 +4,7 @@ use std::{fs::File, io::Read, path::PathBuf};
 
 use crate::{
     renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer, RendererConfig},
-    scene::{benchmark, Scene},
+    scene::Scene,
 };
 
 #[derive(Parser, Debug)]
@@ -36,7 +36,7 @@ impl CommonArgs {
                 .wrap_err("Cannot read scene file")?;
             serde_json::from_str(&contents).wrap_err("Cannot parse scene file")?
         } else {
-            benchmark::benchmark_scene()
+            Scene::default()
         };
 
         let mut config = RendererConfig::default();
