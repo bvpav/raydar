@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{crate_version, Parser};
 use color_eyre::eyre::{self, Context, OptionExt};
 use owo_colors::OwoColorize;
 use raydar::cli::RaydarArgs;
@@ -8,6 +8,39 @@ fn main() -> eyre::Result<()> {
 
     let args = RaydarArgs::parse();
     let (scene, mut renderer) = args.common.initialize()?;
+
+    println!(
+        "{}",
+        format!("{}", format!("=== Raydar v{} ===", crate_version!()).bold())
+    );
+
+    println!(
+        "{} {}",
+        "Renderer:".red().bold(),
+        // TODO: Add renderer name to renderer
+        if args.common.cpu { "CPU" } else { "Vulkan" }
+    );
+
+    println!(
+        "{} {}",
+        "Max Samples:".yellow().bold(),
+        renderer.max_sample_count()
+    );
+
+    println!(
+        "{} {}",
+        "Max Bounces:".green().bold(),
+        renderer.max_bounces()
+    );
+
+    println!(
+        "{} {}x{}",
+        "Resolution:".blue().bold(),
+        scene.camera.resolution_x(),
+        scene.camera.resolution_y()
+    );
+
+    println!("{} {}", "Objects:".magenta().bold(), scene.objects.len());
 
     let image = renderer.render_frame(&scene);
     image.save(&args.output).wrap_err("Cannot save image")?;

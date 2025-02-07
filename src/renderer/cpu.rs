@@ -159,6 +159,10 @@ impl Renderer for CpuRenderer {
         self.config.max_sample_count
     }
 
+    fn max_bounces(&self) -> u32 {
+        self.config.max_bounces
+    }
+
     fn profiler(&self) -> &Profiler {
         &self.profiler
     }
