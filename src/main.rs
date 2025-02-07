@@ -1,7 +1,11 @@
 use clap::{crate_version, Parser};
 use color_eyre::eyre::{self, Context, OptionExt};
 use owo_colors::OwoColorize;
-use raydar::cli::RaydarArgs;
+use raydar::{
+    cli::RaydarArgs,
+    renderer::{timing::Profiler, Renderer},
+    scene::Scene,
+};
 
 fn main() -> eyre::Result<()> {
     color_eyre::install()?;
@@ -9,6 +13,17 @@ fn main() -> eyre::Result<()> {
     let args = RaydarArgs::parse();
     let (scene, mut renderer) = args.common.initialize()?;
 
+    print_info(&args, &scene, renderer.as_ref());
+
+    let image = renderer.render_frame(&scene);
+    image.save(&args.output).wrap_err("Cannot save image")?;
+
+    print_profiling_metrics(renderer.profiler())?;
+
+    Ok(())
+}
+
+fn print_info(args: &RaydarArgs, scene: &Scene, renderer: &dyn Renderer) {
     println!(
         "{}",
         format!("{}", format!("=== Raydar v{} ===", crate_version!()).bold())
@@ -17,7 +32,6 @@ fn main() -> eyre::Result<()> {
     println!(
         "{} {}",
         "Renderer:".red().bold(),
-        // TODO: Add renderer name to renderer
         if args.common.cpu { "CPU" } else { "Vulkan" }
     );
 
@@ -41,13 +55,9 @@ fn main() -> eyre::Result<()> {
     );
 
     println!("{} {}", "Objects:".magenta().bold(), scene.objects.len());
+}
 
-    let image = renderer.render_frame(&scene);
-    image.save(&args.output).wrap_err("Cannot save image")?;
-
-    let profiler = renderer.profiler();
-
-    // Print all metrics with rainbow colors
+fn print_profiling_metrics(profiler: &Profiler) -> eyre::Result<()> {
     println!("\n{}", "=== Render Profiling Metrics ===".bold());
 
     println!(
