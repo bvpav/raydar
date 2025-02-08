@@ -7,13 +7,14 @@ use raydar::{
     scene::Scene,
     widgets::{Inspector, Viewport},
 };
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write, path::PathBuf};
 
 struct EditorApp {
     scene: Scene,
     renderer: Box<dyn Renderer>,
 
     original_resolution: Vector2<u32>,
+    original_scene_file: Option<PathBuf>,
 
     needs_rerender: bool,
     should_constantly_rerender: bool,
@@ -51,7 +52,11 @@ impl eframe::App for EditorApp {
 }
 
 impl EditorApp {
-    fn new(scene: Scene, renderer: Box<dyn Renderer>) -> Self {
+    fn new(
+        scene: Scene,
+        renderer: Box<dyn Renderer>,
+        original_scene_file: Option<PathBuf>,
+    ) -> Self {
         let original_resolution_x = scene.camera.resolution_x();
         let original_resolution_y = scene.camera.resolution_y();
 
@@ -60,6 +65,7 @@ impl EditorApp {
             renderer,
 
             original_resolution: Vector2::new(original_resolution_x, original_resolution_y),
+            original_scene_file,
 
             needs_rerender: true,
             should_constantly_rerender: false,
@@ -75,10 +81,14 @@ impl EditorApp {
         camera.set_resolution_y(self.original_resolution.y);
 
         let json = serde_json::to_string_pretty(&scene)?;
-        let file_name = "output.rscn";
-        let mut file = File::create(file_name)?;
+        let file_name = if let Some(original_scene_file) = &self.original_scene_file {
+            original_scene_file.to_path_buf()
+        } else {
+            PathBuf::from("output.rscn")
+        };
+        let mut file = File::create(&file_name)?;
         file.write_all(json.as_bytes())?;
-        println!("Scene saved to {file_name}");
+        println!("Scene saved to {}", file_name.display());
         Ok(())
     }
 
@@ -116,7 +126,13 @@ fn main() -> eyre::Result<()> {
     eframe::run_native(
         "Raydar Editor",
         native_options,
-        Box::new(|_cc| Ok(Box::new(EditorApp::new(scene, renderer)))),
+        Box::new(|_cc| {
+            Ok(Box::new(EditorApp::new(
+                scene,
+                renderer,
+                args.common.scene_file,
+            )))
+        }),
     )
     .map_err(|e| color_eyre::eyre::eyre!("Failed to run editor: {}", e))
 }
