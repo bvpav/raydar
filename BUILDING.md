@@ -7,13 +7,13 @@
 
    ```bash
    # Ubuntu/Debian
-   sudo apt install vulkan-tools libvulkan-dev
+   sudo apt install libshaderc-dev libvulkan-dev vulkan-validationlayers-dev
 
    # Fedora
-   sudo dnf install vulkan-tools vulkan-loader-devel
+   sudo dnf install libshaderc-devel vulkan-loader-devel vulkan-validation-layers-devel
 
    # Arch Linux
-   sudo pacman -S vulkan-devel
+   sudo pacman -S shaderc vulkan-icd-loader vulkan-validation-layers
    ```
 
 ## Building
