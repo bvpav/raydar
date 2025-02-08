@@ -36,14 +36,14 @@ This will create two binaries in `target/release/`:
 For development, you can build and run without `--release`:
 
 ```bash
-cargo run -- [FLAGS] [scene-file]            # Run headless renderer
-cargo run --bin raydar_editor -- [FLAGS]     # Run editor
+cargo run -- [OPTIONS] [<scene-file>]          # Run headless renderer
+cargo run --bin raydar_editor -- [OPTIONS]     # Run editor
 ```
 
 Note that the CPU renderer will be significantly slower in development builds. Always use `--release` for production rendering:
 
 ```bash
-cargo run --release -- [FLAGS] [scene-file]  # Much faster CPU rendering
+cargo run --release -- [OPTIONS] [<scene-file>]  # Much faster CPU rendering
 ```
 
 ## Troubleshooting

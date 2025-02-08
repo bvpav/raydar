@@ -21,10 +21,10 @@ Download the latest release from the [releases tab](https://github.com/bvpav/ray
 Renders a scene to an image file:
 
 ```bash
-./raydar [FLAGS] [scene-file]
+raydar [OPTIONS] [<scene-file>]
 
 # Example: Render scene.rscn with 512 samples using CPU
-./raydar --cpu --max-sample-count 512 scene.rscn
+raydar --cpu --max-sample-count 512 scene.rscn
 ```
 
 ### Scene Editor (`raydar_editor`)
@@ -32,10 +32,10 @@ Renders a scene to an image file:
 Interactive editor for creating and modifying scenes:
 
 ```bash
-./raydar_editor [FLAGS] [scene-file]
+raydar_editor [OPTIONS] [<scene-file>]
 
 # Example: Open scene.rscn with 8 light bounces using CPU
-./raydar_editor --cpu --max-bounces 8 scene.rscn
+raydar_editor --cpu --max-bounces 8 scene.rscn
 ```
 
 ### Common Flags
@@ -43,12 +43,12 @@ Interactive editor for creating and modifying scenes:
 Both binaries accept these flags:
 
 - `--cpu` - Use CPU renderer instead of Vulkan
-- `--max-sample-count <N>` - Maximum samples per pixel (default: 1024)
-- `--max-bounces <N>` - Maximum light bounces per ray (default: 12)
+- `--max-sample-count <count>` - Maximum samples per pixel (default: 1024)
+- `--max-bounces <count>` - Maximum light bounces per ray (default: 12)
 
 ### Additional Flags for Headless Renderer
 
-- `-o, --output <FILE>` - Output image path (default: output.png)
+- `-o, --output <file>` - Output image path (default: output.png)
 
 ## Building from Source
 
@@ -62,8 +62,8 @@ For quick development builds:
 
 ```bash
 # Run headless renderer
-cargo run -- [FLAGS] [scene-file]
+cargo run -- [OPTIONS] [<scene-file>]
 
 # Run editor
-cargo run --bin raydar_editor -- [FLAGS] [scene-file]
+cargo run --bin raydar_editor -- [OPTIONS] [<scene-file>]
 ```
