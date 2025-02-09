@@ -57,6 +57,7 @@ pub struct VulkanRenderer {
     profiler: Profiler,
     config: RendererConfig,
 
+    #[allow(unused)]
     instance: Arc<Instance>,
     device: Arc<Device>,
     queue: Arc<Queue>,
@@ -78,6 +79,7 @@ pub struct VulkanRenderer {
 }
 
 struct BoundScene {
+    #[allow(unused)]
     tlas: Arc<AccelerationStructure>,
     scene_descriptor_set: Arc<DescriptorSet>,
     image_descriptor_set: Arc<DescriptorSet>,
