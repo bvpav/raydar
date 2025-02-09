@@ -170,6 +170,14 @@ impl Renderer for CpuRenderer {
     fn sample_count(&self) -> u32 {
         self.sample_count
     }
+
+    fn set_max_sample_count(&mut self, count: u32) {
+        self.config.max_sample_count = count;
+    }
+
+    fn set_max_bounces(&mut self, bounces: u32) {
+        self.config.max_bounces = bounces;
+    }
 }
 
 impl CpuRenderer {

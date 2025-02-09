@@ -15,7 +15,7 @@ use crate::{
 pub struct Inspector<'a> {
     scene: &'a mut Scene,
     original_resolution: &'a mut Vector2<u32>,
-    renderer: &'a dyn Renderer,
+    renderer: &'a mut dyn Renderer,
     needs_rerender: &'a mut bool,
     should_constantly_rerender: &'a mut bool,
 }
@@ -24,7 +24,7 @@ impl<'a> Inspector<'a> {
     pub fn new(
         scene: &'a mut Scene,
         original_resolution: &'a mut Vector2<u32>,
-        renderer: &'a dyn Renderer,
+        renderer: &'a mut dyn Renderer,
         needs_rerender: &'a mut bool,
         should_constantly_rerender: &'a mut bool,
     ) -> Self {
@@ -85,6 +85,7 @@ impl<'a> Inspector<'a> {
 
                         CameraEditor::new(
                             &mut self.scene.camera,
+                            self.renderer,
                             self.original_resolution,
                             self.needs_rerender,
                         )
@@ -145,18 +146,21 @@ impl<'a> Inspector<'a> {
 pub struct CameraEditor<'a> {
     camera: &'a mut Camera,
     original_resolution: &'a mut Vector2<u32>,
+    renderer: &'a mut dyn Renderer,
     needs_rerender: &'a mut bool,
 }
 
 impl<'a> CameraEditor<'a> {
     pub fn new(
         camera: &'a mut Camera,
+        renderer: &'a mut dyn Renderer,
         original_resolution: &'a mut Vector2<u32>,
         needs_rerender: &'a mut bool,
     ) -> Self {
         Self {
             camera,
             original_resolution,
+            renderer,
             needs_rerender,
         }
     }
@@ -167,6 +171,42 @@ impl<'a> CameraEditor<'a> {
                 .num_columns(2)
                 .striped(true)
                 .show(ui, |ui| {
+                    // FIXME: This doesn't belong in the camera editor
+                    // It should be a new renderer editor
+                    ui.label("Max Sample Count");
+                    ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
+                        let mut max_samples = self.renderer.max_sample_count();
+                        if ui
+                            .add(
+                                egui::DragValue::new(&mut max_samples)
+                                    .speed(10.0)
+                                    .range(1..=10000),
+                            )
+                            .changed()
+                        {
+                            self.renderer.set_max_sample_count(max_samples);
+                            *self.needs_rerender = true;
+                        }
+                    });
+                    ui.end_row();
+
+                    ui.label("Max Bounces");
+                    ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {
+                        let mut max_bounces = self.renderer.max_bounces();
+                        if ui
+                            .add(
+                                egui::DragValue::new(&mut max_bounces)
+                                    .speed(1.0)
+                                    .range(1..=100),
+                            )
+                            .changed()
+                        {
+                            self.renderer.set_max_bounces(max_bounces);
+                            *self.needs_rerender = true;
+                        }
+                    });
+                    ui.end_row();
+
                     // Position
                     ui.label("Position X");
                     ui.with_layout(Layout::top_down_justified(egui::Align::Min), |ui| {

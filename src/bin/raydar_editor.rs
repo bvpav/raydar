@@ -32,7 +32,7 @@ impl eframe::App for EditorApp {
         Inspector::new(
             &mut self.scene,
             &mut self.original_resolution,
-            Box::as_ref(&self.renderer),
+            self.renderer.as_mut(),
             &mut self.needs_rerender,
             &mut self.should_constantly_rerender,
         )

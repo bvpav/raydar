@@ -30,4 +30,6 @@ pub trait Renderer {
     fn sample_count(&self) -> u32;
     fn max_sample_count(&self) -> u32;
     fn max_bounces(&self) -> u32;
+    fn set_max_sample_count(&mut self, count: u32);
+    fn set_max_bounces(&mut self, bounces: u32);
 }
