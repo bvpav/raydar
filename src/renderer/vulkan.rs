@@ -208,7 +208,6 @@ impl Renderer for VulkanRenderer {
             .objects
             .iter()
             .enumerate()
-            // FIXME: Add support for spheres
             .map(|(index, object)| {
                 let get_transform_matrix = |location: Point3<f32>, scale: f32| {
                     let transform =
