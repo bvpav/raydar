@@ -1,6 +1,6 @@
 use clap::Parser;
 use color_eyre::eyre::{Context, Report};
-use std::{fs::File, io::Read, path::PathBuf};
+use std::{fs::File, io::BufReader, path::PathBuf};
 
 use crate::{
     renderer::{cpu::CpuRenderer, vulkan::VulkanRenderer, Renderer, RendererConfig},
@@ -30,11 +30,9 @@ impl CommonArgs {
     /// Initialize scene and renderer from command line arguments
     pub fn initialize(&self) -> Result<(Scene, Box<dyn Renderer>), Report> {
         let scene = if let Some(path) = &self.scene_file {
-            let mut file = File::open(path).wrap_err("Cannot open scene file")?;
-            let mut contents = String::new();
-            file.read_to_string(&mut contents)
-                .wrap_err("Cannot read scene file")?;
-            serde_json::from_str(&contents).wrap_err("Cannot parse scene file")?
+            let file = File::open(path).wrap_err("Cannot open scene file")?;
+            let reader = BufReader::new(file);
+            serde_json::from_reader(reader).wrap_err("Cannot parse scene file")?
         } else {
             Scene::default()
         };
