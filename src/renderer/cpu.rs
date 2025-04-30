@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
@@ -20,11 +22,11 @@ pub struct Ray {
 }
 
 impl Ray {
-    fn hit<'a>(&self, bvh_node: &'a BVHNode) -> Option<(f32, &'a Object)> {
+    fn hit<'a>(&self, bvh_node: &'a BVHNode) -> Option<(f32, &'a Rc<Object>)> {
         match &bvh_node.kind {
             BVHNodeKind::Internal(left, right) => [left, right]
                 .into_iter()
-                .filter_map(|n| self.hit(n))
+                .filter_map(|n| self.hit(n.as_ref()))
                 .min_by_key(|(t, _)| ordered_float::OrderedFloat(*t)),
             BVHNodeKind::Leaf(o) => self.hit_object(o).map(|t| (t, o)),
         }
@@ -110,8 +112,8 @@ impl Ray {
 
 #[derive(Clone)]
 enum BVHNodeKind {
-    Internal(Box<BVHNode>, Box<BVHNode>),
-    Leaf(Object),
+    Internal(Rc<BVHNode>, Rc<BVHNode>),
+    Leaf(Rc<Object>),
 }
 
 #[derive(Clone)]
@@ -143,7 +145,7 @@ impl BVHNode {
         Self {
             aabb_min,
             aabb_max,
-            kind: BVHNodeKind::Leaf(object),
+            kind: BVHNodeKind::Leaf(Rc::new(object)),
         }
     }
 }
@@ -163,7 +165,7 @@ pub struct CpuRenderer {
     frame_buffer: Option<Rgba32FImage>,
     sample_count: u32,
     config: RendererConfig,
-    bvh_root: Option<BVHNode>,
+    bvh_root: Option<Rc<BVHNode>>,
 }
 
 impl Renderer for CpuRenderer {
@@ -191,7 +193,7 @@ impl Renderer for CpuRenderer {
         self.profiler.prepare_timer.start();
         self.frame_buffer = Some(self.blank_frame_buffer(scene));
         self.sample_count = 0;
-        self.bvh_root = Some(BVHNode::new(&scene.objects));
+        self.bvh_root = Some(Rc::new(BVHNode::new(&scene.objects)));
     }
 
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
