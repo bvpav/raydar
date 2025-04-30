@@ -24,9 +24,14 @@ impl Ray {
         match &bvh_node.kind {
             BVHNodeKind::Internal(left, right) => [left, right]
                 .into_iter()
-                .filter_map(|n| self.hit(n))
+                .filter_map(|n| {
+                    self.hit_aabb(n.aabb_min, n.aabb_max)
+                        .and_then(|_| self.hit(n))
+                })
                 .min_by_key(|(t, _)| ordered_float::OrderedFloat(*t)),
-            BVHNodeKind::Leaf(o) => self.hit_object(o).map(|t| (t, o)),
+            BVHNodeKind::Leaf(o) => self
+                .hit_aabb(bvh_node.aabb_min, bvh_node.aabb_max)
+                .and_then(|_| self.hit_object(o).map(|t| (t, o))),
         }
     }
 
@@ -80,6 +85,10 @@ impl Ray {
         let min = cube.center - half_size;
         let max = cube.center + half_size;
 
+        self.hit_aabb(min, max)
+    }
+
+    fn hit_aabb(&self, min: Point3<f32>, max: Point3<f32>) -> Option<f32> {
         // Calculate intersection distances for each axis using vector operations
         let t1 = (min - self.origin).div_element_wise(self.direction);
         let t2 = (max - self.origin).div_element_wise(self.direction);
@@ -407,15 +416,11 @@ impl CpuRenderer {
     fn trace_ray<'a>(
         &self,
         ray: &Ray,
-        bvh_root: &BVHNode,
+        bvh_root: &'a BVHNode,
         scene: &'a Scene,
     ) -> Option<HitRecord<'a>> {
-        scene
-            .objects
-            .iter()
-            .filter_map(|o| ray.hit_object(o).map(|t| (o, t)))
-            .min_by_key(|(_, t)| ordered_float::OrderedFloat(*t))
-            .and_then(|(o, t)| self.closest_hit(ray, t, o))
+        ray.hit(bvh_root)
+            .and_then(|(t, o)| self.closest_hit(ray, t, o))
             .or_else(|| self.miss(ray, scene))
     }
 
