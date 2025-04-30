@@ -20,7 +20,17 @@ pub struct Ray {
 }
 
 impl Ray {
-    fn hit(&self, object: &Object) -> Option<f32> {
+    fn hit<'a>(&self, bvh_node: &'a BVHNode) -> Option<(f32, &'a Object)> {
+        match &bvh_node.kind {
+            BVHNodeKind::Internal(left, right) => [left, right]
+                .into_iter()
+                .filter_map(|n| self.hit(n))
+                .min_by_key(|(t, _)| ordered_float::OrderedFloat(*t)),
+            BVHNodeKind::Leaf(o) => self.hit_object(o).map(|t| (t, o)),
+        }
+    }
+
+    fn hit_object(&self, object: &Object) -> Option<f32> {
         match &object.geometry {
             Geometry::Sphere(sphere) => self.hit_sphere(sphere),
             Geometry::Cube(cube) => self.hit_cube(cube),
@@ -98,6 +108,46 @@ impl Ray {
     }
 }
 
+#[derive(Clone)]
+enum BVHNodeKind {
+    Internal(Box<BVHNode>, Box<BVHNode>),
+    Leaf(Object),
+}
+
+#[derive(Clone)]
+struct BVHNode {
+    aabb_min: Point3<f32>,
+    aabb_max: Point3<f32>,
+    kind: BVHNodeKind,
+}
+
+impl BVHNode {
+    fn new(objects: &[Object]) -> Self {
+        assert!(objects.len() == 1);
+        // FIXME: do not clone
+        let object = objects[0].clone();
+        let (aabb_min, aabb_max) = match &object.geometry {
+            Geometry::Cube(cube) => {
+                let half_size = Vector3::new(
+                    cube.side_length * 0.5,
+                    cube.side_length * 0.5,
+                    cube.side_length * 0.5,
+                );
+                (cube.center - half_size, cube.center + half_size)
+            }
+            Geometry::Sphere(sphere) => (
+                sphere.center - Vector3::new(sphere.radius, sphere.radius, sphere.radius),
+                sphere.center + Vector3::new(sphere.radius, sphere.radius, sphere.radius),
+            ),
+        };
+        Self {
+            aabb_min,
+            aabb_max,
+            kind: BVHNodeKind::Leaf(object),
+        }
+    }
+}
+
 struct HitRecord<'a> {
     #[allow(unused)]
     hit_distance: f32,
@@ -113,6 +163,7 @@ pub struct CpuRenderer {
     frame_buffer: Option<Rgba32FImage>,
     sample_count: u32,
     config: RendererConfig,
+    bvh_root: Option<BVHNode>,
 }
 
 impl Renderer for CpuRenderer {
@@ -123,8 +174,11 @@ impl Renderer for CpuRenderer {
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
+        // FIXME: do not clone and expect :/
+        let bvh_root = self.bvh_root.clone().expect("BVH root is not set");
+
         while self.sample_count < self.config.max_sample_count {
-            self.render_next_sample(scene, &mut frame_buffer);
+            self.render_next_sample(scene, &bvh_root, &mut frame_buffer);
         }
         self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
 
@@ -137,6 +191,7 @@ impl Renderer for CpuRenderer {
         self.profiler.prepare_timer.start();
         self.frame_buffer = Some(self.blank_frame_buffer(scene));
         self.sample_count = 0;
+        self.bvh_root = Some(BVHNode::new(&scene.objects));
     }
 
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
@@ -149,7 +204,10 @@ impl Renderer for CpuRenderer {
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
-        self.render_next_sample(scene, &mut frame_buffer);
+        // FIXME: do not clone and expect :/
+        let bvh_root = self.bvh_root.clone().expect("BVH root is not set");
+
+        self.render_next_sample(scene, &bvh_root, &mut frame_buffer);
         self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
 
         self.frame_buffer = Some(frame_buffer);
@@ -190,7 +248,12 @@ impl CpuRenderer {
         }
     }
 
-    fn render_next_sample(&mut self, scene: &Scene, frame_buffer: &mut Rgba32FImage) {
+    fn render_next_sample(
+        &mut self,
+        scene: &Scene,
+        bvh_root: &BVHNode,
+        frame_buffer: &mut Rgba32FImage,
+    ) {
         self.profiler.prepare_timer.end_if_not_ended();
         self.profiler.render_timer.start_if_not_started();
         self.profiler.sample_timer.start();
@@ -200,7 +263,7 @@ impl CpuRenderer {
                 x as f32 / scene.camera.resolution_x() as f32,
                 1.0 - y as f32 / scene.camera.resolution_y() as f32,
             );
-            let color = self.per_pixel(uv_coord, scene);
+            let color = self.per_pixel(uv_coord, scene, bvh_root);
             *pixel = Rgba([
                 (pixel[0] + color.x),
                 (pixel[1] + color.y),
@@ -230,7 +293,7 @@ impl CpuRenderer {
     }
 
     /// Performs Monte Carlo path tracing for a single pixel by solving the rendering equation.
-    fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene) -> Vector4<f32> {
+    fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene, bvh_root: &BVHNode) -> Vector4<f32> {
         let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
             .extend(-1.0)
             .extend(-1.0);
@@ -254,7 +317,7 @@ impl CpuRenderer {
         let mut attenuation = Vector3::new(1.0, 1.0, 1.0);
 
         for _ in 0..self.config.max_bounces {
-            if let Some(hit_record) = self.trace_ray(&ray, scene) {
+            if let Some(hit_record) = self.trace_ray(&ray, bvh_root, scene) {
                 // The roughness is squared to achieve perceptual linearity.
                 // (based on https://www.pbr-book.org/3ed-2018/Reflection_Models/Microfacet_Models.html
                 //           https://www.pbr-book.org/4ed/Reflection_Models/Roughness_Using_Microfacet_Theory
@@ -341,11 +404,16 @@ impl CpuRenderer {
         light.extend(1.0)
     }
 
-    fn trace_ray<'a>(&self, ray: &Ray, scene: &'a Scene) -> Option<HitRecord<'a>> {
+    fn trace_ray<'a>(
+        &self,
+        ray: &Ray,
+        bvh_root: &BVHNode,
+        scene: &'a Scene,
+    ) -> Option<HitRecord<'a>> {
         scene
             .objects
             .iter()
-            .filter_map(|o| ray.hit(o).map(|t| (o, t)))
+            .filter_map(|o| ray.hit_object(o).map(|t| (o, t)))
             .min_by_key(|(_, t)| ordered_float::OrderedFloat(*t))
             .and_then(|(o, t)| self.closest_hit(ray, t, o))
             .or_else(|| self.miss(ray, scene))
