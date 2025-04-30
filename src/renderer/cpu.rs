@@ -3,6 +3,7 @@ use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
 
 use crate::{
     scene::{
+        aabb::{HasBoundingBox, AABB},
         objects::{Cube, Geometry, Object, Sphere},
         Scene,
     },
@@ -24,13 +25,10 @@ impl Ray {
         match &bvh_node.kind {
             BVHNodeKind::Internal(left, right) => [left, right]
                 .into_iter()
-                .filter_map(|n| {
-                    self.hit_aabb(n.aabb_min, n.aabb_max)
-                        .and_then(|_| self.hit(n))
-                })
+                .filter_map(|n| self.hit_aabb(&n.aabb).and_then(|_| self.hit(n)))
                 .min_by_key(|(t, _)| ordered_float::OrderedFloat(*t)),
             BVHNodeKind::Leaf(o) => self
-                .hit_aabb(bvh_node.aabb_min, bvh_node.aabb_max)
+                .hit_aabb(&bvh_node.aabb)
                 .and_then(|_| self.hit_object(o).map(|t| (t, o))),
         }
     }
@@ -77,21 +75,13 @@ impl Ray {
     }
 
     fn hit_cube(&self, cube: &Cube) -> Option<f32> {
-        let half_size = Vector3::new(
-            cube.side_length * 0.5,
-            cube.side_length * 0.5,
-            cube.side_length * 0.5,
-        );
-        let min = cube.center - half_size;
-        let max = cube.center + half_size;
-
-        self.hit_aabb(min, max)
+        self.hit_aabb(&cube.aabb())
     }
 
-    fn hit_aabb(&self, min: Point3<f32>, max: Point3<f32>) -> Option<f32> {
+    fn hit_aabb(&self, aabb: &AABB) -> Option<f32> {
         // Calculate intersection distances for each axis using vector operations
-        let t1 = (min - self.origin).div_element_wise(self.direction);
-        let t2 = (max - self.origin).div_element_wise(self.direction);
+        let t1 = (aabb.min - self.origin).div_element_wise(self.direction);
+        let t2 = (aabb.max - self.origin).div_element_wise(self.direction);
 
         // Find entry and exit points
         let tmin = t1.x.min(t2.x).max(t1.y.min(t2.y)).max(t1.z.min(t2.z));
@@ -125,34 +115,19 @@ enum BVHNodeKind {
 
 #[derive(Clone)]
 struct BVHNode {
-    aabb_min: Point3<f32>,
-    aabb_max: Point3<f32>,
+    aabb: AABB,
     kind: BVHNodeKind,
 }
 
 impl BVHNode {
-    fn new(objects: &[Object]) -> Self {
-        assert!(objects.len() == 1);
-        // FIXME: do not clone
-        let object = objects[0].clone();
-        let (aabb_min, aabb_max) = match &object.geometry {
-            Geometry::Cube(cube) => {
-                let half_size = Vector3::new(
-                    cube.side_length * 0.5,
-                    cube.side_length * 0.5,
-                    cube.side_length * 0.5,
-                );
-                (cube.center - half_size, cube.center + half_size)
-            }
-            Geometry::Sphere(sphere) => (
-                sphere.center - Vector3::new(sphere.radius, sphere.radius, sphere.radius),
-                sphere.center + Vector3::new(sphere.radius, sphere.radius, sphere.radius),
-            ),
-        };
-        Self {
-            aabb_min,
-            aabb_max,
-            kind: BVHNodeKind::Leaf(object),
+    fn new(objects: &[Object]) -> Option<Self> {
+        match objects {
+            [] => None,
+            [object] => Some(Self {
+                aabb: object.aabb(),
+                kind: BVHNodeKind::Leaf(object.clone()),
+            }),
+            _ => todo!(),
         }
     }
 }
@@ -183,15 +158,16 @@ impl Renderer for CpuRenderer {
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
-        // FIXME: do not clone and expect :/
-        let bvh_root = self.bvh_root.clone().expect("BVH root is not set");
+        let bvh_root = self.bvh_root.take();
 
         while self.sample_count < self.config.max_sample_count {
-            self.render_next_sample(scene, &bvh_root, &mut frame_buffer);
+            self.render_next_sample(scene, bvh_root.as_ref(), &mut frame_buffer);
         }
         self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
 
         self.frame_buffer = Some(frame_buffer);
+        self.bvh_root = bvh_root;
+
         rendered_frame
     }
 
@@ -200,7 +176,7 @@ impl Renderer for CpuRenderer {
         self.profiler.prepare_timer.start();
         self.frame_buffer = Some(self.blank_frame_buffer(scene));
         self.sample_count = 0;
-        self.bvh_root = Some(BVHNode::new(&scene.objects));
+        self.bvh_root = BVHNode::new(&scene.objects);
     }
 
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
@@ -213,13 +189,13 @@ impl Renderer for CpuRenderer {
         let mut rendered_frame =
             ImageBuffer::new(scene.camera.resolution_x(), scene.camera.resolution_y());
 
-        // FIXME: do not clone and expect :/
-        let bvh_root = self.bvh_root.clone().expect("BVH root is not set");
+        let bvh_root = self.bvh_root.take();
 
-        self.render_next_sample(scene, &bvh_root, &mut frame_buffer);
+        self.render_next_sample(scene, bvh_root.as_ref(), &mut frame_buffer);
         self.print_frame_buffer(&frame_buffer, &mut rendered_frame);
 
         self.frame_buffer = Some(frame_buffer);
+        self.bvh_root = bvh_root;
 
         Some(rendered_frame)
     }
@@ -260,7 +236,7 @@ impl CpuRenderer {
     fn render_next_sample(
         &mut self,
         scene: &Scene,
-        bvh_root: &BVHNode,
+        bvh_root: Option<&BVHNode>,
         frame_buffer: &mut Rgba32FImage,
     ) {
         self.profiler.prepare_timer.end_if_not_ended();
@@ -302,7 +278,12 @@ impl CpuRenderer {
     }
 
     /// Performs Monte Carlo path tracing for a single pixel by solving the rendering equation.
-    fn per_pixel(&self, uv_coord: Vector2<f32>, scene: &Scene, bvh_root: &BVHNode) -> Vector4<f32> {
+    fn per_pixel(
+        &self,
+        uv_coord: Vector2<f32>,
+        scene: &Scene,
+        bvh_root: Option<&BVHNode>,
+    ) -> Vector4<f32> {
         let clip_space_point = (uv_coord * 2.0 - Vector2::new(1.0, 1.0))
             .extend(-1.0)
             .extend(-1.0);
@@ -416,10 +397,11 @@ impl CpuRenderer {
     fn trace_ray<'a>(
         &self,
         ray: &Ray,
-        bvh_root: &'a BVHNode,
+        bvh_root: Option<&'a BVHNode>,
         scene: &'a Scene,
     ) -> Option<HitRecord<'a>> {
-        ray.hit(bvh_root)
+        bvh_root
+            .and_then(|bvh_root| ray.hit(bvh_root))
             .and_then(|(t, o)| self.closest_hit(ray, t, o))
             .or_else(|| self.miss(ray, scene))
     }

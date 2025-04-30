@@ -5,6 +5,7 @@ use objects::{Cube, Geometry, Object, Sphere};
 use serde::{Deserialize, Serialize};
 use world::World;
 
+pub mod aabb;
 pub mod camera;
 pub mod material;
 pub mod objects;
