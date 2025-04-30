@@ -1,5 +1,6 @@
 use cgmath::{ElementWise, EuclideanSpace, InnerSpace, Point3, Vector2, Vector3, Vector4, Zero};
 use image::{ImageBuffer, Rgba, Rgba32FImage, RgbaImage};
+use rand::Rng;
 
 use crate::{
     scene::{
@@ -25,6 +26,7 @@ impl Ray {
         match &bvh_node.kind {
             BVHNodeKind::Internal(left, right) => [left, right]
                 .into_iter()
+                .flatten()
                 .filter_map(|n| self.hit_aabb(&n.aabb).and_then(|_| self.hit(n)))
                 .min_by_key(|(t, _)| ordered_float::OrderedFloat(*t)),
             BVHNodeKind::Leaf(o) => self
@@ -109,7 +111,7 @@ impl Ray {
 
 #[derive(Clone)]
 enum BVHNodeKind {
-    Internal(Box<BVHNode>, Box<BVHNode>),
+    Internal(Option<Box<BVHNode>>, Option<Box<BVHNode>>),
     Leaf(Object),
 }
 
@@ -120,14 +122,37 @@ struct BVHNode {
 }
 
 impl BVHNode {
-    fn new(objects: &[Object]) -> Option<Self> {
+    fn new(objects: &mut [Object]) -> Option<Self> {
         match objects {
             [] => None,
             [object] => Some(Self {
                 aabb: object.aabb(),
                 kind: BVHNodeKind::Leaf(object.clone()),
             }),
-            _ => todo!(),
+            _ => {
+                let axis = rand::thread_rng().gen_range(0..3);
+
+                // FIXME: we can get the min and max bounds here, after sorting, and use them to create the AABB
+                objects.sort_unstable_by_key(|o| ordered_float::OrderedFloat(o.aabb().max[axis]));
+                objects.sort_unstable_by_key(|o| ordered_float::OrderedFloat(o.aabb().min[axis]));
+
+                let (left_objects, right_objects) = objects.split_at_mut(objects.len() / 2);
+
+                let left_node = Self::new(left_objects);
+                let right_node = Self::new(right_objects);
+
+                let aabb = match (&left_node, &right_node) {
+                    (Some(left), Some(right)) => left.aabb.union(&right.aabb),
+                    (Some(left), None) => left.aabb,
+                    (None, Some(right)) => right.aabb,
+                    _ => unreachable!(),
+                };
+
+                Some(Self {
+                    aabb,
+                    kind: BVHNodeKind::Internal(left_node.map(Box::new), right_node.map(Box::new)),
+                })
+            }
         }
     }
 }
@@ -176,7 +201,7 @@ impl Renderer for CpuRenderer {
         self.profiler.prepare_timer.start();
         self.frame_buffer = Some(self.blank_frame_buffer(scene));
         self.sample_count = 0;
-        self.bvh_root = BVHNode::new(&scene.objects);
+        self.bvh_root = BVHNode::new(&mut scene.objects.clone());
     }
 
     fn render_sample(&mut self, scene: &Scene) -> Option<RgbaImage> {
